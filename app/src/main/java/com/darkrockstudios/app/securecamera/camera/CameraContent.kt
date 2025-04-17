@@ -91,7 +91,7 @@ fun EnhancedCameraScreen(
 	Box(modifier = Modifier.fillMaxSize()) {
 		if (!isTopControlsVisible) {
 			IconButton(
-				onClick = { isTopControlsVisible = !isTopControlsVisible },
+				onClick = { isTopControlsVisible = true },
 				modifier = Modifier
 					.align(Alignment.TopEnd)
 					.padding(
