@@ -5,12 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -124,7 +127,7 @@ private fun TopControlsBar(
 	onFlashToggle: (Boolean) -> Unit,
 	onTorchToggle: (Boolean) -> Unit,
 	onLensToggle: () -> Unit,
-	paddingValues: androidx.compose.foundation.layout.PaddingValues? = null
+	paddingValues: PaddingValues? = null
 ) {
 	Surface(
 		modifier = Modifier
@@ -135,7 +138,7 @@ private fun TopControlsBar(
 				top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
 				bottom = 16.dp
 			),
-		color = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.6f),
+		color = Color.Black.copy(alpha = 0.6f),
 		shape = RoundedCornerShape(16.dp)
 	) {
 		Row(
@@ -170,7 +173,7 @@ private fun TopControlsBar(
 					.padding(8.dp)
 			) {
 				Icon(
-					imageVector = SwitchCamera,
+					imageVector = Icons.Filled.Refresh,
 					contentDescription = "Toggle Camera",
 					tint = Color.White
 				)
@@ -232,7 +235,7 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 			)
 		) {
 			Icon(
-				imageVector = Camera,
+				imageVector = Icons.Filled.Done,
 				contentDescription = "Capture",
 				tint = Color.White,
 				modifier = Modifier.size(32.dp)
@@ -247,7 +250,7 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 				.align(Alignment.BottomEnd),
 		) {
 			Icon(
-				imageVector = Gallery,
+				imageVector = Icons.Filled.Refresh,
 				contentDescription = "Gallery",
 				tint = Color.White
 			)
@@ -283,10 +286,9 @@ private fun CapturedImagePreview(
 						.background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f), CircleShape)
 				) {
 					Icon(
-						imageVector = Cross,
+						imageVector = Icons.Filled.Close,
 						contentDescription = "Close Preview",
-						tint =MaterialTheme.colorScheme.onSurface,
-						modifier = Modifier.rotate(120f)
+						tint = MaterialTheme.colorScheme.onSurface,
 					)
 				}
 			}
