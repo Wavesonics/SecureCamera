@@ -2,35 +2,11 @@ package com.darkrockstudios.app.securecamera.camera
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,20 +16,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.darkrockstudios.app.securecamera.Camera
-import com.darkrockstudios.app.securecamera.Cross
-import com.darkrockstudios.app.securecamera.Flash_off
-import com.darkrockstudios.app.securecamera.Flash_on
-import com.darkrockstudios.app.securecamera.Flashlight
-import com.darkrockstudios.app.securecamera.FlashlightOff
-import com.darkrockstudios.app.securecamera.SwitchCamera
-import com.darkrockstudios.app.securecamera.decodeToImageBitmap
+import androidx.navigation.NavHostController
+import com.darkrockstudios.app.securecamera.*
+import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.kashif.cameraK.controller.CameraController
-import com.kashif.cameraK.enums.CameraLens
-import com.kashif.cameraK.enums.Directory
-import com.kashif.cameraK.enums.FlashMode
-import com.kashif.cameraK.enums.ImageFormat
-import com.kashif.cameraK.enums.TorchMode
+import com.kashif.cameraK.enums.*
 import com.kashif.cameraK.result.ImageCaptureResult
 import com.kashif.cameraK.ui.CameraPreview
 import com.kashif.imagesaverplugin.ImageSaverPlugin
@@ -67,7 +34,8 @@ import kotlin.uuid.Uuid
 internal fun CameraContent(
 	cameraController: MutableState<CameraController?>,
 	imageSaverPlugin: ImageSaverPlugin,
-	modifier: Modifier
+	navController: NavHostController,
+	modifier: Modifier,
 ) {
 	Box(modifier = modifier.fillMaxSize()) {
 		CameraPreview(
@@ -91,6 +59,7 @@ internal fun CameraContent(
 			EnhancedCameraScreen(
 				cameraController = controller,
 				imageSaverPlugin = imageSaverPlugin,
+				navController = navController,
 			)
 		}
 	}
@@ -100,6 +69,7 @@ internal fun CameraContent(
 fun EnhancedCameraScreen(
 	cameraController: CameraController,
 	imageSaverPlugin: ImageSaverPlugin,
+	navController: NavHostController,
 ) {
 	val scope = rememberCoroutineScope()
 	var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -107,7 +77,6 @@ fun EnhancedCameraScreen(
 	var isTorchOn by remember { mutableStateOf(false) }
 
 	Box(modifier = Modifier.fillMaxSize()) {
-
 		TopControlsBar(
 			isFlashOn = isFlashOn,
 			isTorchOn = isTorchOn,
@@ -122,9 +91,9 @@ fun EnhancedCameraScreen(
 			onLensToggle = { cameraController.toggleCameraLens() }
 		)
 
-
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
+			navController = navController,
 			onCapture = {
 				scope.launch {
 					handleImageCapture(
@@ -137,7 +106,6 @@ fun EnhancedCameraScreen(
 				}
 			}
 		)
-
 
 		CapturedImagePreview(imageBitmap = imageBitmap) {
 			imageBitmap = null
@@ -237,18 +205,18 @@ private fun CameraControlSwitch(
 }
 
 @Composable
-private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit) {
+private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit, navController: NavHostController) {
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
 			.padding(bottom = 32.dp),
-		contentAlignment = Alignment.BottomCenter
 	) {
 		FilledTonalButton(
 			onClick = onCapture,
 			modifier = Modifier
 				.size(80.dp)
-				.clip(CircleShape),
+				.clip(CircleShape)
+				.align(Alignment.BottomCenter),
 			colors = ButtonDefaults.filledTonalButtonColors(
 				containerColor = MaterialTheme.colorScheme.primary
 			)
@@ -258,6 +226,20 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit)
 				contentDescription = "Capture",
 				tint = Color.White,
 				modifier = Modifier.size(32.dp)
+			)
+		}
+
+		IconButton(
+			onClick = { navController.navigate(AppDestinations.GALLERY_ROUTE) },
+			modifier = Modifier
+				.background(MaterialTheme.colorScheme.primary, CircleShape)
+				.padding(8.dp)
+				.align(Alignment.BottomEnd),
+		) {
+			Icon(
+				imageVector = Gallery,
+				contentDescription = "Gallery",
+				tint = Color.White
 			)
 		}
 	}

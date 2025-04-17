@@ -1,25 +1,17 @@
 package com.darkrockstudios.app.securecamera
 
 // Import the Gallery icon
-import com.darkrockstudios.app.securecamera.Gallery
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.darkrockstudios.app.securecamera.camera.CameraBottomBar
+import com.darkrockstudios.app.securecamera.gallery.GalleryBottomNav
+import com.darkrockstudios.app.securecamera.gallery.GalleryTopNav
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.navigation.AppNavHost
 import com.darkrockstudios.app.securecamera.ui.theme.SecureCameraTheme
@@ -36,48 +28,30 @@ fun App() = SecureCameraTheme {
 	val snackbarHostState = remember { SnackbarHostState() }
 	val navController = rememberNavController()
 
-	// Define navigation items
-	val items = listOf(
-		NavigationItem(
-			route = AppDestinations.CAMERA_ROUTE,
-			icon = { Icon(imageVector = Camera, contentDescription = "Camera") },
-			label = "Camera"
-		),
-		NavigationItem(
-			route = AppDestinations.GALLERY_ROUTE,
-			icon = { Icon(imageVector = Gallery, contentDescription = "Gallery") },
-			label = "Gallery"
-		)
-	)
+	val navBackStackEntry by navController.currentBackStackEntryAsState()
+	val currentDestination = navBackStackEntry?.destination
 
 	Scaffold(
 		snackbarHost = { SnackbarHost(snackbarHostState) },
-		modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
-		bottomBar = {
-			NavigationBar {
-				val navBackStackEntry by navController.currentBackStackEntryAsState()
-				val currentDestination = navBackStackEntry?.destination
+		modifier = Modifier,
+		topBar = {
+			when (currentDestination?.route) {
+				AppDestinations.CAMERA_ROUTE -> {
+				}
 
-				items.forEach { item ->
-					NavigationBarItem(
-						icon = { item.icon() },
-						label = { Text(item.label) },
-						selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
-						onClick = {
-							navController.navigate(item.route) {
-								// Pop up to the start destination of the graph to
-								// avoid building up a large stack of destinations
-								popUpTo(navController.graph.findStartDestination().id) {
-									saveState = true
-								}
-								// Avoid multiple copies of the same destination when
-								// reselecting the same item
-								launchSingleTop = true
-								// Restore state when reselecting a previously selected item
-								restoreState = true
-							}
-						}
-					)
+				AppDestinations.GALLERY_ROUTE -> {
+					GalleryTopNav(navController)
+				}
+			}
+		},
+		bottomBar = {
+			when (currentDestination?.route) {
+				AppDestinations.CAMERA_ROUTE -> {
+					CameraBottomBar(navController)
+				}
+
+				AppDestinations.GALLERY_ROUTE -> {
+					GalleryBottomNav(navController)
 				}
 			}
 		}
@@ -106,20 +80,11 @@ fun App() = SecureCameraTheme {
 				navController = navController,
 				cameraController = cameraController,
 				imageSaverPlugin = imageSaverPlugin,
-				modifier = Modifier.padding(paddingValues)
+				modifier = Modifier
 			)
 		}
 	}
 }
-
-/**
- * Data class for navigation items
- */
-private data class NavigationItem(
-	val route: String,
-	val icon: @Composable () -> Unit,
-	val label: String
-)
 
 @Composable
 private fun PermissionsHandler(

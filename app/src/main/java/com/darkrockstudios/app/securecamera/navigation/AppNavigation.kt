@@ -1,5 +1,6 @@
 package com.darkrockstudios.app.securecamera.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -39,12 +40,16 @@ fun AppNavHost(
             CameraContent(
                 cameraController = cameraController,
                 imageSaverPlugin = imageSaverPlugin,
-                modifier = Modifier
+                navController = navController,
+                modifier = Modifier.fillMaxSize()
             )
         }
-        
+
         composable(AppDestinations.GALLERY_ROUTE) {
-            GalleryContent()
+            GalleryContent(
+                navController = navController,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
