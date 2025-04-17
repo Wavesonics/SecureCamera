@@ -36,6 +36,7 @@ internal fun CameraContent(
 	imageSaverPlugin: ImageSaverPlugin,
 	navController: NavHostController,
 	modifier: Modifier,
+	paddingValues: PaddingValues? = null,
 ) {
 	Box(modifier = modifier.fillMaxSize()) {
 		CameraPreview(
@@ -60,6 +61,7 @@ internal fun CameraContent(
 				cameraController = controller,
 				imageSaverPlugin = imageSaverPlugin,
 				navController = navController,
+				paddingValues = paddingValues,
 			)
 		}
 	}
@@ -70,6 +72,7 @@ fun EnhancedCameraScreen(
 	cameraController: CameraController,
 	imageSaverPlugin: ImageSaverPlugin,
 	navController: NavHostController,
+	paddingValues: PaddingValues? = null,
 ) {
 	val scope = rememberCoroutineScope()
 	var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -88,7 +91,8 @@ fun EnhancedCameraScreen(
 				isTorchOn = it
 				cameraController.toggleTorchMode()
 			},
-			onLensToggle = { cameraController.toggleCameraLens() }
+			onLensToggle = { cameraController.toggleCameraLens() },
+			paddingValues = paddingValues
 		)
 
 		BottomControls(
@@ -119,12 +123,18 @@ private fun TopControlsBar(
 	isTorchOn: Boolean,
 	onFlashToggle: (Boolean) -> Unit,
 	onTorchToggle: (Boolean) -> Unit,
-	onLensToggle: () -> Unit
+	onLensToggle: () -> Unit,
+	paddingValues: androidx.compose.foundation.layout.PaddingValues? = null
 ) {
 	Surface(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(16.dp),
+			.padding(
+				start = 16.dp,
+				end = 16.dp,
+				top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
+				bottom = 16.dp
+			),
 		color = androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.6f),
 		shape = RoundedCornerShape(16.dp)
 	) {

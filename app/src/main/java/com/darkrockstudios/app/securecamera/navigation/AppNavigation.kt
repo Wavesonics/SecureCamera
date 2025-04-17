@@ -29,7 +29,8 @@ fun AppNavHost(
     cameraController: MutableState<CameraController?>,
     imageSaverPlugin: ImageSaverPlugin,
     modifier: Modifier = Modifier,
-    startDestination: String = AppDestinations.CAMERA_ROUTE
+    startDestination: String = AppDestinations.CAMERA_ROUTE,
+    paddingValues: androidx.compose.foundation.layout.PaddingValues? = null
 ) {
     NavHost(
         navController = navController,
@@ -41,7 +42,8 @@ fun AppNavHost(
                 cameraController = cameraController,
                 imageSaverPlugin = imageSaverPlugin,
                 navController = navController,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                paddingValues = paddingValues
             )
         }
 

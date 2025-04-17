@@ -80,7 +80,8 @@ fun App() = SecureCameraTheme {
 				navController = navController,
 				cameraController = cameraController,
 				imageSaverPlugin = imageSaverPlugin,
-				modifier = Modifier
+				modifier = Modifier,
+				paddingValues = paddingValues
 			)
 		}
 	}
