@@ -1,5 +1,7 @@
 package com.darkrockstudios.app.securecamera.camera
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,7 +23,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.darkrockstudios.app.securecamera.*
+import com.darkrockstudios.app.securecamera.Flashlight
+import com.darkrockstudios.app.securecamera.FlashlightOff
+import com.darkrockstudios.app.securecamera.decodeToImageBitmap
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.*
@@ -81,20 +86,39 @@ fun EnhancedCameraScreen(
 	var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 	var isFlashOn by remember { mutableStateOf(false) }
 	var isTorchOn by remember { mutableStateOf(false) }
+	var isTopControlsVisible by remember { mutableStateOf(false) }
 
 	Box(modifier = Modifier.fillMaxSize()) {
+		if (!isTopControlsVisible) {
+			IconButton(
+				onClick = { isTopControlsVisible = !isTopControlsVisible },
+				modifier = Modifier
+					.align(Alignment.TopEnd)
+					.padding(
+						top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
+						end = 16.dp
+					)
+					.background(MaterialTheme.colorScheme.primary, CircleShape)
+					.padding(8.dp)
+			) {
+				Icon(
+					imageVector = Icons.Filled.MoreVert,
+					contentDescription = "More Options",
+					tint = Color.White
+				)
+			}
+		}
+
 		TopControlsBar(
 			isFlashOn = isFlashOn,
 			isTorchOn = isTorchOn,
+			isVisible = isTopControlsVisible,
 			onFlashToggle = {
 				isFlashOn = it
 				cameraController.toggleFlashMode()
 			},
-			onTorchToggle = {
-				isTorchOn = it
-				cameraController.toggleTorchMode()
-			},
 			onLensToggle = { cameraController.toggleCameraLens() },
+			onClose = { isTopControlsVisible = false },
 			paddingValues = paddingValues
 		)
 
@@ -124,59 +148,83 @@ fun EnhancedCameraScreen(
 private fun TopControlsBar(
 	isFlashOn: Boolean,
 	isTorchOn: Boolean,
+	isVisible: Boolean,
 	onFlashToggle: (Boolean) -> Unit,
-	onTorchToggle: (Boolean) -> Unit,
 	onLensToggle: () -> Unit,
+	onClose: () -> Unit,
 	paddingValues: PaddingValues? = null
 ) {
-	Surface(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(
-				start = 16.dp,
-				end = 16.dp,
-				top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
-				bottom = 16.dp
-			),
-		color = Color.Black.copy(alpha = 0.6f),
-		shape = RoundedCornerShape(16.dp)
+	AnimatedVisibility(
+		visible = isVisible,
+		enter = slideInHorizontally(
+			initialOffsetX = { fullWidth -> fullWidth },
+			animationSpec = tween(durationMillis = 300)
+		) + fadeIn(animationSpec = tween(durationMillis = 300)),
+		exit = slideOutHorizontally(
+			targetOffsetX = { fullWidth -> fullWidth },
+			animationSpec = tween(durationMillis = 300)
+		) + fadeOut(animationSpec = tween(durationMillis = 300))
 	) {
-		Row(
+		Surface(
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(16.dp),
-			horizontalArrangement = Arrangement.SpaceBetween,
-			verticalAlignment = Alignment.CenterVertically
+				.padding(
+					start = 16.dp,
+					end = 16.dp,
+					top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
+					bottom = 16.dp
+				),
+			color = Color.Black.copy(alpha = 0.6f),
+			shape = RoundedCornerShape(16.dp)
 		) {
-			Column(
-				verticalArrangement = Arrangement.spacedBy(8.dp)
-			) {
-				CameraControlSwitch(
-					icon = if (isFlashOn) Flashlight else FlashlightOff,
-					text = "Flash",
-					checked = isFlashOn,
-					onCheckedChange = onFlashToggle
-				)
-
-				CameraControlSwitch(
-					icon = if (isTorchOn) Flash_on else Flash_off,
-					text = "Torch",
-					checked = isTorchOn,
-					onCheckedChange = onTorchToggle
-				)
-			}
-
-			IconButton(
-				onClick = onLensToggle,
+			Row(
 				modifier = Modifier
-					.background(MaterialTheme.colorScheme.primary, CircleShape)
-					.padding(8.dp)
+					.fillMaxWidth()
+					.padding(16.dp),
+				horizontalArrangement = Arrangement.SpaceBetween,
+				verticalAlignment = Alignment.CenterVertically
 			) {
-				Icon(
-					imageVector = Icons.Filled.Refresh,
-					contentDescription = "Toggle Camera",
-					tint = Color.White
-				)
+				Column(
+					verticalArrangement = Arrangement.spacedBy(8.dp)
+				) {
+					CameraControlSwitch(
+						icon = if (isFlashOn) Flashlight else FlashlightOff,
+						text = "Flash",
+						checked = isFlashOn,
+						onCheckedChange = onFlashToggle
+					)
+				}
+
+				Row(
+					horizontalArrangement = Arrangement.spacedBy(16.dp),
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					IconButton(
+						onClick = onLensToggle,
+						modifier = Modifier
+							.background(MaterialTheme.colorScheme.primary, CircleShape)
+							.padding(8.dp)
+					) {
+						Icon(
+							imageVector = Icons.Filled.Refresh,
+							contentDescription = "Toggle Camera",
+							tint = Color.White
+						)
+					}
+
+					IconButton(
+						onClick = onClose,
+						modifier = Modifier
+							.background(MaterialTheme.colorScheme.primary, CircleShape)
+							.padding(8.dp)
+					) {
+						Icon(
+							imageVector = Icons.Filled.Close,
+							contentDescription = "Close Controls",
+							tint = Color.White
+						)
+					}
+				}
 			}
 		}
 	}
