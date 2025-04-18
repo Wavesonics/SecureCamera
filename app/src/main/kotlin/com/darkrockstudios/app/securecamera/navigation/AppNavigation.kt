@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.darkrockstudios.app.securecamera.camera.CameraContent
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.gallery.GalleryContent
+import com.darkrockstudios.app.securecamera.settings.SettingsContent
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoContent
 import com.kashif.cameraK.controller.CameraController
 import org.koin.compose.koinInject
@@ -24,6 +25,7 @@ object AppDestinations {
 	const val CAMERA_ROUTE = "camera"
 	const val GALLERY_ROUTE = "gallery"
 	const val VIEW_PHOTO_ROUTE = "viewphoto/{photoName}"
+	const val SETTINGS_ROUTE = "settings"
 
 	fun createViewPhotoRoute(photoName: String): String {
 		return "viewphoto/$photoName"
@@ -82,6 +84,14 @@ fun AppNavHost(
 			} else {
 				Text(text = "No photo selected")
 			}
+		}
+
+		composable(AppDestinations.SETTINGS_ROUTE) {
+			SettingsContent(
+				navController = navController,
+				modifier = Modifier.fillMaxSize(),
+				paddingValues = paddingValues
+			)
 		}
 	}
 }

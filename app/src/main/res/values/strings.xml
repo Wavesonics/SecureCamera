@@ -30,10 +30,16 @@
 
     <!-- Camera Screen -->
     <string name="camera_more_options_content_description">More Options</string>
+    <string name="camera_settings_button">Settings</string>
     <string name="camera_toggle_content_description">Toggle Camera</string>
     <string name="camera_close_controls_content_description">Close Controls</string>
     <string name="camera_flash_text">Flash</string>
     <string name="camera_capture_content_description">Capture</string>
     <string name="camera_gallery_content_description">Gallery</string>
     <string name="camera_captured_image_content_description">Captured Image</string>
+    <string name="camera_settings_content_description">Settings</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_description">This is the settings screen. Add your settings here.</string>
 </resources>

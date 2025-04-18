@@ -207,7 +207,7 @@ private fun TopControlsBar(
 							.padding(8.dp)
 					) {
 						Icon(
-							imageVector = Icons.Filled.Refresh,
+							imageVector = Icons.Filled.Cameraswitch,
 							contentDescription = stringResource(id = R.string.camera_toggle_content_description),
 							tint = Color.White
 						)
@@ -272,6 +272,20 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 			.fillMaxWidth()
 			.padding(bottom = 32.dp),
 	) {
+		IconButton(
+			onClick = { navController.navigate(AppDestinations.SETTINGS_ROUTE) },
+			modifier = Modifier
+				.background(MaterialTheme.colorScheme.primary, CircleShape)
+				.padding(8.dp)
+				.align(Alignment.BottomStart),
+		) {
+			Icon(
+				imageVector = Icons.Filled.Settings,
+				contentDescription = stringResource(R.string.camera_settings_button),
+				tint = Color.White
+			)
+		}
+
 		FilledTonalButton(
 			onClick = onCapture,
 			modifier = Modifier
