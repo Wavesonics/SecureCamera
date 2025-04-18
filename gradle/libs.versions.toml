@@ -23,6 +23,7 @@ composeBom = "2025.04.00"
 navigationCompose = "2.8.9"
 qr_scanner_plugin = "0.0.7"
 koin-bom = "4.0.4"
+cryptographyBom = "0.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,6 +32,9 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
 camerak_image_saver_plugin = { module = "io.github.kashif-mehmood-km:image_saver_plugin", version.ref = "image_saver_plugin" }
 camerak_qr_scanner_plugin = { module = "io.github.kashif-mehmood-km:qr_scanner_plugin", version.ref = "qr_scanner_plugin" }
+cryptography-bom = { group = "dev.whyoleg.cryptography", name = "cryptography-bom", version.ref = "cryptographyBom" }
+cryptography-provider-jdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk" }
+cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core" }
 imageviewer = { module = "com.github.0xZhangKe:ImageViewer", version.ref = "imageviewer" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -69,6 +69,9 @@ dependencies {
 	implementation(libs.koin.core.coroutines)
 	implementation(libs.imageviewer)
 	implementation(libs.androidx.material.icons.extended)
+	implementation(platform(libs.cryptography.bom))
+	implementation(libs.cryptography.core)
+	implementation(libs.cryptography.provider.jdk)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)
