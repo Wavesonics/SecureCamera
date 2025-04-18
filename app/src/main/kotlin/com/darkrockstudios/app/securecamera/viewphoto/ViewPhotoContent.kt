@@ -16,8 +16,10 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
+import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.sharePhoto
@@ -85,12 +87,12 @@ fun ViewPhotoContent(
 				) {
 					Image(
 						bitmap = bitmap,
-						contentDescription = "Photo",
+						contentDescription = stringResource(id = R.string.photo_content_description),
 						contentScale = ContentScale.Fit,
 					)
 				}
 			} else {
-				Text(text = "Photo not found")
+				Text(text = stringResource(id = R.string.photo_not_found))
 			}
 		}
 	}

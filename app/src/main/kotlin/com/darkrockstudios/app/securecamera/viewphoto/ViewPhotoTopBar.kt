@@ -8,8 +8,10 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.darkrockstudios.app.securecamera.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,7 +23,7 @@ fun ViewPhotoTopBar(
 	TopAppBar(
 		title = {
 			Text(
-				"Photo",
+				stringResource(id = R.string.photo_title),
 				color = MaterialTheme.colorScheme.onSurface,
 			)
 		},
@@ -36,7 +38,7 @@ fun ViewPhotoTopBar(
 			) {
 				Icon(
 					imageVector = Icons.Filled.Close,
-					contentDescription = "Close Photo",
+					contentDescription = stringResource(id = R.string.close_photo_content_description),
 					tint = MaterialTheme.colorScheme.onSurface,
 				)
 			}
@@ -48,7 +50,7 @@ fun ViewPhotoTopBar(
 			) {
 				Icon(
 					imageVector = Icons.Filled.Share,
-					contentDescription = "Share Photos",
+					contentDescription = stringResource(id = R.string.share_photo_content_description),
 					tint = MaterialTheme.colorScheme.onSurface,
 				)
 			}
@@ -58,7 +60,7 @@ fun ViewPhotoTopBar(
 			) {
 				Icon(
 					imageVector = Icons.Filled.Delete,
-					contentDescription = "Delete Photos",
+					contentDescription = stringResource(id = R.string.delete_photo_content_description),
 					tint = MaterialTheme.colorScheme.onSurface,
 				)
 			}

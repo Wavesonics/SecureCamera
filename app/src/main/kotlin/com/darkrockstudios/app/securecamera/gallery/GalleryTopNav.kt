@@ -8,8 +8,10 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.darkrockstudios.app.securecamera.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +26,11 @@ fun GalleryTopNav(
 	TopAppBar(
 		title = {
 			Text(
-				if (isSelectionMode) "$selectedCount Selected" else "Gallery",
+				if (isSelectionMode) {
+					stringResource(id = R.string.gallery_selected_count, selectedCount)
+				} else {
+					stringResource(id = R.string.gallery_title)
+				},
 				color = MaterialTheme.colorScheme.onSurface,
 			)
 		},
@@ -46,7 +52,11 @@ fun GalleryTopNav(
 			) {
 				Icon(
 					imageVector = Icons.Filled.Close,
-					contentDescription = if (isSelectionMode) "Cancel Selection" else "Close Gallery",
+					contentDescription = if (isSelectionMode) {
+						stringResource(id = R.string.gallery_cancel_selection_content_description)
+					} else {
+						stringResource(id = R.string.gallery_close_content_description)
+					},
 					tint = MaterialTheme.colorScheme.onSurface,
 				)
 			}
@@ -57,7 +67,7 @@ fun GalleryTopNav(
 				IconButton(onClick = onDeleteClick) {
 					Icon(
 						imageVector = Icons.Filled.Delete,
-						contentDescription = "Delete Selected",
+						contentDescription = stringResource(id = R.string.gallery_delete_selected_content_description),
 						tint = MaterialTheme.colorScheme.onSurface
 					)
 				}
@@ -66,7 +76,7 @@ fun GalleryTopNav(
 				IconButton(onClick = onShareClick) {
 					Icon(
 						imageVector = Icons.Filled.Share,
-						contentDescription = "Share Selected",
+						contentDescription = stringResource(id = R.string.gallery_share_selected_content_description),
 						tint = MaterialTheme.colorScheme.onSurface
 					)
 				}

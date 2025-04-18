@@ -21,10 +21,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.Flashlight
 import com.darkrockstudios.app.securecamera.FlashlightOff
+import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.decodeToImageBitmap
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
@@ -102,7 +104,7 @@ fun EnhancedCameraScreen(
 			) {
 				Icon(
 					imageVector = Icons.Filled.MoreVert,
-					contentDescription = "More Options",
+					contentDescription = stringResource(id = R.string.camera_more_options_content_description),
 					tint = Color.White
 				)
 			}
@@ -206,7 +208,7 @@ private fun TopControlsBar(
 					) {
 						Icon(
 							imageVector = Icons.Filled.Refresh,
-							contentDescription = "Toggle Camera",
+							contentDescription = stringResource(id = R.string.camera_toggle_content_description),
 							tint = Color.White
 						)
 					}
@@ -219,7 +221,7 @@ private fun TopControlsBar(
 					) {
 						Icon(
 							imageVector = Icons.Filled.Close,
-							contentDescription = "Close Controls",
+							contentDescription = stringResource(id = R.string.camera_close_controls_content_description),
 							tint = Color.White
 						)
 					}
@@ -247,7 +249,7 @@ private fun CameraControlSwitch(
 		)
 		Spacer(modifier = Modifier.width(8.dp))
 		Text(
-			text = "Flash",
+			text = stringResource(id = R.string.camera_flash_text),
 			color = Color.White,
 			style = MaterialTheme.typography.bodyMedium
 		)
@@ -282,7 +284,7 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 		) {
 			Icon(
 				imageVector = Icons.Filled.Camera,
-				contentDescription = "Capture",
+				contentDescription = stringResource(id = R.string.camera_capture_content_description),
 				tint = Color.White,
 				modifier = Modifier.size(32.dp)
 			)
@@ -297,7 +299,7 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 		) {
 			Icon(
 				imageVector = Icons.Filled.PhotoLibrary,
-				contentDescription = "Gallery",
+				contentDescription = stringResource(id = R.string.camera_gallery_content_description),
 				tint = Color.White
 			)
 		}

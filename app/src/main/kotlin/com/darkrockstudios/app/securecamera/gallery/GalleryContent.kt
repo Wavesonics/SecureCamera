@@ -17,9 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
+import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
@@ -128,9 +130,9 @@ fun GalleryContent(
 		) {
 			if (isLoading) {
 				// Show a loading indicator or placeholder
-				Text(text = "Loading photos...")
+				Text(text = stringResource(id = R.string.gallery_loading))
 			} else if (photos.isEmpty()) {
-				Text(text = "No photos yet")
+				Text(text = stringResource(id = R.string.gallery_empty))
 			} else {
 				PhotoGrid(
 					photos = photos,
@@ -210,7 +212,7 @@ private fun PhotoItem(
 		) {
 			Image(
 				bitmap = thumbnailBitmap,
-				contentDescription = "Photo ${photo.photoName}",
+				contentDescription = stringResource(id = R.string.gallery_photo_content_description, photo.photoName),
 				contentScale = ContentScale.Crop,
 				modifier = Modifier.fillMaxSize()
 			)
