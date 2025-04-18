@@ -85,6 +85,10 @@ class SecureImageManager(private val appContext: Context) {
 		}
 	}
 
+	fun deleteImages(photos: List<PhotoDef>): Boolean {
+		return photos.map { deleteImage(it) }.all { it }
+	}
+
 	fun getPhotoByName(photoName: String): PhotoDef? {
 		val dir = getGalleryDirectory()
 		if (!dir.exists()) {

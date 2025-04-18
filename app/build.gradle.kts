@@ -68,6 +68,7 @@ dependencies {
 	implementation(libs.koin.androidx.compose.navigation)
 	implementation(libs.koin.core.coroutines)
 	implementation(libs.imageviewer)
+	implementation(libs.androidx.material.icons.extended)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

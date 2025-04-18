@@ -1,9 +1,11 @@
 package com.darkrockstudios.app.securecamera.camera
 
+import android.content.Context
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,11 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.Flashlight
 import com.darkrockstudios.app.securecamera.FlashlightOff
 import com.darkrockstudios.app.securecamera.decodeToImageBitmap
+import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.*
@@ -81,6 +85,7 @@ fun EnhancedCameraScreen(
 	var isTorchOn by remember { mutableStateOf(false) }
 	var isTopControlsVisible by remember { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageManager>()
+	val context = LocalContext.current
 
 	Box(modifier = Modifier.fillMaxSize()) {
 		if (!isTopControlsVisible) {
@@ -101,6 +106,10 @@ fun EnhancedCameraScreen(
 					tint = Color.White
 				)
 			}
+		}
+
+		CapturedImagePreview(imageBitmap = imageBitmap) {
+			imageBitmap = null
 		}
 
 		TopControlsBar(
@@ -124,6 +133,7 @@ fun EnhancedCameraScreen(
 					handleImageCapture(
 						cameraController = cameraController,
 						imageSaver = imageSaver,
+						context = context,
 						onImageCaptured = {
 							imageBitmap = it
 						}
@@ -131,10 +141,6 @@ fun EnhancedCameraScreen(
 				}
 			}
 		)
-
-		CapturedImagePreview(imageBitmap = imageBitmap) {
-			imageBitmap = null
-		}
 	}
 }
 
@@ -275,7 +281,7 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 			)
 		) {
 			Icon(
-				imageVector = Icons.Filled.Done,
+				imageVector = Icons.Filled.Camera,
 				contentDescription = "Capture",
 				tint = Color.White,
 				modifier = Modifier.size(32.dp)
@@ -290,7 +296,7 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 				.align(Alignment.BottomEnd),
 		) {
 			Icon(
-				imageVector = Icons.Filled.Home,
+				imageVector = Icons.Filled.PhotoLibrary,
 				contentDescription = "Gallery",
 				tint = Color.White
 			)
@@ -304,38 +310,39 @@ private fun CapturedImagePreview(
 	onDismiss: () -> Unit
 ) {
 	imageBitmap?.let { bitmap ->
+		var isFlashing by remember { mutableStateOf(true) }
+
 		Surface(
 			modifier = Modifier.fillMaxSize(),
-			color = Color.Black.copy(alpha = 0.9f)
+			color = if (isFlashing) Color.White else Color.Black.copy(alpha = 0.9f)
 		) {
-			Box(modifier = Modifier.fillMaxSize()) {
-				Image(
-					bitmap = bitmap,
-					contentDescription = "Captured Image",
-					modifier = Modifier
-						.fillMaxSize()
-						.padding(16.dp),
-					contentScale = ContentScale.Fit
-				)
-
-				IconButton(
-					onClick = onDismiss,
-					modifier = Modifier
-						.align(Alignment.TopEnd)
-						.padding(16.dp)
-						.background(MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f), CircleShape)
+			Box(
+				modifier = Modifier
+					.fillMaxSize()
+					.clickable { onDismiss() }) {
+				AnimatedVisibility(
+					visible = !isFlashing,
+					enter = fadeIn(animationSpec = tween(durationMillis = 300))
 				) {
-					Icon(
-						imageVector = Icons.Filled.Close,
-						contentDescription = "Close Preview",
-						tint = MaterialTheme.colorScheme.onSurface,
+					Image(
+						bitmap = bitmap,
+						contentDescription = "Captured Image",
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(16.dp),
+						contentScale = ContentScale.Fit
 					)
 				}
 			}
 		}
 
 		LaunchedEffect(bitmap) {
-			delay(2000)
+			// Flash white for 250ms
+			delay(250)
+			isFlashing = false
+
+			// Dismiss after showing the image for 1 second
+			delay(1000)
 			onDismiss()
 		}
 	}
@@ -345,10 +352,12 @@ private fun CapturedImagePreview(
 private suspend fun handleImageCapture(
 	cameraController: CameraController,
 	imageSaver: SecureImageManager,
+	context: Context,
 	onImageCaptured: (ImageBitmap) -> Unit
 ) {
 	when (val result = cameraController.takePicture()) {
 		is ImageCaptureResult.Success -> {
+			vibrateDevice(context)
 			val bitmap = result.byteArray.decodeToImageBitmap()
 			onImageCaptured(bitmap)
 			imageSaver.saveImage(

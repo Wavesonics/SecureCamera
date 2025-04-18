@@ -68,9 +68,7 @@ fun ViewPhotoContent(
 					BitmapFactory.decodeFile(photo.photoFile.absolutePath).asImageBitmap()
 				}
 
-				val state = rememberImageViewerState(
-					minimumScale = 0.75f,
-				) {
+				val state = rememberImageViewerState {
 					navController.navigateUp()
 				}
 				ImageViewer(
