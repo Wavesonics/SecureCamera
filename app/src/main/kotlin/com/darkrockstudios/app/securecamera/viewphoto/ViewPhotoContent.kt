@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +17,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.sharePhoto
@@ -53,9 +52,16 @@ fun ViewPhotoContent(
 		)
 
 		if (showDeleteConfirmation) {
-			ConfirmDeletePhotoDialog(imageManager, photo, navController) {
-				showDeleteConfirmation = false
-			}
+			ConfirmDeletePhotoDialog(
+				selectedCount = 1, onConfirm = {
+					showDeleteConfirmation = false
+					imageManager.deleteImage(photo)
+					navController.navigateUp()
+				},
+				onDismiss = {
+					showDeleteConfirmation = false
+				}
+			)
 		}
 
 		Box(
@@ -88,36 +94,4 @@ fun ViewPhotoContent(
 			}
 		}
 	}
-}
-
-@Composable
-private fun ConfirmDeletePhotoDialog(
-	imageManager: SecureImageManager,
-	photo: PhotoDef,
-	navController: NavController,
-	onDismiss: () -> Unit,
-) {
-	AlertDialog(
-		onDismissRequest = onDismiss,
-		title = { Text("Delete Photo") },
-		text = { Text("Are you sure you want to delete this photo?") },
-		confirmButton = {
-			TextButton(
-				onClick = {
-					onDismiss()
-					imageManager.deleteImage(photo)
-					navController.navigateUp()
-				}
-			) {
-				Text("Delete")
-			}
-		},
-		dismissButton = {
-			TextButton(
-				onClick = onDismiss
-			) {
-				Text("Cancel")
-			}
-		}
-	)
 }

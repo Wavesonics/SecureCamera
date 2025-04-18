@@ -19,9 +19,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.sharePhotos
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +41,7 @@ fun GalleryContent(
 	// Selection state
 	var isSelectionMode by remember { mutableStateOf(false) }
 	var selectedPhotos by remember { mutableStateOf<Set<String>>(emptySet()) }
+	var showDeleteConfirmation by remember { mutableStateOf(false) }
 
 	// Function to toggle selection of a photo
 	val togglePhotoSelection = { photoName: String ->
@@ -54,32 +57,35 @@ fun GalleryContent(
 		}
 	}
 
-	fun refreshPhotos() {
-		photos = imageManager.getPhotos()
-	}
-
 	val startSelectionMode = { photoName: String ->
 		isSelectionMode = true
 		selectedPhotos = setOf(photoName)
 		vibrateDevice(context)
 	}
 
-	val cancelSelection = {
+	val clearSelection = {
 		isSelectionMode = false
 		selectedPhotos = emptySet()
 	}
 
 	val handleDelete = {
+		showDeleteConfirmation = true
+	}
+
+	val performDelete = {
 		val photoDefs = selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
 		imageManager.deleteImages(photoDefs)
-		cancelSelection()
-		photos -= photoDefs
+		clearSelection()
+		photos = photos.filter { it !in photoDefs }
+		showDeleteConfirmation = false
 	}
 
 	val handleShare = {
-		// TODO: Implement share functionality
-		// For now, just cancel selection
-		cancelSelection()
+		val photoDefs = selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
+		if (photoDefs.isNotEmpty()) {
+			sharePhotos(photoDefs, context)
+		}
+		clearSelection()
 	}
 
 	LaunchedEffect(Unit) {
@@ -98,8 +104,16 @@ fun GalleryContent(
 			onShareClick = handleShare,
 			isSelectionMode = isSelectionMode,
 			selectedCount = selectedPhotos.size,
-			onCancelSelection = cancelSelection
+			onCancelSelection = clearSelection
 		)
+
+		if (showDeleteConfirmation) {
+			ConfirmDeletePhotoDialog(
+				selectedCount = selectedPhotos.size,
+				onConfirm = performDelete,
+				onDismiss = { showDeleteConfirmation = false }
+			)
+		}
 
 		Box(
 			modifier = Modifier
@@ -203,4 +217,3 @@ private fun PhotoItem(
 		}
 	}
 }
-
