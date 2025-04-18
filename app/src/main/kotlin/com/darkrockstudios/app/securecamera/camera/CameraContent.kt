@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,20 +28,18 @@ import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.*
 import com.kashif.cameraK.result.ImageCaptureResult
 import com.kashif.cameraK.ui.CameraPreview
-import com.kashif.imagesaverplugin.ImageSaverPlugin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 
 @Composable
 internal fun CameraContent(
 	cameraController: MutableState<CameraController?>,
-	imageSaverPlugin: ImageSaverPlugin,
 	navController: NavHostController,
 	modifier: Modifier,
-	paddingValues: PaddingValues? = null,
+	paddingValues: PaddingValues,
 ) {
 	Box(modifier = modifier.fillMaxSize()) {
 		CameraPreview(
@@ -55,30 +50,28 @@ internal fun CameraContent(
 				setImageFormat(ImageFormat.JPEG)
 				setDirectory(Directory.PICTURES)
 				setTorchMode(TorchMode.OFF)
-				addPlugin(imageSaverPlugin)
 			},
 			onCameraControllerReady = {
 				print("==> Camera Controller Ready")
 				cameraController.value = it
-
 			}
 		)
 
 		cameraController.value?.let { controller ->
 			EnhancedCameraScreen(
 				cameraController = controller,
-				imageSaverPlugin = imageSaverPlugin,
 				navController = navController,
 				paddingValues = paddingValues,
 			)
 		}
+
+		CameraBottomBar(navController)
 	}
 }
 
 @Composable
 fun EnhancedCameraScreen(
 	cameraController: CameraController,
-	imageSaverPlugin: ImageSaverPlugin,
 	navController: NavHostController,
 	paddingValues: PaddingValues? = null,
 ) {
@@ -87,6 +80,7 @@ fun EnhancedCameraScreen(
 	var isFlashOn by remember { mutableStateOf(false) }
 	var isTorchOn by remember { mutableStateOf(false) }
 	var isTopControlsVisible by remember { mutableStateOf(false) }
+	val imageSaver = koinInject<SecureImageManager>()
 
 	Box(modifier = Modifier.fillMaxSize()) {
 		if (!isTopControlsVisible) {
@@ -129,7 +123,7 @@ fun EnhancedCameraScreen(
 				scope.launch {
 					handleImageCapture(
 						cameraController = cameraController,
-						imageSaverPlugin = imageSaverPlugin,
+						imageSaver = imageSaver,
 						onImageCaptured = {
 							imageBitmap = it
 						}
@@ -189,7 +183,6 @@ private fun TopControlsBar(
 				) {
 					CameraControlSwitch(
 						icon = if (isFlashOn) Flashlight else FlashlightOff,
-						text = "Flash",
 						checked = isFlashOn,
 						onCheckedChange = onFlashToggle
 					)
@@ -233,7 +226,6 @@ private fun TopControlsBar(
 @Composable
 private fun CameraControlSwitch(
 	icon: ImageVector,
-	text: String,
 	checked: Boolean,
 	onCheckedChange: (Boolean) -> Unit
 ) {
@@ -249,7 +241,7 @@ private fun CameraControlSwitch(
 		)
 		Spacer(modifier = Modifier.width(8.dp))
 		Text(
-			text = text,
+			text = "Flash",
 			color = Color.White,
 			style = MaterialTheme.typography.bodyMedium
 		)
@@ -298,7 +290,7 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 				.align(Alignment.BottomEnd),
 		) {
 			Icon(
-				imageVector = Icons.Filled.Refresh,
+				imageVector = Icons.Filled.Home,
 				contentDescription = "Gallery",
 				tint = Color.White
 			)
@@ -343,7 +335,7 @@ private fun CapturedImagePreview(
 		}
 
 		LaunchedEffect(bitmap) {
-			delay(3000)
+			delay(2000)
 			onDismiss()
 		}
 	}
@@ -352,21 +344,17 @@ private fun CapturedImagePreview(
 @OptIn(ExperimentalUuidApi::class)
 private suspend fun handleImageCapture(
 	cameraController: CameraController,
-	imageSaverPlugin: ImageSaverPlugin,
+	imageSaver: SecureImageManager,
 	onImageCaptured: (ImageBitmap) -> Unit
 ) {
 	when (val result = cameraController.takePicture()) {
 		is ImageCaptureResult.Success -> {
 			val bitmap = result.byteArray.decodeToImageBitmap()
 			onImageCaptured(bitmap)
-			if (!imageSaverPlugin.config.isAutoSave) {
-				val customName = "Manual_${Uuid.random().toHexString()}"
-				imageSaverPlugin.saveImage(
-					byteArray = result.byteArray,
-					imageName = customName
-				)?.let { path ->
-					println("Image saved at: $path")
-				}
+			imageSaver.saveImage(
+				byteArray = result.byteArray,
+			).let { path ->
+				println("Image saved at: $path")
 			}
 		}
 

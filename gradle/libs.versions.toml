@@ -1,7 +1,15 @@
 [versions]
 agp = "8.9.1"
 camerak = "0.0.11"
+compileSdk = "35"
+minSdk = "29"
+mockk = "1.14.0"
+targetSdk = "35"
+versionCode = "1"
+versionName = "1.0"
+javaVersion = "11"
 image_saver_plugin = "0.0.6"
+imageviewer = "1.0.3"
 kim = "0.24"
 kotlin = "2.1.10"
 coreKtx = "1.16.0"
@@ -13,6 +21,7 @@ activityCompose = "1.10.1"
 composeBom = "2025.04.00"
 navigationCompose = "2.8.9"
 qr_scanner_plugin = "0.0.7"
+koin-bom = "4.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -20,6 +29,7 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
 camerak_image_saver_plugin = { module = "io.github.kashif-mehmood-km:image_saver_plugin", version.ref = "image_saver_plugin" }
 camerak_qr_scanner_plugin = { module = "io.github.kashif-mehmood-km:qr_scanner_plugin", version.ref = "qr_scanner_plugin" }
+imageviewer = { module = "com.github.0xZhangKe:ImageViewer", version.ref = "imageviewer" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -34,9 +44,19 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kim = { module = "com.ashampoo:kim", version.ref = "kim" }
+koin-android-test = { module = "io.insert-koin:koin-android-test" }
+koin-androidx-compose-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-core-coroutines = { module = "io.insert-koin:koin-core-coroutines" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

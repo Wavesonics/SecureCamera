@@ -6,14 +6,21 @@ plugins {
 
 android {
 	namespace = "com.darkrockstudios.app.securecamera"
-	compileSdk = 35
+	compileSdk = libs.versions.compileSdk.get().toInt()
+
+	packaging {
+		resources {
+			excludes += "META-INF/LICENSE.md"
+			excludes += "META-INF/LICENSE-notice.md"
+		}
+	}
 
 	defaultConfig {
 		applicationId = "com.darkrockstudios.app.securecamera"
-		minSdk = 28
-		targetSdk = 35
-		versionCode = 1
-		versionName = "1.0"
+		minSdk = libs.versions.minSdk.get().toInt()
+		targetSdk = libs.versions.targetSdk.get().toInt()
+		versionCode = libs.versions.versionCode.get().toInt()
+		versionName = libs.versions.versionName.get()
 
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 	}
@@ -28,11 +35,11 @@ android {
 		}
 	}
 	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_11
-		targetCompatibility = JavaVersion.VERSION_11
+		sourceCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
+		targetCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
 	}
 	kotlinOptions {
-		jvmTarget = "11"
+		jvmTarget = libs.versions.javaVersion.get()
 	}
 	buildFeatures {
 		compose = true
@@ -54,12 +61,24 @@ dependencies {
 	implementation(libs.camerak.image.saver.plugin)
 	implementation(libs.camerak.qr.scanner.plugin)
 	implementation(libs.kim)
+	implementation(project.dependencies.platform(libs.koin.bom))
+	implementation(libs.koin.core)
+	implementation(libs.koin.android)
+	implementation(libs.koin.androidx.compose)
+	implementation(libs.koin.androidx.compose.navigation)
+	implementation(libs.koin.core.coroutines)
+	implementation(libs.imageviewer)
 
 	testImplementation(libs.junit)
+	testImplementation(libs.koin.test.junit4)
+	testImplementation(libs.koin.android.test)
+	testImplementation(libs.mockk)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
 	androidTestImplementation(libs.androidx.ui.test.junit4)
+	androidTestImplementation(libs.mockk.android)
+	androidTestImplementation(libs.mockk.agent)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 }
