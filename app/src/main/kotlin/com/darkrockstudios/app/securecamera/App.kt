@@ -43,16 +43,14 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 				modifier = Modifier
 			) { paddingValues ->
 				val cameraPermissionState = remember { mutableStateOf(permissions.hasCameraPermission()) }
-				val storagePermissionState = remember { mutableStateOf(permissions.hasStoragePermission()) }
 				val cameraController = remember { mutableStateOf<CameraController?>(null) }
 
 				PermissionsHandler(
 					permissions = permissions,
 					cameraPermissionState = cameraPermissionState,
-					storagePermissionState = storagePermissionState
 				)
 
-				if (cameraPermissionState.value && storagePermissionState.value) {
+				if (cameraPermissionState.value) {
 					AppNavHost(
 						navController = navController,
 						cameraController = cameraController,
@@ -71,19 +69,11 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 private fun PermissionsHandler(
 	permissions: Permissions,
 	cameraPermissionState: MutableState<Boolean>,
-	storagePermissionState: MutableState<Boolean>
 ) {
 	if (!cameraPermissionState.value) {
 		permissions.RequestCameraPermission(
 			onGranted = { cameraPermissionState.value = true },
 			onDenied = { println("Camera Permission Denied") }
-		)
-	}
-
-	if (!storagePermissionState.value) {
-		permissions.RequestStoragePermission(
-			onGranted = { storagePermissionState.value = true },
-			onDenied = { println("Storage Permission Denied") }
 		)
 	}
 }

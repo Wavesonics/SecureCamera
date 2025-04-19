@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import com.ashampoo.kim.Kim
+import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.MetadataUpdate.TakenDate
 import com.ashampoo.kim.model.TiffOrientation
@@ -94,7 +95,12 @@ class SecureImageManager(
 		}
 	}
 
-	suspend fun saveImage(byteArray: ByteArray, quality: Int = 90, orientation: TiffOrientation): File {
+	suspend fun saveImage(
+		byteArray: ByteArray,
+		quality: Int = 90,
+		orientation: TiffOrientation,
+		latLng: GpsCoordinates?
+	): File {
 		val dir = getGalleryDirectory()
 
 		if (!dir.exists()) {
@@ -117,6 +123,11 @@ class SecureImageManager(
 
 		val orientationUpdate: MetadataUpdate = MetadataUpdate.Orientation(orientation)
 		updatedBytes = Kim.update(bytes = updatedBytes, orientationUpdate)
+
+		if (latLng != null) {
+			val gpsUpdate: MetadataUpdate = MetadataUpdate.GpsCoordinates(latLng)
+			updatedBytes = Kim.update(bytes = updatedBytes, gpsUpdate)
+		}
 
 		tempFile.writeBytes(updatedBytes)
 		tempFile.renameTo(photoFile)

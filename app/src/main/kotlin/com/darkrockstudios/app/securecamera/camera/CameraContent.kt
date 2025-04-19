@@ -1,6 +1,7 @@
 package com.darkrockstudios.app.securecamera.camera
 
 import android.content.Context
+import android.location.Location
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -20,9 +21,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.TiffOrientation
-import com.darkrockstudios.app.securecamera.Flashlight
-import com.darkrockstudios.app.securecamera.FlashlightOff
+import com.darkrockstudios.app.securecamera.*
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
@@ -90,8 +91,14 @@ fun EnhancedCameraScreen(
 	var isFlashing by remember { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
+	val locationRepository = koinInject<LocationRepository>()
 	val context = LocalContext.current
 	val orientation = rememberCurrentTiffOrientation()
+
+	var locationPermissionState by remember { mutableStateOf(false) }
+	RequestLocationPermission {
+		locationPermissionState = true
+	}
 
 	fun doCapturePhoto() {
 		if (authManager.checkSessionValidity()) {
@@ -99,11 +106,18 @@ fun EnhancedCameraScreen(
 
 			activeJobs++
 			scope.launch(Dispatchers.IO) {
+				val location = if (locationPermissionState) {
+					locationRepository.currentLocation()
+				} else {
+					null
+				}
+
 				try {
 					handleImageCapture(
 						cameraController = cameraController,
 						imageSaver = imageSaver,
 						orientation = orientation,
+						location = location,
 						context = context,
 					)
 				} finally {
@@ -386,13 +400,22 @@ private suspend fun handleImageCapture(
 	imageSaver: SecureImageManager,
 	context: Context,
 	orientation: TiffOrientation,
+	location: Location?,
 ) {
+	val gpsCoordinates = location?.let {
+		GpsCoordinates(
+			latitude = it.latitude,
+			longitude = it.longitude,
+		)
+	}
+
 	when (val result = cameraController.takePicture()) {
 		is ImageCaptureResult.Success -> {
 			vibrateDevice(context)
 			imageSaver.saveImage(
 				byteArray = result.byteArray,
 				orientation = orientation,
+				latLng = gpsCoordinates
 			).let { path ->
 				println("Image saved at: $path")
 			}

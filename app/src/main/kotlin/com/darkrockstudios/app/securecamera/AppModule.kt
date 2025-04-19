@@ -10,4 +10,5 @@ val appModule = module {
 	singleOf(::SecureImageManager)
 	singleOf(::AppPreferencesManager)
 	singleOf(::AuthorizationManager)
+	singleOf(::LocationRepository)
 }
