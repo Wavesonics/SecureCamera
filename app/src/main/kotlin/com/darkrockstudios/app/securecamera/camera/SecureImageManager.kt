@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
-import android.media.ThumbnailUtils
-import android.util.Size
 import com.ashampoo.kim.Kim
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.MetadataUpdate.TakenDate
@@ -106,8 +104,9 @@ class SecureImageManager(
 		val finalImageName: String = "photo_" + dateFormat.format(Date()) + ".jpg"
 
 		val photoFile = File(dir, finalImageName)
+		val tempFile = File(dir, "$finalImageName.tmp")
 
-		FileOutputStream(photoFile).use { outputStream ->
+		FileOutputStream(tempFile).use { outputStream ->
 			val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
 			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
 		}
@@ -115,22 +114,24 @@ class SecureImageManager(
 		println("JPEG size: ${photoFile.length()}")
 
 		val update: MetadataUpdate = TakenDate(System.currentTimeMillis())
-		photoFile.writeBytes(Kim.update(bytes = photoFile.readBytes(), update))
+		tempFile.writeBytes(Kim.update(bytes = tempFile.readBytes(), update))
 
-		val thumbnailBitmap = ThumbnailUtils.createImageThumbnail(photoFile, Size(640, 480), null)
-		val thumbnailBytes = thumbnailBitmap.let { bitmap ->
-			ByteArrayOutputStream().use { outputStream ->
-				bitmap.compress(CompressFormat.JPEG, quality, outputStream)
-				outputStream.toByteArray()
-			}
-		}
+		tempFile.renameTo(photoFile)
 
-		photoFile.writeBytes(
-			Kim.updateThumbnail(
-				bytes = photoFile.readBytes(),
-				thumbnailBytes = thumbnailBytes
-			)
-		)
+//		val thumbnailBitmap = ThumbnailUtils.createImageThumbnail(photoFile, Size(640, 480), null)
+//		val thumbnailBytes = thumbnailBitmap.let { bitmap ->
+//			ByteArrayOutputStream().use { outputStream ->
+//				bitmap.compress(CompressFormat.JPEG, quality, outputStream)
+//				outputStream.toByteArray()
+//			}
+//		}
+//
+//		photoFile.writeBytes(
+//			Kim.updateThumbnail(
+//				bytes = photoFile.readBytes(),
+//				thumbnailBytes = thumbnailBytes
+//			)
+//		)
 
 		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
 
