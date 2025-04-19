@@ -52,14 +52,14 @@ object AppDestinations {
 fun AppNavHost(
 	navController: NavHostController,
 	cameraController: MutableState<CameraController?>,
+	capturePhoto: MutableState<Boolean?>,
 	modifier: Modifier = Modifier,
 	startDestination: String = AppDestinations.CAMERA_ROUTE,
-	paddingValues: PaddingValues
+	paddingValues: PaddingValues,
 ) {
 	val imageManager = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
 
-	// Enforce route security
 	LaunchedEffect(Unit) {
 		authManager.checkSessionValidity()
 
@@ -113,6 +113,7 @@ fun AppNavHost(
 		composable(AppDestinations.CAMERA_ROUTE) {
 			CameraContent(
 				cameraController = cameraController,
+				capturePhoto = capturePhoto,
 				navController = navController,
 				modifier = Modifier.fillMaxSize(),
 				paddingValues = paddingValues

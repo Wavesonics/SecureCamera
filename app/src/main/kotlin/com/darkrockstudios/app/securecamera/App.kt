@@ -18,7 +18,7 @@ import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
 @Composable
-fun App() {
+fun App(capturePhoto: MutableState<Boolean?>) {
 	KoinContext {
 		SecureCameraTheme {
 			val permissions: Permissions = providePermissions()
@@ -56,6 +56,7 @@ fun App() {
 					AppNavHost(
 						navController = navController,
 						cameraController = cameraController,
+						capturePhoto = capturePhoto,
 						modifier = Modifier,
 						startDestination = startDestination,
 						paddingValues = paddingValues

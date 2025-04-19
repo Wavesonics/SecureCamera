@@ -40,6 +40,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 internal fun CameraContent(
 	cameraController: MutableState<CameraController?>,
+	capturePhoto: MutableState<Boolean?>,
 	navController: NavHostController,
 	modifier: Modifier,
 	paddingValues: PaddingValues,
@@ -63,6 +64,7 @@ internal fun CameraContent(
 		cameraController.value?.let { controller ->
 			EnhancedCameraScreen(
 				cameraController = controller,
+				capturePhoto = capturePhoto,
 				navController = navController,
 				paddingValues = paddingValues,
 			)
@@ -75,6 +77,7 @@ internal fun CameraContent(
 @Composable
 fun EnhancedCameraScreen(
 	cameraController: CameraController,
+	capturePhoto: MutableState<Boolean?>,
 	navController: NavHostController,
 	paddingValues: PaddingValues? = null,
 ) {
@@ -88,7 +91,7 @@ fun EnhancedCameraScreen(
 	val authManager = koinInject<AuthorizationManager>()
 	val context = LocalContext.current
 
-	fun capturePhoto() {
+	fun doCapturePhoto() {
 		if (authManager.checkSessionValidity()) {
 			isFlashing = true
 
@@ -106,6 +109,12 @@ fun EnhancedCameraScreen(
 			}
 		} else {
 			navController.navigate(AppDestinations.createPinVerificationRoute(AppDestinations.CAMERA_ROUTE))
+		}
+	}
+
+	LaunchedEffect(capturePhoto.value) {
+		if (capturePhoto.value != null) {
+			doCapturePhoto()
 		}
 	}
 
@@ -165,7 +174,7 @@ fun EnhancedCameraScreen(
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
 			navController = navController,
-			onCapture = { capturePhoto() }
+			onCapture = { doCapturePhoto() }
 		)
 	}
 }
