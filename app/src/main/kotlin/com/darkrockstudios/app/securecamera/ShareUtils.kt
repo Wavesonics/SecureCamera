@@ -12,6 +12,19 @@ import java.util.*
 private val SHAR_DIR = "share"
 
 /**
+ * Clears all photos in the share directory
+ */
+fun clearShareDirectory(context: Context): Boolean {
+	val shareDir = File(context.cacheDir, SHAR_DIR)
+	if (!shareDir.exists()) {
+		return true
+	}
+
+	val files = shareDir.listFiles() ?: return true
+	return if (files.isEmpty()) true else files.all { it.delete() }
+}
+
+/**
  * Creates a temporary file from a ByteArray for sharing purposes
  */
 private fun createTempFileFromByteArray(

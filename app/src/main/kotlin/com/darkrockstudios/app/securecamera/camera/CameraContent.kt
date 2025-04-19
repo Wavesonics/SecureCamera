@@ -131,6 +131,16 @@ fun EnhancedCameraScreen(
 			paddingValues = paddingValues
 		)
 
+		if (activeJobs > 0) {
+			CircularProgressIndicator(
+				modifier = Modifier
+					.padding(start = 16.dp, top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp)
+					.size(40.dp)
+					.align(Alignment.TopStart),
+				color = MaterialTheme.colorScheme.primary
+			)
+		}
+
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
 			navController = navController,
@@ -309,12 +319,6 @@ private fun BottomControls(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.spacedBy(8.dp)
 		) {
-			if (isLoading) {
-				CircularProgressIndicator(
-					modifier = Modifier.size(40.dp),
-					color = MaterialTheme.colorScheme.primary
-				)
-			}
 
 			FilledTonalButton(
 				onClick = onCapture,

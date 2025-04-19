@@ -17,7 +17,6 @@ import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.AES
 import dev.whyoleg.cryptography.algorithms.PBKDF2
 import dev.whyoleg.cryptography.algorithms.SHA256
-import dev.whyoleg.cryptography.random.CryptographyRandom
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -35,34 +34,34 @@ class SecureImageManager(
 ) {
 
 	private val provider = CryptographyProvider.Default
+	private var key: ByteArray? = null
 
-	fun getGalleryDirectory(): File = File(appContext.filesDir, DIRECTORY)
+	fun getGalleryDirectory(): File = File(appContext.filesDir, PHOTOS_DIR)
+
+	fun evictKey() {
+		key = null
+	}
 
 	/**
 	 * Derives the encryption key from the user's PIN, then encrypted the plainText bytes and writes it to targetFile
 	 */
 	private suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File) {
-		val imageSalt = CryptographyRandom.nextBytes(16)
-		val secrete = deriveKey(KeyParams(), plainPin, hashedPin, imageSalt)
+		val secrete = deriveKey(plainPin, hashedPin)
 
 		val aesKey = provider
 			.get(AES.GCM)
 			.keyDecoder()
 			.decodeFromByteArray(AES.Key.Format.RAW, secrete)
 		val encryptedBytes = aesKey.cipher().encrypt(plain)
-		val saltedBytes = imageSalt + encryptedBytes
-		targetFile.writeBytes(saltedBytes)
+		targetFile.writeBytes(encryptedBytes)
 	}
 
 	/**
 	 * Derives the encryption key from the user's PIN, then decrypts encryptedFile and returns the plainText bytes
 	 */
 	private suspend fun decryptFile(plainPin: String, hashedPin: HashedPin, encryptedFile: File): ByteArray {
-		val bytes = encryptedFile.readBytes()
-		val imageSalt = bytes.copyOfRange(0, 16)
-		val encryptedBytes = bytes.copyOfRange(16, bytes.size)
-
-		val keyBytes = deriveKey(KeyParams(), plainPin, hashedPin, imageSalt)
+		val encryptedBytes = encryptedFile.readBytes()
+		val keyBytes = deriveKey(plainPin, hashedPin)
 
 		val aesKey = provider.get(AES.GCM).keyDecoder()
 			.decodeFromByteArray(AES.Key.Format.RAW, keyBytes)
@@ -71,20 +70,22 @@ class SecureImageManager(
 	}
 
 	private suspend fun deriveKey(
-		keyParams: KeyParams,
 		plainPin: String,
 		hashedPin: HashedPin,
-		imageSalt: ByteArray,
+		keyParams: KeyParams = KeyParams(),
 	): ByteArray {
-		val secretDerivation = provider.get(PBKDF2).secretDerivation(
-			digest = SHA256,
-			iterations = keyParams.iterations,
-			outputSize = keyParams.outputSize,
-			salt = imageSalt
-		)
+		return key ?: run {
+			val secretDerivation = provider.get(PBKDF2).secretDerivation(
+				digest = SHA256,
+				iterations = keyParams.iterations,
+				outputSize = keyParams.outputSize,
+				salt = hashedPin.salt.toByteArray()
+			)
 
-		val saltedPin = plainPin + hashedPin.salt
-		return secretDerivation.deriveSecret(saltedPin.toByteArray()).toByteArray()
+			val derivedKey = secretDerivation.deriveSecret(plainPin.toByteArray()).toByteArray()
+			key = derivedKey
+			derivedKey
+		}
 	}
 
 	suspend fun saveImage(byteArray: ByteArray, quality: Int = 90): File {
@@ -158,19 +159,55 @@ class SecureImageManager(
 		return plainBytes
 	}
 
+	private fun getThumbnailsDir(): File {
+		val thumbnailsDir = File(appContext.cacheDir, THUMBNAILS_DIR)
+		thumbnailsDir.mkdirs()
+		return thumbnailsDir
+	}
+
+	private fun getThumbnail(photoDef: PhotoDef): File {
+		val dir = getThumbnailsDir()
+		return File(dir, photoDef.photoName)
+	}
+
 	suspend fun readThumbnail(photo: PhotoDef): Bitmap {
 		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		val thumbFile = getThumbnail(photo)
 
-		val plainBytes = decryptFile(
-			plainPin = pin.plainPin,
-			hashedPin = pin.hashedPin,
-			encryptedFile = photo.photoFile,
-		)
+		return if (thumbFile.exists()) {
+			val plainBytes = decryptFile(
+				plainPin = pin.plainPin,
+				hashedPin = pin.hashedPin,
+				encryptedFile = photo.photoFile,
+			)
+			BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size)
+		} else {
+			val plainBytes = decryptFile(
+				plainPin = pin.plainPin,
+				hashedPin = pin.hashedPin,
+				encryptedFile = photo.photoFile,
+			)
 
-		val options = BitmapFactory.Options().apply {
-			inSampleSize = 4
+			val options = BitmapFactory.Options().apply {
+				inSampleSize = 4
+			}
+
+			val thumbnailBitmap = BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size, options)
+			val thumbnailBytes = thumbnailBitmap.let { bitmap ->
+				ByteArrayOutputStream().use { outputStream ->
+					bitmap.compress(CompressFormat.JPEG, 75, outputStream)
+					outputStream.toByteArray()
+				}
+			}
+			encryptToFile(
+				plainPin = pin.plainPin,
+				hashedPin = pin.hashedPin,
+				plain = thumbnailBytes,
+				targetFile = thumbFile,
+			)
+
+			thumbnailBitmap
 		}
-		return BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size, options)
 	}
 
 	fun getPhotos(): List<PhotoDef> {
@@ -194,6 +231,7 @@ class SecureImageManager(
 
 	fun deleteImage(photoDef: PhotoDef): Boolean {
 		return if (photoDef.photoFile.exists()) {
+			getThumbnail(photoDef).delete()
 			photoDef.photoFile.delete()
 		} else {
 			false
@@ -224,6 +262,7 @@ class SecureImageManager(
 	}
 
 	companion object {
-		const val DIRECTORY = "photos"
+		const val PHOTOS_DIR = "photos"
+		const val THUMBNAILS_DIR = ".thumbnails"
 	}
 }
