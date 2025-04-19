@@ -17,6 +17,8 @@ import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.AES
 import dev.whyoleg.cryptography.algorithms.PBKDF2
 import dev.whyoleg.cryptography.algorithms.SHA256
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -34,12 +36,13 @@ class SecureImageManager(
 ) {
 
 	private val provider = CryptographyProvider.Default
-	private var key: ByteArray? = null
+	private var keyFlow: ByteArray? = null
+	private val keyMutex = Mutex()
 
 	fun getGalleryDirectory(): File = File(appContext.filesDir, PHOTOS_DIR)
 
 	fun evictKey() {
-		key = null
+		keyFlow = null
 	}
 
 	/**
@@ -74,7 +77,11 @@ class SecureImageManager(
 		hashedPin: HashedPin,
 		keyParams: KeyParams = KeyParams(),
 	): ByteArray {
-		return key ?: run {
+		keyFlow?.let { return it }
+
+		return keyMutex.withLock {
+			keyFlow?.let { return@withLock it }
+
 			val secretDerivation = provider.get(PBKDF2).secretDerivation(
 				digest = SHA256,
 				iterations = keyParams.iterations,
@@ -83,7 +90,7 @@ class SecureImageManager(
 			)
 
 			val derivedKey = secretDerivation.deriveSecret(plainPin.toByteArray()).toByteArray()
-			key = derivedKey
+			keyFlow = derivedKey
 			derivedKey
 		}
 	}
