@@ -77,7 +77,7 @@ dependencies {
 	implementation(libs.androidx.datastore.preferences)
 	implementation(libs.androidx.datastore.preferences.core)
 	implementation(libs.kotlinx.serialization.json)
-	implementation(libs.kotlinx.io.core.jvm)
+	implementation(libs.androidx.core.splashscreen)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

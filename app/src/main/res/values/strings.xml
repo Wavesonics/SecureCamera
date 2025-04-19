@@ -45,6 +45,7 @@
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
     <string name="settings_description">Customize application and security options.</string>
+    <string name="settings_back_description">Back</string>
     <string name="settings_sharing_section">Sharing</string>
     <string name="settings_sanitize_filename">Sanitize file name</string>
     <string name="settings_sanitize_filename_description">Remove identifying information from file names when sharing
@@ -62,6 +63,17 @@
     <string name="settings_location_status_coarse">Approximate</string>
     <string name="settings_location_status_fine">Precise</string>
     <string name="settings_location_description">Current location access</string>
+
+    <!-- Location Dialog -->
+    <string name="location_dialog_title_denied">Request Location Permission</string>
+    <string name="location_dialog_title_coarse">Request Precise Location</string>
+    <string name="location_dialog_title_fine">Remove Location Permission</string>
+    <string name="location_dialog_message_denied">Allow the app to access your location?</string>
+    <string name="location_dialog_message_coarse">Allow the app to access your precise location?</string>
+    <string name="location_dialog_message_fine">Remove location permission for this app? You\'ll need to go to system
+        settings.
+    </string>
+    <string name="location_dialog_change_settings">Change in Settings</string>
 
     <!-- Introduction Screen -->
     <string name="intro_title">Welcome to SecureCamera</string>
