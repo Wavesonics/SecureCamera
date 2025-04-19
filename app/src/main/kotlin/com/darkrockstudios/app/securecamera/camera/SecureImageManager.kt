@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import com.ashampoo.kim.Kim
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.MetadataUpdate.TakenDate
+import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import dev.whyoleg.cryptography.BinarySize
@@ -93,7 +94,7 @@ class SecureImageManager(
 		}
 	}
 
-	suspend fun saveImage(byteArray: ByteArray, quality: Int = 90): File {
+	suspend fun saveImage(byteArray: ByteArray, quality: Int = 90, orientation: TiffOrientation): File {
 		val dir = getGalleryDirectory()
 
 		if (!dir.exists()) {
@@ -111,11 +112,13 @@ class SecureImageManager(
 			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
 		}
 
-		println("JPEG size: ${photoFile.length()}")
+		val dateUpdate: MetadataUpdate = TakenDate(System.currentTimeMillis())
+		var updatedBytes = Kim.update(bytes = tempFile.readBytes(), dateUpdate)
 
-		val update: MetadataUpdate = TakenDate(System.currentTimeMillis())
-		tempFile.writeBytes(Kim.update(bytes = tempFile.readBytes(), update))
+		val orientationUpdate: MetadataUpdate = MetadataUpdate.Orientation(orientation)
+		updatedBytes = Kim.update(bytes = updatedBytes, orientationUpdate)
 
+		tempFile.writeBytes(updatedBytes)
 		tempFile.renameTo(photoFile)
 
 //		val thumbnailBitmap = ThumbnailUtils.createImageThumbnail(photoFile, Size(640, 480), null)

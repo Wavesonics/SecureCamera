@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.Flashlight
 import com.darkrockstudios.app.securecamera.FlashlightOff
 import com.darkrockstudios.app.securecamera.R
@@ -90,6 +91,7 @@ fun EnhancedCameraScreen(
 	val imageSaver = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
 	val context = LocalContext.current
+	val orientation = rememberCurrentTiffOrientation()
 
 	fun doCapturePhoto() {
 		if (authManager.checkSessionValidity()) {
@@ -101,6 +103,7 @@ fun EnhancedCameraScreen(
 					handleImageCapture(
 						cameraController = cameraController,
 						imageSaver = imageSaver,
+						orientation = orientation,
 						context = context,
 					)
 				} finally {
@@ -382,12 +385,14 @@ private suspend fun handleImageCapture(
 	cameraController: CameraController,
 	imageSaver: SecureImageManager,
 	context: Context,
+	orientation: TiffOrientation,
 ) {
 	when (val result = cameraController.takePicture()) {
 		is ImageCaptureResult.Success -> {
 			vibrateDevice(context)
 			imageSaver.saveImage(
 				byteArray = result.byteArray,
+				orientation = orientation,
 			).let { path ->
 				println("Image saved at: $path")
 			}
