@@ -13,9 +13,12 @@
     <string name="photo_title">Photo</string>
     <string name="photo_not_found">Photo not found</string>
     <string name="photo_content_description">Photo</string>
+    <string name="photo_content_loading">Loading…</string>
     <string name="close_photo_content_description">Close Photo</string>
     <string name="share_photo_content_description">Share Photos</string>
     <string name="delete_photo_content_description">Delete Photos</string>
+    <string name="photo_content_none_selected">No photo selected</string>
+    <string name="unauthorized">Unauthorized</string>
 
     <!-- Gallery Screen -->
     <string name="gallery_title">Gallery</string>
@@ -42,4 +45,47 @@
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
     <string name="settings_description">This is the settings screen. Add your settings here.</string>
+
+    <!-- Introduction Screen -->
+    <string name="intro_title">Welcome to SecureCamera</string>
+    <string name="intro_next">Next</string>
+    <string name="intro_skip">Skip</string>
+    <string name="intro_finish">Finish</string>
+
+    <!-- Introduction Slides -->
+    <string name="intro_slide1_title">Privacy Focused</string>
+    <string name="intro_slide1_description">SecureCamera is designed with your privacy in mind. All photos are stored
+        securely. They are not available to other apps, and are never backed up to the cloud.
+    </string>
+
+    <string name="intro_slide2_title">Secure Storage</string>
+    <string name="intro_slide2_description">Your photos are stored in app-private, encrypted storage. Your PIN is
+        required to view the photos, keeping them safe from unauthorized access even if the rest of your device is
+        unlocked.
+    </string>
+
+    <string name="intro_slide3_title">Meta Data</string>
+    <string name="intro_slide3_description">You choose what to do about your photo\'s metadata based on your threat
+        model. Internally your photos are stored with some basic metadata, but we can automatically strip this data when
+        sharing a photo outside the app.
+    </string>
+
+    <!-- PIN Creation -->
+    <string name="pin_creation_title">Create Your PIN</string>
+    <string name="pin_creation_description">Create a PIN at least 4-digits long to secure your photos</string>
+    <string name="pin_creation_warning">Do not use the same PIN as your device. If you forget this PIN there is no way
+        to recover it, all of your photos will be lost.
+    </string>
+    <string name="pin_creation_hint">Enter PIN</string>
+    <string name="pin_creation_confirm_hint">Confirm PIN</string>
+    <string name="pin_creation_error">PINs do not match. Please try again.</string>
+    <string name="pin_creation_success">PIN created successfully!</string>
+    <string name="pin_creation_button">Create PIN</string>
+
+    <!-- PIN Verification -->
+    <string name="pin_verification_title">Enter your PIN</string>
+    <string name="pin_verification_label">PIN</string>
+    <string name="pin_verification_empty_error">PIN cannot be empty</string>
+    <string name="pin_verification_invalid_error">Invalid PIN. Please try again.</string>
+    <string name="pin_verification_button">Verify</string>
 </resources>

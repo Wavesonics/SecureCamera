@@ -4,41 +4,88 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
+import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import java.io.File
+import java.io.FileOutputStream
+import java.util.*
 
-fun sharePhoto(photo: PhotoDef, context: Context): Boolean {
-	return if (photo.photoFile.exists()) {
-		val uri = FileProvider.getUriForFile(
-			context,
-			context.packageName + ".fileprovider",
-			photo.photoFile
-		)
+private val SHAR_DIR = "share"
 
-		val shareIntent = Intent().apply {
-			action = Intent.ACTION_SEND
-			putExtra(Intent.EXTRA_STREAM, uri)
-			type = "image/jpeg"
-			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-		}
+/**
+ * Creates a temporary file from a ByteArray for sharing purposes
+ */
+private fun createTempFileFromByteArray(
+	imageData: ByteArray,
+	photoDef: PhotoDef,
+	sanitizeName: Boolean,
+	context: Context
+): File {
+	val shareDir = File(context.cacheDir, SHAR_DIR)
+	shareDir.mkdirs()
 
-		context.startActivity(Intent.createChooser(shareIntent, "Share Photo"))
-		true
-	} else {
-		false
+	val fileName = if (sanitizeName) "image_${UUID.randomUUID()}.jpg" else photoDef.photoName
+	val tempFile = File(shareDir, fileName)
+	FileOutputStream(tempFile).use { outputStream ->
+		outputStream.write(imageData)
 	}
+	return tempFile
 }
 
-fun sharePhotos(photos: List<PhotoDef>, context: Context): Boolean {
-	val existingPhotos = photos.filter { it.photoFile.exists() }
+/**
+ * Share a photo using its decrypted ByteArray data
+ */
+suspend fun sharePhotoData(
+	photo: PhotoDef,
+	sanitizeName: Boolean,
+	imageManager: SecureImageManager,
+	context: Context
+): Boolean {
+	val imageData = imageManager.decryptJpg(photo)
+	val tempFile = createTempFileFromByteArray(imageData, photo, sanitizeName, context)
 
-	if (existingPhotos.isEmpty()) {
+	val uri = FileProvider.getUriForFile(
+		context,
+		context.packageName + ".fileprovider",
+		tempFile
+	)
+
+	val shareIntent = Intent().apply {
+		action = Intent.ACTION_SEND
+		putExtra(Intent.EXTRA_STREAM, uri)
+		type = "image/jpeg"
+		addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+	}
+
+	context.startActivity(Intent.createChooser(shareIntent, "Share Photo"))
+	return true
+}
+
+/**
+ * Share multiple photos using their decrypted ByteArray data
+ */
+suspend fun sharePhotosData(
+	photos: List<PhotoDef>,
+	sanitizeName: Boolean,
+	imageManager: SecureImageManager,
+	context: Context
+): Boolean {
+	if (photos.isEmpty()) {
 		return false
 	}
 
-	val uris = existingPhotos.map { photo ->
+	val imagesData = photos.map { photo ->
+		Pair(photo, imageManager.decryptJpg(photo))
+	}
+
+	val tempFiles = imagesData.map { (photo, imageData) ->
+		createTempFileFromByteArray(imageData, photo, sanitizeName, context)
+	}
+
+	val uris = tempFiles.map { file ->
 		FileProvider.getUriForFile(
 			context,
 			context.packageName + ".fileprovider",
-			photo.photoFile
+			file
 		)
 	}
 
@@ -61,5 +108,6 @@ fun sharePhotos(photos: List<PhotoDef>, context: Context): Boolean {
 	}
 
 	context.startActivity(Intent.createChooser(shareIntent, "Share Photos"))
+
 	return true
 }

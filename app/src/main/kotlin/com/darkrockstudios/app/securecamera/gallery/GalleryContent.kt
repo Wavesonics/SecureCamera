@@ -1,19 +1,16 @@
 package com.darkrockstudios.app.securecamera.gallery
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -25,7 +22,11 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.sharePhotos
+import com.darkrockstudios.app.securecamera.sharePhotosData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +40,7 @@ fun GalleryContent(
 	var photos by remember { mutableStateOf<List<PhotoDef>>(emptyList()) }
 	var isLoading by remember { mutableStateOf(true) }
 	val context = LocalContext.current
+	val scope = rememberCoroutineScope()
 
 	// Selection state
 	var isSelectionMode by remember { mutableStateOf(false) }
@@ -85,9 +87,13 @@ fun GalleryContent(
 	val handleShare = {
 		val photoDefs = selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
 		if (photoDefs.isNotEmpty()) {
-			sharePhotos(photoDefs, context)
+			scope.launch(Dispatchers.IO) {
+				sharePhotosData(photoDefs, false, imageManager, context)
+				withContext(Dispatchers.Main) {
+					clearSelection()
+				}
+			}
 		}
-		clearSelection()
 	}
 
 	LaunchedEffect(Unit) {
@@ -159,6 +165,8 @@ private fun PhotoGrid(
 	onPhotoLongClick: (String) -> Unit = {},
 	onPhotoClick: (String) -> Unit = {}
 ) {
+	val imageManager = koinInject<SecureImageManager>()
+	val scope = rememberCoroutineScope()
 	LazyVerticalGrid(
 		columns = GridCells.Adaptive(minSize = 128.dp),
 		contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 0.dp),
@@ -169,6 +177,8 @@ private fun PhotoGrid(
 		items(items = photos, key = { it.hashCode() }) { photo ->
 			PhotoItem(
 				photo = photo,
+				imageManager = imageManager,
+				scope = scope,
 				isSelected = selectedPhotoNames.contains(photo.photoName),
 				onLongClick = { onPhotoLongClick(photo.photoName) },
 				onClick = { onPhotoClick(photo.photoName) }
@@ -181,16 +191,19 @@ private fun PhotoGrid(
 @Composable
 private fun PhotoItem(
 	photo: PhotoDef,
+	imageManager: SecureImageManager,
+	scope: CoroutineScope,
 	isSelected: Boolean = false,
 	onLongClick: () -> Unit = {},
 	onClick: () -> Unit = {},
 	modifier: Modifier = Modifier
 ) {
-	val thumbnailBitmap = remember {
-		val options = BitmapFactory.Options().apply {
-			inSampleSize = 4
+	var thumbnailBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+
+	LaunchedEffect(Unit) {
+		scope.launch(Dispatchers.IO) {
+			thumbnailBitmap = imageManager.readThumbnail(photo).asImageBitmap()
 		}
-		BitmapFactory.decodeFile(photo.photoFile.absolutePath, options).asImageBitmap()
 	}
 
 	val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
@@ -210,12 +223,21 @@ private fun PhotoItem(
 					onLongClick = onLongClick,
 				),
 		) {
-			Image(
-				bitmap = thumbnailBitmap,
-				contentDescription = stringResource(id = R.string.gallery_photo_content_description, photo.photoName),
-				contentScale = ContentScale.Crop,
-				modifier = Modifier.fillMaxSize()
-			)
+			thumbnailBitmap?.let {
+				Image(
+					bitmap = it,
+					contentDescription = stringResource(
+						id = R.string.gallery_photo_content_description,
+						photo.photoName
+					),
+					contentScale = ContentScale.Crop,
+					modifier = Modifier.fillMaxSize()
+				)
+			} ?: run {
+				Box(modifier = Modifier.fillMaxSize()) {
+					CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+				}
+			}
 		}
 	}
 }

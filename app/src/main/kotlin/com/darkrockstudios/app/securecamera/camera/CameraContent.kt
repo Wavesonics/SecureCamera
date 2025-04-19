@@ -3,9 +3,7 @@ package com.darkrockstudios.app.securecamera.camera
 import android.content.Context
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,9 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -27,13 +23,14 @@ import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.Flashlight
 import com.darkrockstudios.app.securecamera.FlashlightOff
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.decodeToImageBitmap
+import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.*
 import com.kashif.cameraK.result.ImageCaptureResult
 import com.kashif.cameraK.ui.CameraPreview
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -82,14 +79,25 @@ fun EnhancedCameraScreen(
 	paddingValues: PaddingValues? = null,
 ) {
 	val scope = rememberCoroutineScope()
-	var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 	var isFlashOn by remember { mutableStateOf(false) }
 	var isTorchOn by remember { mutableStateOf(false) }
 	var isTopControlsVisible by remember { mutableStateOf(false) }
+	var activeJobs by remember { mutableStateOf(0) }
+	var isFlashing by remember { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageManager>()
+	val authManager = koinInject<AuthorizationManager>()
 	val context = LocalContext.current
 
+	LaunchedEffect(isFlashing) {
+		if (isFlashing) {
+			delay(250)
+			isFlashing = false
+		}
+	}
+
 	Box(modifier = Modifier.fillMaxSize()) {
+		FlashEffect(isFlashing = isFlashing)
+
 		if (!isTopControlsVisible) {
 			IconButton(
 				onClick = { isTopControlsVisible = true },
@@ -110,10 +118,6 @@ fun EnhancedCameraScreen(
 			}
 		}
 
-		CapturedImagePreview(imageBitmap = imageBitmap) {
-			imageBitmap = null
-		}
-
 		TopControlsBar(
 			isFlashOn = isFlashOn,
 			isTorchOn = isTorchOn,
@@ -130,16 +134,25 @@ fun EnhancedCameraScreen(
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
 			navController = navController,
+			isLoading = activeJobs > 0,
 			onCapture = {
-				scope.launch {
-					handleImageCapture(
-						cameraController = cameraController,
-						imageSaver = imageSaver,
-						context = context,
-						onImageCaptured = {
-							imageBitmap = it
+				if (authManager.checkSessionValidity()) {
+					isFlashing = true
+
+					activeJobs++
+					scope.launch(Dispatchers.IO) {
+						try {
+							handleImageCapture(
+								cameraController = cameraController,
+								imageSaver = imageSaver,
+								context = context,
+							)
+						} finally {
+							activeJobs--
 						}
-					)
+					}
+				} else {
+					navController.navigate(AppDestinations.createPinVerificationRoute(AppDestinations.CAMERA_ROUTE))
 				}
 			}
 		)
@@ -266,7 +279,12 @@ private fun CameraControlSwitch(
 }
 
 @Composable
-private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit, navController: NavHostController) {
+private fun BottomControls(
+	modifier: Modifier = Modifier,
+	onCapture: () -> Unit,
+	navController: NavHostController,
+	isLoading: Boolean = false
+) {
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
@@ -286,22 +304,34 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 			)
 		}
 
-		FilledTonalButton(
-			onClick = onCapture,
-			modifier = Modifier
-				.size(80.dp)
-				.clip(CircleShape)
-				.align(Alignment.BottomCenter),
-			colors = ButtonDefaults.filledTonalButtonColors(
-				containerColor = MaterialTheme.colorScheme.primary
-			)
+		Row(
+			modifier = Modifier.align(Alignment.BottomCenter),
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.spacedBy(8.dp)
 		) {
-			Icon(
-				imageVector = Icons.Filled.Camera,
-				contentDescription = stringResource(id = R.string.camera_capture_content_description),
-				tint = Color.White,
-				modifier = Modifier.size(32.dp)
-			)
+			if (isLoading) {
+				CircularProgressIndicator(
+					modifier = Modifier.size(40.dp),
+					color = MaterialTheme.colorScheme.primary
+				)
+			}
+
+			FilledTonalButton(
+				onClick = onCapture,
+				modifier = Modifier
+					.size(80.dp)
+					.clip(CircleShape),
+				colors = ButtonDefaults.filledTonalButtonColors(
+					containerColor = MaterialTheme.colorScheme.primary
+				)
+			) {
+				Icon(
+					imageVector = Icons.Filled.Camera,
+					contentDescription = stringResource(id = R.string.camera_capture_content_description),
+					tint = Color.White,
+					modifier = Modifier.size(32.dp)
+				)
+			}
 		}
 
 		IconButton(
@@ -321,46 +351,16 @@ private fun BottomControls(modifier: Modifier = Modifier, onCapture: () -> Unit,
 }
 
 @Composable
-private fun CapturedImagePreview(
-	imageBitmap: ImageBitmap?,
-	onDismiss: () -> Unit
-) {
-	imageBitmap?.let { bitmap ->
-		var isFlashing by remember { mutableStateOf(true) }
-
+private fun FlashEffect(isFlashing: Boolean) {
+	AnimatedVisibility(
+		visible = isFlashing,
+		enter = fadeIn(animationSpec = tween(durationMillis = 50)),
+		exit = fadeOut(animationSpec = tween(durationMillis = 100))
+	) {
 		Surface(
 			modifier = Modifier.fillMaxSize(),
-			color = if (isFlashing) Color.White else Color.Black.copy(alpha = 0.9f)
-		) {
-			Box(
-				modifier = Modifier
-					.fillMaxSize()
-					.clickable { onDismiss() }) {
-				AnimatedVisibility(
-					visible = !isFlashing,
-					enter = fadeIn(animationSpec = tween(durationMillis = 300))
-				) {
-					Image(
-						bitmap = bitmap,
-						contentDescription = "Captured Image",
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(16.dp),
-						contentScale = ContentScale.Fit
-					)
-				}
-			}
-		}
-
-		LaunchedEffect(bitmap) {
-			// Flash white for 250ms
-			delay(250)
-			isFlashing = false
-
-			// Dismiss after showing the image for 1 second
-			delay(1000)
-			onDismiss()
-		}
+			color = Color.White
+		) {}
 	}
 }
 
@@ -369,13 +369,10 @@ private suspend fun handleImageCapture(
 	cameraController: CameraController,
 	imageSaver: SecureImageManager,
 	context: Context,
-	onImageCaptured: (ImageBitmap) -> Unit
 ) {
 	when (val result = cameraController.takePicture()) {
 		is ImageCaptureResult.Success -> {
 			vibrateDevice(context)
-			val bitmap = result.byteArray.decodeToImageBitmap()
-			onImageCaptured(bitmap)
 			imageSaver.saveImage(
 				byteArray = result.byteArray,
 			).let { path ->
