@@ -7,12 +7,30 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+
+enum class LocationPermissionStatus {
+	DENIED,
+	COARSE,
+	FINE
+}
 
 class LocationRepository(private val ctx: Context) {
 	private val locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 	private var lastKnownLocation: Location? = null
+
+	fun getLocationPermissionStatus(): LocationPermissionStatus {
+		val finePermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+		val coarsePermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION)
+
+		return when {
+			finePermission == PackageManager.PERMISSION_GRANTED -> LocationPermissionStatus.FINE
+			coarsePermission == PackageManager.PERMISSION_GRANTED -> LocationPermissionStatus.COARSE
+			else -> LocationPermissionStatus.DENIED
+		}
+	}
 
 	suspend fun currentLocation(): Location? {
 		// Check if we have permission

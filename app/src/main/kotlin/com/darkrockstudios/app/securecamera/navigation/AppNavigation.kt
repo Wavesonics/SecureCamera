@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.auth.PinVerificationContent
@@ -61,6 +62,7 @@ fun AppNavHost(
 	val imageManager = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
 	val preferencesManager = koinInject<AppPreferencesManager>()
+	val locationRepository = koinInject<LocationRepository>()
 
 	LaunchedEffect(Unit) {
 		authManager.checkSessionValidity()
@@ -188,6 +190,7 @@ fun AppNavHost(
 				modifier = Modifier.fillMaxSize(),
 				paddingValues = paddingValues,
 				preferencesManager = preferencesManager,
+				locationRepository = locationRepository
 			)
 		}
 	}

@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.darkrockstudios.app.securecamera.LocationPermissionStatus
+import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import kotlinx.coroutines.launch
@@ -27,13 +29,17 @@ fun SettingsContent(
 	navController: NavHostController,
 	modifier: Modifier = Modifier,
 	paddingValues: PaddingValues,
-	preferencesManager: AppPreferencesManager
+	preferencesManager: AppPreferencesManager,
+	locationRepository: LocationRepository
 ) {
 	val coroutineScope = rememberCoroutineScope()
 
 	// Collect preferences as state
 	val sanitizeFileName by preferencesManager.sanitizeFileName.collectAsState(initial = true)
 	val sanitizeMetadata by preferencesManager.sanitizeMetadata.collectAsState(initial = true)
+
+	// Get current location permission status
+	val locationPermissionStatus = locationRepository.getLocationPermissionStatus()
 
 	Column(
 		modifier = modifier
@@ -148,6 +154,43 @@ fun SettingsContent(
 							preferencesManager.setSanitizeMetadata(checked)
 						}
 					}
+				)
+			}
+
+			Spacer(modifier = Modifier.height(24.dp))
+
+			// Location section
+			Text(
+				text = stringResource(id = R.string.settings_location_section),
+				style = MaterialTheme.typography.titleLarge
+			)
+
+			Spacer(modifier = Modifier.height(8.dp))
+
+			// Location permission status
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Column(modifier = Modifier.weight(1f)) {
+					Text(
+						text = stringResource(id = R.string.settings_location_status),
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Text(
+						text = stringResource(id = R.string.settings_location_description),
+						style = MaterialTheme.typography.bodyMedium,
+						color = MaterialTheme.colorScheme.onSurfaceVariant
+					)
+				}
+				Text(
+					text = when (locationPermissionStatus) {
+						LocationPermissionStatus.DENIED -> stringResource(id = R.string.settings_location_status_denied)
+						LocationPermissionStatus.COARSE -> stringResource(id = R.string.settings_location_status_coarse)
+						LocationPermissionStatus.FINE -> stringResource(id = R.string.settings_location_status_fine)
+					},
+					style = MaterialTheme.typography.bodyMedium,
+					color = MaterialTheme.colorScheme.primary
 				)
 			}
 		}
