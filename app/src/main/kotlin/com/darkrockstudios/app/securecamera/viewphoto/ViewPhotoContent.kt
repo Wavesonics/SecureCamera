@@ -22,6 +22,7 @@ import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.sharePhotoData
 import com.zhangke.imageviewer.ImageViewer
 import com.zhangke.imageviewer.rememberImageViewerState
@@ -38,8 +39,14 @@ fun ViewPhotoContent(
 ) {
 	val imageManager = koinInject<SecureImageManager>()
 	var showDeleteConfirmation by remember { mutableStateOf(false) }
+	val preferencesManager = koinInject<AppPreferencesManager>()
 	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
+
+	val sanitizeFileName by
+	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeFileNameDefault)
+	val sanitizeMetadata by
+	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeMetadataDefault)
 
 	Column(
 		modifier = modifier
@@ -53,7 +60,13 @@ fun ViewPhotoContent(
 			},
 			onShareClick = {
 				scope.launch {
-					sharePhotoData(photo, false, imageManager, context)
+					sharePhotoData(
+						photo = photo,
+						sanitizeName = sanitizeFileName,
+						sanitizeMetadata = sanitizeMetadata,
+						imageManager = imageManager,
+						context = context
+					)
 				}
 			},
 		)

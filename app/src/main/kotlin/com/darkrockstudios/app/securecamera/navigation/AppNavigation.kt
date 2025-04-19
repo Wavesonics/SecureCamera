@@ -19,6 +19,7 @@ import com.darkrockstudios.app.securecamera.camera.CameraContent
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.gallery.GalleryContent
 import com.darkrockstudios.app.securecamera.introduction.IntroductionContent
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.settings.SettingsContent
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoContent
 import com.kashif.cameraK.controller.CameraController
@@ -59,6 +60,7 @@ fun AppNavHost(
 ) {
 	val imageManager = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
+	val preferencesManager = koinInject<AppPreferencesManager>()
 
 	LaunchedEffect(Unit) {
 		authManager.checkSessionValidity()
@@ -184,7 +186,8 @@ fun AppNavHost(
 			SettingsContent(
 				navController = navController,
 				modifier = Modifier.fillMaxSize(),
-				paddingValues = paddingValues
+				paddingValues = paddingValues,
+				preferencesManager = preferencesManager,
 			)
 		}
 	}

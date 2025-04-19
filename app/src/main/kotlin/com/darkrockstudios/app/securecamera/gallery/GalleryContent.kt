@@ -22,6 +22,7 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.sharePhotosData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +38,7 @@ fun GalleryContent(
 	paddingValues: PaddingValues
 ) {
 	val imageManager = koinInject<SecureImageManager>()
+	val preferencesManager = koinInject<AppPreferencesManager>()
 	var photos by remember { mutableStateOf<List<PhotoDef>>(emptyList()) }
 	var isLoading by remember { mutableStateOf(true) }
 	val context = LocalContext.current
@@ -46,6 +48,11 @@ fun GalleryContent(
 	var isSelectionMode by remember { mutableStateOf(false) }
 	var selectedPhotos by remember { mutableStateOf<Set<String>>(emptySet()) }
 	var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+	val sanitizeFileName by
+	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeFileNameDefault)
+	val sanitizeMetadata by
+	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeMetadataDefault)
 
 	// Function to toggle selection of a photo
 	val togglePhotoSelection = { photoName: String ->
@@ -88,7 +95,13 @@ fun GalleryContent(
 		val photoDefs = selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
 		if (photoDefs.isNotEmpty()) {
 			scope.launch(Dispatchers.IO) {
-				sharePhotosData(photoDefs, false, imageManager, context)
+				sharePhotosData(
+					photos = photoDefs,
+					sanitizeName = sanitizeFileName,
+					sanitizeMetadata = sanitizeMetadata,
+					imageManager = imageManager,
+					context = context
+				)
 				withContext(Dispatchers.Main) {
 					clearSelection()
 				}

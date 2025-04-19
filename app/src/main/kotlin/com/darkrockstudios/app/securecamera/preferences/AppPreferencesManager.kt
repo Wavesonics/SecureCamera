@@ -27,6 +27,8 @@ class AppPreferencesManager(private val context: Context) {
 	companion object {
 		private val HAS_COMPLETED_INTRO = booleanPreferencesKey("has_completed_intro")
 		private val APP_PIN = stringPreferencesKey("app_pin")
+		private val SANITIZE_FILE_NAME = booleanPreferencesKey("sanitize_file_name")
+		private val SANITIZE_METADATA = booleanPreferencesKey("sanitize_metadata")
 	}
 
 	private val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
@@ -46,6 +48,24 @@ class AppPreferencesManager(private val context: Context) {
 		.map { preferences ->
 			preferences[APP_PIN]
 		}
+
+	/**
+	 * Get the sanitize file name preference
+	 */
+	val sanitizeFileName: Flow<Boolean> = context.dataStore.data
+		.map { preferences ->
+			preferences[SANITIZE_FILE_NAME] ?: sanitizeFileNameDefault
+		}
+	val sanitizeFileNameDefault = true
+
+	/**
+	 * Get the sanitize metadata preference
+	 */
+	val sanitizeMetadata: Flow<Boolean> = context.dataStore.data
+		.map { preferences ->
+			preferences[SANITIZE_METADATA] ?: sanitizeMetadataDefault
+		}
+	val sanitizeMetadataDefault = true
 
 	/**
 	 * Set the introduction completion status
@@ -95,6 +115,24 @@ class AppPreferencesManager(private val context: Context) {
 		val saltedInputPin = inputPin + storedHash.salt
 		val hashedInputPin = hasher.hash(saltedInputPin.encodeToByteArray()).toHexString()
 		return hashedInputPin == storedHash.hash
+	}
+
+	/**
+	 * Set the sanitize file name preference
+	 */
+	suspend fun setSanitizeFileName(sanitize: Boolean) {
+		context.dataStore.edit { preferences ->
+			preferences[SANITIZE_FILE_NAME] = sanitize
+		}
+	}
+
+	/**
+	 * Set the sanitize metadata preference
+	 */
+	suspend fun setSanitizeMetadata(sanitize: Boolean) {
+		context.dataStore.edit { preferences ->
+			preferences[SANITIZE_METADATA] = sanitize
+		}
 	}
 }
 

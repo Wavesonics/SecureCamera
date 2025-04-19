@@ -2,6 +2,8 @@ package com.darkrockstudios.app.securecamera
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap.CompressFormat
+import android.graphics.BitmapFactory
 import androidx.core.content.FileProvider
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
@@ -27,6 +29,7 @@ fun clearShareDirectory(context: Context): Boolean {
 /**
  * Creates a temporary file from a ByteArray for sharing purposes
  */
+@OptIn(ExperimentalStdlibApi::class)
 private fun createTempFileFromByteArray(
 	imageData: ByteArray,
 	photoDef: PhotoDef,
@@ -36,12 +39,26 @@ private fun createTempFileFromByteArray(
 	val shareDir = File(context.cacheDir, SHAR_DIR)
 	shareDir.mkdirs()
 
-	val fileName = if (sanitizeName) "image_${UUID.randomUUID()}.jpg" else photoDef.photoName
+	val uuid = UUID.randomUUID()
+	val randomSection = uuid.leastSignificantBits.toHexString() + uuid.mostSignificantBits.toHexString()
+
+	val fileName = if (sanitizeName) "image_$randomSection.jpg" else photoDef.photoName
 	val tempFile = File(shareDir, fileName)
 	FileOutputStream(tempFile).use { outputStream ->
 		outputStream.write(imageData)
 	}
 	return tempFile
+}
+
+private fun stripMetadata(file: File) {
+	val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+	if (bitmap != null) {
+		FileOutputStream(file).use { outputStream ->
+			bitmap.compress(CompressFormat.JPEG, 90, outputStream)
+		}
+	} else {
+		error("Failed to strip metadata")
+	}
 }
 
 /**
@@ -50,11 +67,16 @@ private fun createTempFileFromByteArray(
 suspend fun sharePhotoData(
 	photo: PhotoDef,
 	sanitizeName: Boolean,
+	sanitizeMetadata: Boolean,
 	imageManager: SecureImageManager,
-	context: Context
+	context: Context,
 ): Boolean {
 	val imageData = imageManager.decryptJpg(photo)
 	val tempFile = createTempFileFromByteArray(imageData, photo, sanitizeName, context)
+
+	if (sanitizeMetadata) {
+		stripMetadata(tempFile)
+	}
 
 	val uri = FileProvider.getUriForFile(
 		context,
@@ -79,6 +101,7 @@ suspend fun sharePhotoData(
 suspend fun sharePhotosData(
 	photos: List<PhotoDef>,
 	sanitizeName: Boolean,
+	sanitizeMetadata: Boolean,
 	imageManager: SecureImageManager,
 	context: Context
 ): Boolean {
@@ -92,6 +115,10 @@ suspend fun sharePhotosData(
 
 	val tempFiles = imagesData.map { (photo, imageData) ->
 		createTempFileFromByteArray(imageData, photo, sanitizeName, context)
+	}
+
+	if (sanitizeMetadata) {
+		tempFiles.forEach { tempFile -> stripMetadata(tempFile) }
 	}
 
 	val uris = tempFiles.map { file ->

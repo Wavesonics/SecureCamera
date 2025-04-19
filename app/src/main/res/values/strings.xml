@@ -44,7 +44,16 @@
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
-    <string name="settings_description">This is the settings screen. Add your settings here.</string>
+    <string name="settings_description">Customize application and security options.</string>
+    <string name="settings_sharing_section">Sharing</string>
+    <string name="settings_sanitize_filename">Sanitize file name</string>
+    <string name="settings_sanitize_filename_description">Remove identifying information from file names when sharing
+        photos
+    </string>
+    <string name="settings_sanitize_metadata">Sanitize metadata</string>
+    <string name="settings_sanitize_metadata_description">Strip metadata (location, device info, etc.) when sharing
+        photos
+    </string>
 
     <!-- Introduction Screen -->
     <string name="intro_title">Welcome to SecureCamera</string>
