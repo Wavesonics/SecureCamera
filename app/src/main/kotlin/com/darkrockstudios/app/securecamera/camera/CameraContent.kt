@@ -88,6 +88,27 @@ fun EnhancedCameraScreen(
 	val authManager = koinInject<AuthorizationManager>()
 	val context = LocalContext.current
 
+	fun capturePhoto() {
+		if (authManager.checkSessionValidity()) {
+			isFlashing = true
+
+			activeJobs++
+			scope.launch(Dispatchers.IO) {
+				try {
+					handleImageCapture(
+						cameraController = cameraController,
+						imageSaver = imageSaver,
+						context = context,
+					)
+				} finally {
+					activeJobs--
+				}
+			}
+		} else {
+			navController.navigate(AppDestinations.createPinVerificationRoute(AppDestinations.CAMERA_ROUTE))
+		}
+	}
+
 	LaunchedEffect(isFlashing) {
 		if (isFlashing) {
 			delay(250)
@@ -144,27 +165,7 @@ fun EnhancedCameraScreen(
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
 			navController = navController,
-			isLoading = activeJobs > 0,
-			onCapture = {
-				if (authManager.checkSessionValidity()) {
-					isFlashing = true
-
-					activeJobs++
-					scope.launch(Dispatchers.IO) {
-						try {
-							handleImageCapture(
-								cameraController = cameraController,
-								imageSaver = imageSaver,
-								context = context,
-							)
-						} finally {
-							activeJobs--
-						}
-					}
-				} else {
-					navController.navigate(AppDestinations.createPinVerificationRoute(AppDestinations.CAMERA_ROUTE))
-				}
-			}
+			onCapture = { capturePhoto() }
 		)
 	}
 }
@@ -293,7 +294,6 @@ private fun BottomControls(
 	modifier: Modifier = Modifier,
 	onCapture: () -> Unit,
 	navController: NavHostController,
-	isLoading: Boolean = false
 ) {
 	Box(
 		modifier = modifier
