@@ -121,8 +121,7 @@ fun EnhancedCameraScreen(
 	paddingValues: PaddingValues? = null,
 ) {
 	val scope = rememberCoroutineScope()
-	var isFlashOn by rememberSaveable { mutableStateOf(false) }
-	var isTorchOn by rememberSaveable { mutableStateOf(false) }
+	var isFlashOn by rememberSaveable(cameraController.getFlashMode()) { mutableStateOf(cameraController.getFlashMode() == FlashMode.ON) }
 	var isTopControlsVisible by rememberSaveable { mutableStateOf(false) }
 	var activeJobs by remember { mutableStateOf(0) }
 	var isFlashing by rememberSaveable { mutableStateOf(false) }
@@ -155,6 +154,7 @@ fun EnhancedCameraScreen(
 						imageSaver = imageSaver,
 						orientation = orientation,
 						location = location,
+						isFlashOn = isFlashOn,
 						context = context,
 					)
 				} finally {
@@ -204,11 +204,9 @@ fun EnhancedCameraScreen(
 
 		TopControlsBar(
 			isFlashOn = isFlashOn,
-			isTorchOn = isTorchOn,
 			isVisible = isTopControlsVisible,
 			onFlashToggle = {
-				isFlashOn = it
-				cameraController.toggleFlashMode()
+				isFlashOn = !isFlashOn
 			},
 			onLensToggle = { cameraController.toggleCameraLens() },
 			onClose = { isTopControlsVisible = false },
@@ -236,7 +234,6 @@ fun EnhancedCameraScreen(
 @Composable
 private fun TopControlsBar(
 	isFlashOn: Boolean,
-	isTorchOn: Boolean,
 	isVisible: Boolean,
 	onFlashToggle: (Boolean) -> Unit,
 	onLensToggle: () -> Unit,
@@ -438,6 +435,7 @@ private suspend fun handleImageCapture(
 	context: Context,
 	orientation: TiffOrientation,
 	location: Location?,
+	isFlashOn: Boolean,
 ) {
 	val gpsCoordinates = location?.let {
 		GpsCoordinates(
@@ -445,6 +443,8 @@ private suspend fun handleImageCapture(
 			longitude = it.longitude,
 		)
 	}
+
+	cameraController.setFlashMode(if (isFlashOn) FlashMode.ON else FlashMode.OFF)
 
 	when (val result = cameraController.takePicture()) {
 		is ImageCaptureResult.Success -> {
