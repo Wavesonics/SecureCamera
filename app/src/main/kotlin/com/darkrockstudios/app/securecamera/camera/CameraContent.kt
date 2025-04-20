@@ -47,6 +47,8 @@ internal fun CameraContent(
 	modifier: Modifier,
 	paddingValues: PaddingValues,
 ) {
+	KeepScreenOnEffect()
+
 	Box(modifier = modifier.fillMaxSize()) {
 		CameraPreview(
 			modifier = Modifier.fillMaxSize(),
