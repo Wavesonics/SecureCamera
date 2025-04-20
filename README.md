@@ -2,16 +2,6 @@
 
 A privacy-focused camera application for Android that prioritizes data security.
 
-## Overview
-
-Secure Camera is designed to provide a secure photography experience by:
-
-- Storing photos in app-private encrypted storage
-- Photos are never uploaded or backed up anywhere
-- Stripping all metadata from captured images
-- Requiring a separate PIN to access photos
-- Providing sharing options through Android's share system
-
 ## Features
 
 - **Privacy-First Design**: No data collection, no internet access, no analytics
