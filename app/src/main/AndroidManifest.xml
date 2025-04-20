@@ -19,6 +19,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.SecureCamera"
             android:windowSoftInputMode="adjustResize"
+            android:enableOnBackInvokedCallback="true"
             tools:targetApi="31">
         <activity
                 android:name=".MainActivity"
