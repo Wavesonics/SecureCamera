@@ -39,7 +39,7 @@ fun NoCameraPermission(navController: NavHostController, permissionsState: Multi
 				verticalArrangement = Arrangement.Center,
 			) {
 				Text(
-					"Camera permissions are required.",
+					stringResource(R.string.camera_permissions_required),
 					modifier = Modifier.padding(16.dp)
 				)
 
@@ -50,7 +50,7 @@ fun NoCameraPermission(navController: NavHostController, permissionsState: Multi
 						}
 						context.startActivity(intent)
 					}) {
-						Text(text = "Open Settings")
+						Text(text = stringResource(R.string.camera_open_settings))
 					}
 				}
 			}

@@ -41,6 +41,8 @@
     <string name="camera_gallery_content_description">Gallery</string>
     <string name="camera_captured_image_content_description">Captured Image</string>
     <string name="camera_settings_content_description">Settings</string>
+    <string name="camera_permissions_required">Camera permissions are required.</string>
+    <string name="camera_open_settings">Open Settings</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
@@ -83,28 +85,50 @@
 
     <!-- Introduction Slides -->
     <string name="intro_slide_icon">Slide Icon</string>
+
+    <string name="intro_slide0_title">Secure Camera</string>
+    <string name="intro_slide0_description">Welcome to secure camera! A free and open source app designed to protect
+        your privacy.\n\nAlong with strong encryption, every measure is taken to safeguard your photos from prying eyes
+        even if your phone is confiscated and searched.
+    </string>
+
     <string name="intro_slide1_title">Privacy Focused</string>
-    <string name="intro_slide1_description">SecureCamera is designed with your privacy in mind. All photos are stored
-        securely. They are not available to other apps, and are never backed up to the cloud.
+    <string name="intro_slide1_description">Your PIN is required to take and view the photos, keeping them safe from
+        unauthorized access even if the rest of your device is
+        unlocked.\n\nAfter a few minutes you will be required to enter your PIN again to verify it is still you.
     </string>
 
     <string name="intro_slide2_title">Secure Storage</string>
-    <string name="intro_slide2_description">Your photos are stored in app-private, encrypted storage. Your PIN is
-        required to view the photos, keeping them safe from unauthorized access even if the rest of your device is
-        unlocked.
+    <string name="intro_slide2_description">Your photos are stored in app-private, encrypted storage. The encryption key
+        is derived from your PIN and is never stored on disk.\n\nNo data, including photos, is ever uploaded or backed
+        up anywhere.
     </string>
 
-    <string name="intro_slide3_title">Meta Data</string>
-    <string name="intro_slide3_description">You choose what to do about your photo\'s metadata based on your threat
-        model. Internally your photos are stored with some basic metadata, but we can automatically strip this data when
+    <string name="intro_slide3_title">Still Sharable</string>
+    <string name="intro_slide3_description">Most times we still need to be able to move our sensitive photos out and
+        share them to another app or person. Secure Camera still allows you to do so safely.\n\nOnce the photo leaves
+        Secure Camera, it\'s privacy is up to you.
+    </string>
+
+    <string name="intro_slide4_title">Meta Data</string>
+    <string name="intro_slide4_description">You choose what to do about your photo\'s metadata based on your threat
+        model.\n\nInternally your photos are stored with some basic metadata. Based on your settings, we can
+        automatically strip this data when
         sharing a photo outside the app.
+    </string>
+
+    <string name="intro_slide5_title">Location Data</string>
+    <string name="intro_slide5_description">If you grant Location permissions, we\'ll store location in your photos, if
+        you don\'t, we won\'t. It\'s that simple. This metadata will still be stripped out when sharing photos outside
+        the app based on your settings.\n\nIf you only grant "coarse" location, then we\'ll store an obfuscated location
+        with each photo.
     </string>
 
     <!-- PIN Creation -->
     <string name="pin_creation_title">Create Your PIN</string>
     <string name="pin_creation_description">Create a PIN at least 4-digits long to secure your photos</string>
-    <string name="pin_creation_warning">Do not use the same PIN as your device. If you forget this PIN there is no way
-        to recover it, all of your photos will be lost.
+    <string name="pin_creation_warning">Do not use the same PIN as your device.\n\nIf you forget this PIN there is no
+        way to recover it, all of your photos will be lost.
     </string>
     <string name="pin_creation_hint">Enter PIN</string>
     <string name="pin_creation_confirm_hint">Confirm PIN</string>
@@ -113,7 +137,7 @@
     <string name="pin_creation_button">Create PIN</string>
 
     <!-- PIN Verification -->
-    <string name="pin_verification_icon">Secure Camera Logo</string>
+    <string name="pin_verification_icon">Create Pin Icon</string>
     <string name="pin_verification_title">Enter your PIN</string>
     <string name="pin_verification_label">PIN</string>
     <string name="pin_verification_empty_error">PIN cannot be empty</string>

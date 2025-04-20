@@ -8,10 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Camera
-import androidx.compose.material.icons.filled.LocationOff
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,6 +46,11 @@ fun IntroductionContent(
 
 	val slides = listOf(
 		IntroductionSlide(
+			icon = Icons.Filled.Camera,
+			title = stringResource(R.string.intro_slide0_title),
+			description = stringResource(R.string.intro_slide0_description)
+		),
+		IntroductionSlide(
 			icon = Icons.Filled.PrivacyTip,
 			title = stringResource(R.string.intro_slide1_title),
 			description = stringResource(R.string.intro_slide1_description)
@@ -59,10 +61,20 @@ fun IntroductionContent(
 			description = stringResource(R.string.intro_slide2_description)
 		),
 		IntroductionSlide(
-			icon = Icons.Filled.LocationOff,
+			icon = Icons.Filled.Send,
 			title = stringResource(R.string.intro_slide3_title),
 			description = stringResource(R.string.intro_slide3_description),
-		)
+		),
+		IntroductionSlide(
+			icon = Icons.Filled.LocationOff,
+			title = stringResource(R.string.intro_slide4_title),
+			description = stringResource(R.string.intro_slide4_description),
+		),
+		IntroductionSlide(
+			icon = Icons.Filled.MyLocation,
+			title = stringResource(R.string.intro_slide5_title),
+			description = stringResource(R.string.intro_slide5_description),
+		),
 	)
 
 	val pagerState = rememberPagerState(pageCount = { slides.size + 1 })
@@ -196,9 +208,9 @@ fun PinCreationContent(
 			modifier = Modifier
 				.size(96.dp)
 				.padding(16.dp),
-			imageVector = Icons.Filled.Camera,
+			imageVector = Icons.Filled.Pin,
 			contentDescription = stringResource(id = R.string.pin_verification_icon),
-			tint = Color.White
+			tint = MaterialTheme.colorScheme.onBackground
 		)
 
 		Text(
