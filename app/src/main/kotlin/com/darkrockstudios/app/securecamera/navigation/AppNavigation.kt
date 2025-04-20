@@ -23,7 +23,6 @@ import com.darkrockstudios.app.securecamera.introduction.IntroductionContent
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.settings.SettingsContent
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoContent
-import com.kashif.cameraK.controller.CameraController
 import kotlinx.coroutines.flow.combine
 import org.koin.compose.koinInject
 
@@ -53,7 +52,6 @@ object AppDestinations {
 @Composable
 fun AppNavHost(
 	navController: NavHostController,
-	cameraController: MutableState<CameraController?>,
 	capturePhoto: MutableState<Boolean?>,
 	modifier: Modifier = Modifier,
 	startDestination: String = AppDestinations.CAMERA_ROUTE,
@@ -116,7 +114,6 @@ fun AppNavHost(
 
 		composable(AppDestinations.CAMERA_ROUTE) {
 			CameraContent(
-				cameraController = cameraController,
 				capturePhoto = capturePhoto,
 				navController = navController,
 				modifier = Modifier.fillMaxSize(),

@@ -78,6 +78,7 @@ dependencies {
 	implementation(libs.androidx.datastore.preferences.core)
 	implementation(libs.kotlinx.serialization.json)
 	implementation(libs.androidx.core.splashscreen)
+	implementation(libs.accompanist.permissions)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

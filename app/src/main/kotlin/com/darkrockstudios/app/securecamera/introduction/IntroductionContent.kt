@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -234,7 +235,10 @@ fun PinCreationContent(
 			},
 			label = { Text(stringResource(R.string.pin_creation_hint)) },
 			visualTransformation = PasswordVisualTransformation(),
-			keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+			keyboardOptions = KeyboardOptions(
+				keyboardType = KeyboardType.NumberPassword,
+				imeAction = ImeAction.Next
+			),
 			singleLine = true,
 			modifier = Modifier
 				.fillMaxWidth()
@@ -252,7 +256,10 @@ fun PinCreationContent(
 			},
 			label = { Text(stringResource(R.string.pin_creation_confirm_hint)) },
 			visualTransformation = PasswordVisualTransformation(),
-			keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+			keyboardOptions = KeyboardOptions(
+				keyboardType = KeyboardType.NumberPassword,
+				imeAction = ImeAction.Done
+			),
 			singleLine = true,
 			modifier = Modifier
 				.fillMaxWidth()

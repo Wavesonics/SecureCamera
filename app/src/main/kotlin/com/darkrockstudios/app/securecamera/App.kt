@@ -13,9 +13,6 @@ import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.navigation.AppNavHost
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.ui.theme.SecureCameraTheme
-import com.kashif.cameraK.controller.CameraController
-import com.kashif.cameraK.permissions.Permissions
-import com.kashif.cameraK.permissions.providePermissions
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
@@ -23,13 +20,12 @@ import org.koin.compose.koinInject
 fun App(capturePhoto: MutableState<Boolean?>) {
 	KoinContext {
 		SecureCameraTheme {
-			val permissions: Permissions = providePermissions()
 			val snackbarHostState = remember { SnackbarHostState() }
 			val navController = rememberNavController()
 			val preferencesManager = koinInject<AppPreferencesManager>()
 			val authorizationManager = koinInject<AuthorizationManager>()
 
-			val hasCompletedIntro by preferencesManager.hasCompletedIntro.collectAsState(initial = true)
+			val hasCompletedIntro by preferencesManager.hasCompletedIntro.collectAsState(initial = false)
 			val startDestination = rememberSaveable(hasCompletedIntro) {
 				if (hasCompletedIntro) {
 					if (authorizationManager.checkSessionValidity()) {
@@ -46,38 +42,14 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 				snackbarHost = { SnackbarHost(snackbarHostState) },
 				modifier = Modifier.imePadding()
 			) { paddingValues ->
-				val cameraPermissionState = rememberSaveable { mutableStateOf(permissions.hasCameraPermission()) }
-				val cameraController = remember { mutableStateOf<CameraController?>(null) }
-
-				PermissionsHandler(
-					permissions = permissions,
-					cameraPermissionState = cameraPermissionState,
-				)
-
-				if (cameraPermissionState.value) {
 					AppNavHost(
 						navController = navController,
-						cameraController = cameraController,
 						capturePhoto = capturePhoto,
 						modifier = Modifier,
 						startDestination = startDestination,
 						paddingValues = paddingValues
 					)
-				}
 			}
 		}
-	}
-}
-
-@Composable
-private fun PermissionsHandler(
-	permissions: Permissions,
-	cameraPermissionState: MutableState<Boolean>,
-) {
-	if (!cameraPermissionState.value) {
-		permissions.RequestCameraPermission(
-			onGranted = { cameraPermissionState.value = true },
-			onDenied = { println("Camera Permission Denied") }
-		)
 	}
 }

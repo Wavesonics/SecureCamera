@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.37.0"
 agp = "8.9.1"
 camerak = "0.0.11"
 compileSdk = "35"
@@ -30,6 +31,7 @@ datastorePreferences = "1.1.4"
 timber = "5.0.1"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }

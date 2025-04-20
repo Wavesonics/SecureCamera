@@ -1,5 +1,6 @@
 package com.darkrockstudios.app.securecamera.camera
 
+import android.Manifest
 import android.content.Context
 import android.location.Location
 import androidx.compose.animation.*
@@ -29,6 +30,8 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.*
 import com.kashif.cameraK.result.ImageCaptureResult
@@ -39,10 +42,9 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import kotlin.uuid.ExperimentalUuidApi
 
-
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun CameraContent(
-	cameraController: MutableState<CameraController?>,
 	capturePhoto: MutableState<Boolean?>,
 	navController: NavHostController,
 	modifier: Modifier,
@@ -50,31 +52,64 @@ internal fun CameraContent(
 ) {
 	KeepScreenOnEffect()
 
-	Box(modifier = modifier.fillMaxSize()) {
-		CameraPreview(
-			modifier = Modifier.fillMaxSize(),
-			cameraConfiguration = {
-				setCameraLens(CameraLens.BACK)
-				setFlashMode(FlashMode.OFF)
-				setImageFormat(ImageFormat.JPEG)
-				setDirectory(Directory.PICTURES)
-				setTorchMode(TorchMode.OFF)
-			},
-			onCameraControllerReady = {
-				cameraController.value = it
-			}
+	val cameraController = remember { mutableStateOf<CameraController?>(null) }
+
+	val permissionsState = rememberMultiplePermissionsState(
+		permissions = listOf(
+			Manifest.permission.CAMERA,
 		)
+	)
 
-		cameraController.value?.let { controller ->
-			EnhancedCameraScreen(
-				cameraController = controller,
-				capturePhoto = capturePhoto,
-				navController = navController,
-				paddingValues = paddingValues,
-			)
+	var showRationaleDialog by remember { mutableStateOf(false) }
+
+	LaunchedEffect(Unit) {
+		if (!permissionsState.allPermissionsGranted && permissionsState.shouldShowRationale) {
+			showRationaleDialog = true
+		} else {
+			permissionsState.launchMultiplePermissionRequest()
 		}
+	}
 
-		CameraBottomBar(navController)
+	if (showRationaleDialog) {
+		CameraPermissionRationaleDialog(
+			onContinue = {
+				showRationaleDialog = false
+				permissionsState.launchMultiplePermissionRequest()
+			},
+			onDismiss = { showRationaleDialog = false }
+		)
+	}
+
+	Box(
+		modifier = modifier
+			.fillMaxSize()
+	) {
+		if (permissionsState.allPermissionsGranted) {
+			CameraPreview(
+				modifier = Modifier.fillMaxSize(),
+				cameraConfiguration = {
+					setCameraLens(CameraLens.BACK)
+					setFlashMode(FlashMode.OFF)
+					setImageFormat(ImageFormat.JPEG)
+					setDirectory(Directory.PICTURES)
+					setTorchMode(TorchMode.OFF)
+				},
+				onCameraControllerReady = {
+					cameraController.value = it
+				}
+			)
+
+			cameraController.value?.let { controller ->
+				EnhancedCameraScreen(
+					cameraController = controller,
+					capturePhoto = capturePhoto,
+					navController = navController,
+					paddingValues = paddingValues,
+				)
+			}
+		} else {
+			NoCameraPermission(navController, permissionsState)
+		}
 	}
 }
 
