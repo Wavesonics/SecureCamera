@@ -1,5 +1,7 @@
 package com.darkrockstudios.app.securecamera
 
+import timber.log.Timber
+
 /**
  * Measures the execution time of the provided block of code in milliseconds.
  * @param block The code block to measure.
@@ -22,6 +24,6 @@ inline fun <T> measureTime(block: () -> T): Pair<T, Long> {
  */
 inline fun <T> measureAndReport(message: String, block: () -> T): T {
 	val (result, time) = measureTime(block)
-	println("$message: $time ms")
+	Timber.d("$message: $time ms")
 	return result
 }
