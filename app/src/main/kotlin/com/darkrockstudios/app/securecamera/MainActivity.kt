@@ -7,9 +7,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateOf
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 	private var capturePhoto = mutableStateOf<Boolean?>(null)
+	private val locationRepository: LocationRepository by inject()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -39,6 +41,12 @@ class MainActivity : ComponentActivity() {
 
 			else -> super.onKeyDown(keyCode, event)
 		}
+	}
+
+	override fun onResume() {
+		super.onResume()
+		// Refresh permission status when the app comes back to the foreground
+		locationRepository.refreshPermissionStatus()
 	}
 
 	override fun onDestroy() {

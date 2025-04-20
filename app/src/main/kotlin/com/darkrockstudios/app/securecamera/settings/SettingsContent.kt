@@ -45,12 +45,12 @@ fun SettingsContent(
 	val sanitizeFileName by preferencesManager.sanitizeFileName.collectAsState(initial = true)
 	val sanitizeMetadata by preferencesManager.sanitizeMetadata.collectAsState(initial = true)
 
-	var locationPermissionStatus by rememberSaveable { mutableStateOf(locationRepository.getLocationPermissionStatus()) }
+	val locationPermissionStatus by locationRepository.locationPermissionStatus.collectAsState()
 
 	var showLocationDialog by rememberSaveable { mutableStateOf(false) }
 
 	LaunchedEffect(Unit) {
-		locationPermissionStatus = locationRepository.getLocationPermissionStatus()
+		locationRepository.refreshPermissionStatus()
 	}
 
 	if (showLocationDialog) {

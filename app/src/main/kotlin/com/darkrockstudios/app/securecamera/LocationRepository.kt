@@ -8,6 +8,9 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -21,7 +24,20 @@ class LocationRepository(private val ctx: Context) {
 	private val locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 	private var lastKnownLocation: Location? = null
 
+	private val _locationPermissionStatus = MutableStateFlow(checkLocationPermissionStatus())
+	val locationPermissionStatus: StateFlow<LocationPermissionStatus> = _locationPermissionStatus.asStateFlow()
+
+	fun refreshPermissionStatus() {
+		_locationPermissionStatus.value = checkLocationPermissionStatus()
+	}
+
 	fun getLocationPermissionStatus(): LocationPermissionStatus {
+		val status = checkLocationPermissionStatus()
+		_locationPermissionStatus.value = status
+		return status
+	}
+
+	private fun checkLocationPermissionStatus(): LocationPermissionStatus {
 		val finePermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
 		val coarsePermission = ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION)
 
