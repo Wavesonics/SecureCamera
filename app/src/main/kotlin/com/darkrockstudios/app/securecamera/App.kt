@@ -47,6 +47,7 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 						navController = navController,
 						capturePhoto = capturePhoto,
 						modifier = Modifier,
+						snackbarHostState = snackbarHostState,
 						startDestination = startDestination,
 						paddingValues = paddingValues
 					)

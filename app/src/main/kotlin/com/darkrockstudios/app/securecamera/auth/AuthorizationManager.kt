@@ -15,6 +15,7 @@ class AuthorizationManager(
 ) {
 	companion object {
 		private val DEFAULT_SESSION_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(5)
+		const val MAX_FAILED_ATTEMPTS = 10
 	}
 
 	private val _isAuthorized = MutableStateFlow(false)
@@ -25,6 +26,79 @@ class AuthorizationManager(
 
 	var securityPin: SecurityPin? = null
 		private set
+
+	suspend fun securityFailureReset() {
+		preferencesManager.securityFailureReset()
+	}
+
+	/**
+	 * Gets the current number of failed PIN attempts
+	 * @return The number of failed attempts
+	 */
+	suspend fun getFailedAttempts(): Int {
+		return preferencesManager.getFailedPinAttempts()
+	}
+
+	/**
+	 * Sets the number of failed PIN attempts
+	 * @param count The number of failed attempts to set
+	 */
+	suspend fun setFailedAttempts(count: Int) {
+		preferencesManager.setFailedPinAttempts(count)
+	}
+
+	/**
+	 * Increments the failed PIN attempts counter, stores the current timestamp, and returns the new count
+	 * @return The updated number of failed attempts
+	 */
+	suspend fun incrementFailedAttempts(): Int {
+		val currentCount = getFailedAttempts()
+		val newCount = currentCount + 1
+		setFailedAttempts(newCount)
+
+		// Store the current timestamp as the last failed attempt time
+		preferencesManager.setLastFailedAttemptTimestamp(System.currentTimeMillis())
+
+		return newCount
+	}
+
+	/**
+	 * Gets the timestamp of the last failed PIN attempt
+	 * @return The timestamp of the last failed attempt
+	 */
+	suspend fun getLastFailedAttemptTimestamp(): Long {
+		return preferencesManager.getLastFailedAttemptTimestamp()
+	}
+
+	/**
+	 * Calculates the remaining backoff time in seconds based on the number of failed attempts and the last failed attempt timestamp
+	 * @return The remaining backoff time in seconds, or 0 if no backoff is needed
+	 */
+	suspend fun calculateRemainingBackoffSeconds(): Int {
+		val failedAttempts = getFailedAttempts()
+		if (failedAttempts <= 0) {
+			return 0
+		}
+
+		val lastFailedTimestamp = getLastFailedAttemptTimestamp()
+		if (lastFailedTimestamp <= 0) {
+			return 0
+		}
+
+		val backoffTime = (2 * Math.pow(2.0, failedAttempts - 1.0)).toInt()
+		val elapsedSeconds = ((System.currentTimeMillis() - lastFailedTimestamp) / 1000).toInt()
+		val remainingSeconds = backoffTime - elapsedSeconds
+		1337
+		return if (remainingSeconds > 0) remainingSeconds else 0
+	}
+
+	/**
+	 * Resets the failed PIN attempts counter to zero and clears the last failed attempt timestamp
+	 */
+	suspend fun resetFailedAttempts() {
+		setFailedAttempts(0)
+		preferencesManager.setLastFailedAttemptTimestamp(0)
+	}
 
 	/**
 	 * Verifies the PIN and updates the authorization state if successful.
@@ -40,6 +114,8 @@ class AuthorizationManager(
 				plainPin = pin,
 				hashedPin = hashedPin,
 			)
+			// Reset failed attempts counter on successful verification
+			resetFailedAttempts()
 		}
 		return isValid
 	}

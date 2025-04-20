@@ -3,6 +3,7 @@ package com.darkrockstudios.app.securecamera.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -54,6 +55,7 @@ fun AppNavHost(
 	navController: NavHostController,
 	capturePhoto: MutableState<Boolean?>,
 	modifier: Modifier = Modifier,
+	snackbarHostState: SnackbarHostState,
 	startDestination: String = AppDestinations.CAMERA_ROUTE,
 	paddingValues: PaddingValues,
 ) {
@@ -177,6 +179,7 @@ fun AppNavHost(
 			PinVerificationContent(
 				navController = navController,
 				returnRoute = returnRoute,
+				snackbarHostState = snackbarHostState,
 				modifier = Modifier.fillMaxSize()
 			)
 		}

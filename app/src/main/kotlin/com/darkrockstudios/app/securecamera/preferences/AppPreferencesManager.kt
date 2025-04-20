@@ -29,6 +29,8 @@ class AppPreferencesManager(private val context: Context) {
 		private val APP_PIN = stringPreferencesKey("app_pin")
 		private val SANITIZE_FILE_NAME = booleanPreferencesKey("sanitize_file_name")
 		private val SANITIZE_METADATA = booleanPreferencesKey("sanitize_metadata")
+		private val FAILED_PIN_ATTEMPTS = stringPreferencesKey("failed_pin_attempts")
+		private val LAST_FAILED_ATTEMPT_TIMESTAMP = stringPreferencesKey("last_failed_attempt_timestamp")
 	}
 
 	private val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
@@ -132,6 +134,64 @@ class AppPreferencesManager(private val context: Context) {
 	suspend fun setSanitizeMetadata(sanitize: Boolean) {
 		context.dataStore.edit { preferences ->
 			preferences[SANITIZE_METADATA] = sanitize
+		}
+	}
+
+	/**
+	 * Get the failed PIN attempts count
+	 */
+	val failedPinAttempts: Flow<Int> = context.dataStore.data
+		.map { preferences ->
+			preferences[FAILED_PIN_ATTEMPTS]?.toIntOrNull() ?: 0
+		}
+
+	/**
+	 * Get the current failed PIN attempts count
+	 */
+	suspend fun getFailedPinAttempts(): Int {
+		return context.dataStore.data.firstOrNull()?.get(FAILED_PIN_ATTEMPTS)?.toIntOrNull() ?: 0
+	}
+
+	/**
+	 * Set the failed PIN attempts count
+	 */
+	suspend fun setFailedPinAttempts(count: Int) {
+		context.dataStore.edit { preferences ->
+			preferences[FAILED_PIN_ATTEMPTS] = count.toString()
+		}
+	}
+
+	/**
+	 * Get the timestamp of the last failed PIN attempt
+	 */
+	val lastFailedAttemptTimestamp: Flow<Long> = context.dataStore.data
+		.map { preferences ->
+			preferences[LAST_FAILED_ATTEMPT_TIMESTAMP]?.toLongOrNull() ?: 0L
+		}
+
+	/**
+	 * Get the current timestamp of the last failed PIN attempt
+	 */
+	suspend fun getLastFailedAttemptTimestamp(): Long {
+		return context.dataStore.data.firstOrNull()?.get(LAST_FAILED_ATTEMPT_TIMESTAMP)?.toLongOrNull() ?: 0L
+	}
+
+	/**
+	 * Set the timestamp of the last failed PIN attempt
+	 */
+	suspend fun setLastFailedAttemptTimestamp(timestamp: Long) {
+		context.dataStore.edit { preferences ->
+			preferences[LAST_FAILED_ATTEMPT_TIMESTAMP] = timestamp.toString()
+		}
+	}
+
+	/**
+	 * Resets all user data and preferences when a security failure occurs.
+	 * This deletes all stored preferences including PIN, intro completion status, and security settings.
+	 */
+	suspend fun securityFailureReset() {
+		context.dataStore.edit { preferences ->
+			preferences.clear()
 		}
 	}
 }

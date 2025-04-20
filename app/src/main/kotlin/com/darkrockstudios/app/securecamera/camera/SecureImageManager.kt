@@ -25,7 +25,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class KeyParams(
+private data class KeyParams(
 	val iterations: Int = 600_000,
 	val outputSize: BinarySize = 32.bytes,
 )
@@ -45,6 +45,26 @@ class SecureImageManager(
 
 	fun evictKey() {
 		keyFlow = null
+	}
+
+	/**
+	 * Resets all security-related data when a security failure occurs.
+	 * Deletes all images and thumbnails and evicts all in-memory data.
+	 */
+	fun securityFailureReset() {
+		// Delete all images
+		val photos = getPhotos()
+		deleteImages(photos)
+
+		// Delete thumbnails directory
+		val thumbnailsDir = getThumbnailsDir()
+		if (thumbnailsDir.exists()) {
+			thumbnailsDir.deleteRecursively()
+		}
+
+		// Evict in-memory data
+		thumbnailCache.clear()
+		evictKey()
 	}
 
 	/**
