@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ fun PinVerificationContent(
 	modifier: Modifier = Modifier
 ) {
 	val authManager = koinInject<AuthorizationManager>()
+	val imageManager = koinInject<SecureImageManager>()
 	val coroutineScope = rememberCoroutineScope()
 
 	var pin by rememberSaveable { mutableStateOf("") }
@@ -53,6 +55,7 @@ fun PinVerificationContent(
 	val focusRequester = remember { FocusRequester() }
 
 	LaunchedEffect(Unit) {
+		imageManager.evictKey()
 		focusRequester.requestFocus()
 	}
 
