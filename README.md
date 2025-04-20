@@ -1,6 +1,6 @@
 # Secure Camera
 
-A privacy-focused camera application for Android that prioritizes user privacy and data security.
+A privacy-focused camera application for Android that prioritizes data security.
 
 ## Overview
 
