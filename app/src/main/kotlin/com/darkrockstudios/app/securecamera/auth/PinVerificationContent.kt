@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 /**
@@ -50,7 +51,6 @@ fun PinVerificationContent(
 	val verifyButtonText = stringResource(R.string.pin_verification_button)
 
 	val focusRequester = remember { FocusRequester() }
-	val keyboardController = LocalSoftwareKeyboardController.current
 
 	LaunchedEffect(Unit) {
 		focusRequester.requestFocus()
@@ -62,17 +62,17 @@ fun PinVerificationContent(
 			return
 		}
 
-		keyboardController?.hide()
-
 		isVerifying = true
-		coroutineScope.launch {
+		coroutineScope.launch(Dispatchers.Default) {
 			val isValid = authManager.verifyPin(pin)
 			isVerifying = false
 
 			if (isValid) {
-				navController.navigate(returnRoute) {
-					popUpTo(AppDestinations.PIN_VERIFICATION_ROUTE) { inclusive = true }
-					launchSingleTop = true
+				withContext(Dispatchers.Main) {
+					navController.navigate(returnRoute) {
+						popUpTo(AppDestinations.PIN_VERIFICATION_ROUTE) { inclusive = true }
+						launchSingleTop = true
+					}
 				}
 			} else {
 				errorMessage = pinInvalidError
@@ -81,9 +81,11 @@ fun PinVerificationContent(
 		}
 	}
 
-	Box(modifier = modifier
-		.fillMaxSize()
-		.background(color = MaterialTheme.colorScheme.background)) {
+	Box(
+		modifier = modifier
+			.fillMaxSize()
+			.background(color = MaterialTheme.colorScheme.background)
+	) {
 		Column(
 			modifier = Modifier
 				.padding(16.dp)
