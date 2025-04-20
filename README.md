@@ -25,3 +25,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under an [MIT LICENSE](LICENSE) file.
+
+## Privacy
+
+Our privacy policy can be found [here](PRIVACY.md).
