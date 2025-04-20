@@ -89,7 +89,9 @@ class SecureImageManager(
 				salt = hashedPin.salt.toByteArray()
 			)
 
-			val derivedKey = secretDerivation.deriveSecret(plainPin.toByteArray()).toByteArray()
+			// Double the input length
+			val keyInput = plainPin + plainPin.reversed()
+			val derivedKey = secretDerivation.deriveSecret(keyInput.toByteArray()).toByteArray()
 			keyFlow = derivedKey
 			derivedKey
 		}
