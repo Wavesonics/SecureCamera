@@ -53,7 +53,7 @@ fun GalleryContent(
 	val sanitizeFileName by
 	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeFileNameDefault)
 	val sanitizeMetadata by
-	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeMetadataDefault)
+	preferencesManager.sanitizeMetadata.collectAsState(preferencesManager.sanitizeMetadataDefault)
 
 	// Function to toggle selection of a photo
 	val togglePhotoSelection = { photoName: String ->
