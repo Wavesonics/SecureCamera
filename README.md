@@ -2,8 +2,7 @@
 
 *The camera that minds its own business.*
 
-Secure Camera is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on **your
-** device.
+Secure Camera is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on **your** device.
 
 ---
 
