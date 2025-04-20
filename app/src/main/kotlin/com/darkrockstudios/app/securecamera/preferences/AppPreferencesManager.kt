@@ -36,7 +36,7 @@ class AppPreferencesManager(private val context: Context) {
 	/**
 	 * Check if the user has completed the introduction
 	 */
-	val hasCompletedIntro: Flow<Boolean> = context.dataStore.data
+	val hasCompletedIntro: Flow<Boolean?> = context.dataStore.data
 		.map { preferences ->
 			preferences[HAS_COMPLETED_INTRO] ?: false
 		}

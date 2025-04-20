@@ -25,9 +25,9 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 			val preferencesManager = koinInject<AppPreferencesManager>()
 			val authorizationManager = koinInject<AuthorizationManager>()
 
-			val hasCompletedIntro by preferencesManager.hasCompletedIntro.collectAsState(initial = false)
+			val hasCompletedIntro by preferencesManager.hasCompletedIntro.collectAsState(initial = null)
 			val startDestination = rememberSaveable(hasCompletedIntro) {
-				if (hasCompletedIntro) {
+				if (hasCompletedIntro == true) {
 					if (authorizationManager.checkSessionValidity()) {
 						AppDestinations.CAMERA_ROUTE
 					} else {
@@ -38,10 +38,11 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 				}
 			}
 
-			Scaffold(
-				snackbarHost = { SnackbarHost(snackbarHostState) },
-				modifier = Modifier.imePadding()
-			) { paddingValues ->
+			if (hasCompletedIntro != null) {
+				Scaffold(
+					snackbarHost = { SnackbarHost(snackbarHostState) },
+					modifier = Modifier.imePadding()
+				) { paddingValues ->
 					AppNavHost(
 						navController = navController,
 						capturePhoto = capturePhoto,
@@ -49,6 +50,7 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 						startDestination = startDestination,
 						paddingValues = paddingValues
 					)
+				}
 			}
 		}
 	}
