@@ -1,31 +1,55 @@
-# Secure Camera
+# Secure Camera
 
-A privacy-focused camera application for Android that prioritizes data security.
+*The camera that minds its own business.*
 
-## Features
+Secure Camera is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on **your
+** device.
 
-- **Privacy-First Design**: No data collection, no internet access, no analytics
-- **Secure Storage**: All photos are stored encrypted in app-private storage
-- **Metadata Removal**: Automatically strips all identifying metadata from images
-- **PIN Protection**: Separate PIN required to view your photos
-- **Secure Sharing**: Share photos securely using Android's native share system
-- **Location Privacy**: Optional location data with configurable precision
-- **Open Source**: Fully transparent codebase
+---
 
-### Planned Features
+## Why Secure Camera?
 
-- Automatic face blurring for enhanced privacy
-- More Camera features (_Zooming, ect_)
-- Secure video recording
+| We do…                                                          | We never do…                         |
+|-----------------------------------------------------------------|--------------------------------------|
+| Capture photos ~~& video~~ locally                              | Phone home or talk to servers        |
+| Encrypt everything in private storage                           | Slurp analytics or usage stats       |
+| Let **you** decide if GPS tags are added (_precision optional_) | Sprinkle ads or trackers in the code |
+| Strip out tell‑tale metadata automatically                      | Read files outside our sandbox       |
+
+---
+
+## Key Features
+
+* **Zero‑Leak Design** – The manifest skips `android.permission.INTERNET`; nothing leaves your device.
+* **Fully Encrypted** – Shots are written to encrypted, app‑private storage.
+* **Metadata Scrub‑A‑Dub** – EXIF and other identifiers are wiped the instant you hit *Share*.
+* **PIN‑Locked Gallery** – A separate PIN stands between curious thumbs and your photos.
+* **Secure Sharing** – When you *do* share, we hand the file off via Android’s native share sheet—no detours.
+* **Granular Location** – Add coarse, fine, or zero location data—your call.
+* **100 % Open Source** – Auditable code in plain sight.
+
+### On the Roadmap
+
+* Auto‑blur faces (because sometimes anonymity matters).
+* Optical zoom controls & other camera goodies.
+* Encrypted video recording.
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Pull requests are happily accepted.
+
+Start with an issue or draft PR and we can talk it through.
+
+---
 
 ## License
 
-This project is licensed under an [MIT LICENSE](LICENSE) file.
+Secure Camera is released under the [MIT License](LICENSE). Use it, fork it, improve it—just keep it open.
+
+---
 
 ## Privacy
 
-Our privacy policy can be found [here](PRIVACY.md).
+Our full, ultra‑brief Privacy Policy lives in [PRIVACY.md](PRIVACY.md). Spoiler: we collect nothing.
