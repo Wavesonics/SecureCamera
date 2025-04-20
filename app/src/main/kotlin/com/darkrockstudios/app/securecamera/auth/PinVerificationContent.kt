@@ -2,12 +2,15 @@ package com.darkrockstudios.app.securecamera.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -40,14 +43,41 @@ fun PinVerificationContent(
 	val pinInvalidError = stringResource(R.string.pin_verification_invalid_error)
 	val verifyButtonText = stringResource(R.string.pin_verification_button)
 
+	val keyboardController = LocalSoftwareKeyboardController.current
+
+	fun verify() {
+		if (pin.isBlank()) {
+			errorMessage = pinEmptyError
+			return
+		}
+
+		keyboardController?.hide()
+
+		isVerifying = true
+		coroutineScope.launch {
+			val isValid = authManager.verifyPin(pin)
+			isVerifying = false
+
+			if (isValid) {
+				navController.navigate(returnRoute) {
+					popUpTo(AppDestinations.PIN_VERIFICATION_ROUTE) { inclusive = true }
+					launchSingleTop = true
+				}
+			} else {
+				errorMessage = pinInvalidError
+				pin = ""
+			}
+		}
+	}
+
 	Box(modifier = modifier
-        .fillMaxSize()
-        .background(color = MaterialTheme.colorScheme.background)) {
+		.fillMaxSize()
+		.background(color = MaterialTheme.colorScheme.background)) {
 		Column(
 			modifier = Modifier
-                .padding(16.dp)
-                .widthIn(max = 512.dp)
-                .align(Alignment.Center),
+				.padding(16.dp)
+				.widthIn(max = 512.dp)
+				.align(Alignment.Center),
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center
 		) {
@@ -60,14 +90,21 @@ fun PinVerificationContent(
 			OutlinedTextField(
 				value = pin,
 				onValueChange = {
-					if (it.length <= pinSize.max()) { // Limit PIN length
+					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
 						pin = it
 						errorMessage = null
 					}
 				},
 				label = { Text(pinVerificationLabel) },
 				visualTransformation = PasswordVisualTransformation(),
-				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+				singleLine = true,
+				keyboardOptions = KeyboardOptions(
+					keyboardType = KeyboardType.NumberPassword,
+					imeAction = ImeAction.Done
+				),
+				keyboardActions = KeyboardActions(
+					onDone = { verify() }
+				),
 				isError = errorMessage != null,
 				enabled = !isVerifying,
 				modifier = Modifier.fillMaxWidth()
@@ -85,28 +122,7 @@ fun PinVerificationContent(
 			Spacer(modifier = Modifier.height(24.dp))
 
 			Button(
-				onClick = {
-					if (pin.isBlank()) {
-						errorMessage = pinEmptyError
-						return@Button
-					}
-
-					isVerifying = true
-					coroutineScope.launch {
-						val isValid = authManager.verifyPin(pin)
-						isVerifying = false
-
-						if (isValid) {
-							navController.navigate(returnRoute) {
-								popUpTo(AppDestinations.PIN_VERIFICATION_ROUTE) { inclusive = true }
-								launchSingleTop = true
-							}
-						} else {
-							errorMessage = pinInvalidError
-							pin = ""
-						}
-					}
-				},
+				onClick = { verify() },
 				enabled = !isVerifying,
 				modifier = Modifier.fillMaxWidth()
 			) {
