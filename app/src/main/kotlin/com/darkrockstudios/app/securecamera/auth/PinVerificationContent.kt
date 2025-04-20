@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -37,9 +38,9 @@ fun PinVerificationContent(
 	val authManager = koinInject<AuthorizationManager>()
 	val coroutineScope = rememberCoroutineScope()
 
-	var pin by remember { mutableStateOf("") }
-	var errorMessage by remember { mutableStateOf<String?>(null) }
-	var isVerifying by remember { mutableStateOf(false) }
+	var pin by rememberSaveable { mutableStateOf("") }
+	var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+	var isVerifying by rememberSaveable { mutableStateOf(false) }
 
 	// Store string resources
 	val pinVerificationTitle = stringResource(R.string.pin_verification_title)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,14 +41,14 @@ fun GalleryContent(
 	val imageManager = koinInject<SecureImageManager>()
 	val preferencesManager = koinInject<AppPreferencesManager>()
 	var photos by remember { mutableStateOf<List<PhotoDef>>(emptyList()) }
-	var isLoading by remember { mutableStateOf(true) }
+	var isLoading by rememberSaveable { mutableStateOf(true) }
 	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
 
 	// Selection state
-	var isSelectionMode by remember { mutableStateOf(false) }
-	var selectedPhotos by remember { mutableStateOf<Set<String>>(emptySet()) }
-	var showDeleteConfirmation by remember { mutableStateOf(false) }
+	var isSelectionMode by rememberSaveable { mutableStateOf(false) }
+	var selectedPhotos by rememberSaveable { mutableStateOf<Set<String>>(emptySet()) }
+	var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
 
 	val sanitizeFileName by
 	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeFileNameDefault)

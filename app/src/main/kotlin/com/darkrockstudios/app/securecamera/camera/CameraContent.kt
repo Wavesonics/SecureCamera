@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +61,6 @@ internal fun CameraContent(
 				setTorchMode(TorchMode.OFF)
 			},
 			onCameraControllerReady = {
-				print("==> Camera Controller Ready")
 				cameraController.value = it
 			}
 		)
@@ -86,18 +86,18 @@ fun EnhancedCameraScreen(
 	paddingValues: PaddingValues? = null,
 ) {
 	val scope = rememberCoroutineScope()
-	var isFlashOn by remember { mutableStateOf(false) }
-	var isTorchOn by remember { mutableStateOf(false) }
-	var isTopControlsVisible by remember { mutableStateOf(false) }
+	var isFlashOn by rememberSaveable { mutableStateOf(false) }
+	var isTorchOn by rememberSaveable { mutableStateOf(false) }
+	var isTopControlsVisible by rememberSaveable { mutableStateOf(false) }
 	var activeJobs by remember { mutableStateOf(0) }
-	var isFlashing by remember { mutableStateOf(false) }
+	var isFlashing by rememberSaveable { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
 	val locationRepository = koinInject<LocationRepository>()
 	val context = LocalContext.current
 	val orientation = rememberCurrentTiffOrientation()
 
-	var locationPermissionState by remember { mutableStateOf(false) }
+	var locationPermissionState by rememberSaveable { mutableStateOf(false) }
 	RequestLocationPermission {
 		locationPermissionState = true
 	}

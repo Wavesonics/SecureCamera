@@ -46,7 +46,7 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 				snackbarHost = { SnackbarHost(snackbarHostState) },
 				modifier = Modifier.imePadding()
 			) { paddingValues ->
-				val cameraPermissionState = remember { mutableStateOf(permissions.hasCameraPermission()) }
+				val cameraPermissionState = rememberSaveable { mutableStateOf(permissions.hasCameraPermission()) }
 				val cameraController = remember { mutableStateOf<CameraController?>(null) }
 
 				PermissionsHandler(
