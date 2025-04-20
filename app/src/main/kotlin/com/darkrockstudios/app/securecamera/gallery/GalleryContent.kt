@@ -110,7 +110,7 @@ fun GalleryContent(
 	}
 
 	LaunchedEffect(Unit) {
-		photos = imageManager.getPhotos()
+		photos = imageManager.getPhotos().sortedByDescending { it.dateTaken() }
 		isLoading = false
 	}
 
