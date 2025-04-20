@@ -85,10 +85,11 @@ fun IntroductionContent(
 	) {
 		HorizontalPager(
 			state = pagerState,
-			modifier = Modifier.weight(1f)
+			modifier = Modifier
+				.weight(1f)
+				.fillMaxWidth()
 		) { page ->
 			if (page < slides.size) {
-				// Introduction slides
 				IntroductionSlideContent(
 					slide = slides[page],
 					modifier = Modifier
@@ -96,7 +97,6 @@ fun IntroductionContent(
 						.padding(16.dp)
 				)
 			} else {
-				// PIN creation page
 				PinCreationContent(
 					onPinCreated = { pin ->
 						coroutineScope.launch {
@@ -158,32 +158,36 @@ fun IntroductionSlideContent(
 	slide: IntroductionSlide,
 	modifier: Modifier = Modifier
 ) {
-	Column(
-		modifier = modifier,
-		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.Center
-	) {
-		Icon(
+	Box(modifier = modifier) {
+		Column(
 			modifier = Modifier
-				.size(96.dp)
-				.padding(16.dp),
-			imageVector = slide.icon,
-			contentDescription = stringResource(id = R.string.intro_slide_icon),
-			tint = MaterialTheme.colorScheme.onBackground
-		)
+				.widthIn(max = 512.dp)
+				.align(Alignment.Center),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.Center
+		) {
+			Icon(
+				modifier = Modifier
+					.size(96.dp)
+					.padding(16.dp),
+				imageVector = slide.icon,
+				contentDescription = stringResource(id = R.string.intro_slide_icon),
+				tint = MaterialTheme.colorScheme.onBackground
+			)
 
-		Text(
-			text = slide.title,
-			style = MaterialTheme.typography.headlineMedium,
-			textAlign = TextAlign.Center,
-			modifier = Modifier.padding(bottom = 16.dp)
-		)
+			Text(
+				text = slide.title,
+				style = MaterialTheme.typography.headlineMedium,
+				textAlign = TextAlign.Center,
+				modifier = Modifier.padding(bottom = 16.dp)
+			)
 
-		Text(
-			text = slide.description,
-			style = MaterialTheme.typography.bodyLarge,
-			textAlign = TextAlign.Center
-		)
+			Text(
+				text = slide.description,
+				style = MaterialTheme.typography.bodyLarge,
+				textAlign = TextAlign.Center
+			)
+		}
 	}
 }
 
@@ -198,109 +202,113 @@ fun PinCreationContent(
 	var pin by rememberSaveable { mutableStateOf("") }
 	var confirmPin by rememberSaveable { mutableStateOf("") }
 	var showError by rememberSaveable { mutableStateOf(false) }
-
-	Column(
-		modifier = modifier.verticalScroll(rememberScrollState()),
-		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.Center
-	) {
-		Icon(
+	Box(modifier = modifier) {
+		Column(
 			modifier = Modifier
-				.size(96.dp)
-				.padding(16.dp),
-			imageVector = Icons.Filled.Pin,
-			contentDescription = stringResource(id = R.string.pin_verification_icon),
-			tint = MaterialTheme.colorScheme.onBackground
-		)
-
-		Text(
-			text = stringResource(R.string.pin_creation_title),
-			style = MaterialTheme.typography.headlineMedium,
-			textAlign = TextAlign.Center,
-			modifier = Modifier.padding(bottom = 8.dp)
-		)
-
-		Text(
-			text = stringResource(R.string.pin_creation_description),
-			style = MaterialTheme.typography.bodyLarge,
-			textAlign = TextAlign.Center,
-			modifier = Modifier.padding(bottom = 24.dp)
-		)
-
-		Text(
-			text = stringResource(R.string.pin_creation_warning),
-			style = MaterialTheme.typography.bodyMedium,
-			fontStyle = FontStyle.Italic,
-			color = Color.Red,
-			textAlign = TextAlign.Center,
-			modifier = Modifier.padding(bottom = 24.dp)
-		)
-
-		// PIN input
-		OutlinedTextField(
-			value = pin,
-			onValueChange = {
-				if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
-					pin = it
-					showError = false
-				}
-			},
-			label = { Text(stringResource(R.string.pin_creation_hint)) },
-			visualTransformation = PasswordVisualTransformation(),
-			keyboardOptions = KeyboardOptions(
-				keyboardType = KeyboardType.NumberPassword,
-				imeAction = ImeAction.Next
-			),
-			singleLine = true,
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(bottom = 16.dp)
-		)
-
-		// Confirm PIN input
-		OutlinedTextField(
-			value = confirmPin,
-			onValueChange = {
-				if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
-					confirmPin = it
-					showError = false
-				}
-			},
-			label = { Text(stringResource(R.string.pin_creation_confirm_hint)) },
-			visualTransformation = PasswordVisualTransformation(),
-			keyboardOptions = KeyboardOptions(
-				keyboardType = KeyboardType.NumberPassword,
-				imeAction = ImeAction.Done
-			),
-			singleLine = true,
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(bottom = 24.dp)
-		)
-
-		// Error message
-		if (showError) {
-			Text(
-				text = stringResource(R.string.pin_creation_error),
-				color = MaterialTheme.colorScheme.error,
-				style = MaterialTheme.typography.bodyMedium,
-				modifier = Modifier.padding(bottom = 16.dp)
-			)
-		}
-
-		// Create PIN button
-		Button(
-			onClick = {
-				if (pin == confirmPin && pin.length in pinSize) {
-					onPinCreated(pin)
-				} else {
-					showError = true
-				}
-			},
-			enabled = pin.length in pinSize && confirmPin.length in pinSize,
-			modifier = Modifier.fillMaxWidth()
+				.verticalScroll(rememberScrollState())
+				.widthIn(max = 512.dp)
+				.align(Alignment.Center),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.Center
 		) {
-			Text(stringResource(R.string.pin_creation_button))
+			Icon(
+				modifier = Modifier
+					.size(96.dp)
+					.padding(16.dp),
+				imageVector = Icons.Filled.Pin,
+				contentDescription = stringResource(id = R.string.pin_verification_icon),
+				tint = MaterialTheme.colorScheme.onBackground
+			)
+
+			Text(
+				text = stringResource(R.string.pin_creation_title),
+				style = MaterialTheme.typography.headlineMedium,
+				textAlign = TextAlign.Center,
+				modifier = Modifier.padding(bottom = 8.dp)
+			)
+
+			Text(
+				text = stringResource(R.string.pin_creation_description),
+				style = MaterialTheme.typography.bodyLarge,
+				textAlign = TextAlign.Center,
+				modifier = Modifier.padding(bottom = 24.dp)
+			)
+
+			Text(
+				text = stringResource(R.string.pin_creation_warning),
+				style = MaterialTheme.typography.bodyMedium,
+				fontStyle = FontStyle.Italic,
+				color = Color.Red,
+				textAlign = TextAlign.Center,
+				modifier = Modifier.padding(bottom = 24.dp)
+			)
+
+			// PIN input
+			OutlinedTextField(
+				value = pin,
+				onValueChange = {
+					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
+						pin = it
+						showError = false
+					}
+				},
+				label = { Text(stringResource(R.string.pin_creation_hint)) },
+				visualTransformation = PasswordVisualTransformation(),
+				keyboardOptions = KeyboardOptions(
+					keyboardType = KeyboardType.NumberPassword,
+					imeAction = ImeAction.Next
+				),
+				singleLine = true,
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(bottom = 16.dp)
+			)
+
+			// Confirm PIN input
+			OutlinedTextField(
+				value = confirmPin,
+				onValueChange = {
+					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
+						confirmPin = it
+						showError = false
+					}
+				},
+				label = { Text(stringResource(R.string.pin_creation_confirm_hint)) },
+				visualTransformation = PasswordVisualTransformation(),
+				keyboardOptions = KeyboardOptions(
+					keyboardType = KeyboardType.NumberPassword,
+					imeAction = ImeAction.Done
+				),
+				singleLine = true,
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(bottom = 24.dp)
+			)
+
+			// Error message
+			if (showError) {
+				Text(
+					text = stringResource(R.string.pin_creation_error),
+					color = MaterialTheme.colorScheme.error,
+					style = MaterialTheme.typography.bodyMedium,
+					modifier = Modifier.padding(bottom = 16.dp)
+				)
+			}
+
+			// Create PIN button
+			Button(
+				onClick = {
+					if (pin == confirmPin && pin.length in pinSize) {
+						onPinCreated(pin)
+					} else {
+						showError = true
+					}
+				},
+				enabled = pin.length in pinSize && confirmPin.length in pinSize,
+				modifier = Modifier.fillMaxWidth()
+			) {
+				Text(stringResource(R.string.pin_creation_button))
+			}
 		}
 	}
 }
