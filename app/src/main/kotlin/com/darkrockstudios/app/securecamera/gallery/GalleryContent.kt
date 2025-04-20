@@ -25,10 +25,7 @@ import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.sharePhotosData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,6 +176,10 @@ private fun PhotoGrid(
 	onPhotoLongClick: (String) -> Unit = {},
 	onPhotoClick: (String) -> Unit = {}
 ) {
+	val limitedDispatcher = remember {
+		Dispatchers.IO.limitedParallelism(4) // Limit to 4 concurrent thumbnail loads
+	}
+
 	val imageManager = koinInject<SecureImageManager>()
 	val scope = rememberCoroutineScope()
 	LazyVerticalGrid(
@@ -188,11 +189,12 @@ private fun PhotoGrid(
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 		modifier = modifier.fillMaxSize()
 	) {
-		items(items = photos, key = { it.hashCode() }) { photo ->
+		items(items = photos, key = { it.photoName }) { photo ->
 			PhotoItem(
 				photo = photo,
 				imageManager = imageManager,
 				scope = scope,
+				limitedDispatcher = limitedDispatcher,
 				isSelected = selectedPhotoNames.contains(photo.photoName),
 				onLongClick = { onPhotoLongClick(photo.photoName) },
 				onClick = { onPhotoClick(photo.photoName) }
@@ -207,16 +209,19 @@ private fun PhotoItem(
 	photo: PhotoDef,
 	imageManager: SecureImageManager,
 	scope: CoroutineScope,
+	limitedDispatcher: CoroutineDispatcher,
 	isSelected: Boolean = false,
 	onLongClick: () -> Unit = {},
 	onClick: () -> Unit = {},
 	modifier: Modifier = Modifier
 ) {
-	var thumbnailBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+	var thumbnailBitmap by remember(photo.photoName) { mutableStateOf<ImageBitmap?>(null) }
 
-	LaunchedEffect(Unit) {
-		scope.launch(Dispatchers.IO) {
-			thumbnailBitmap = imageManager.readThumbnail(photo).asImageBitmap()
+	LaunchedEffect(photo.photoName) {
+		if (thumbnailBitmap == null) {
+			scope.launch(limitedDispatcher) {
+				thumbnailBitmap = imageManager.readThumbnail(photo).asImageBitmap()
+			}
 		}
 	}
 

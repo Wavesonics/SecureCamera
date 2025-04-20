@@ -39,6 +39,8 @@ class SecureImageManager(
 	private var keyFlow: ByteArray? = null
 	private val keyMutex = Mutex()
 
+	val thumbnailCache = ThumbnailCache()
+
 	fun getGalleryDirectory(): File = File(appContext.filesDir, PHOTOS_DIR)
 
 	fun evictKey() {
@@ -195,17 +197,21 @@ class SecureImageManager(
 	}
 
 	suspend fun readThumbnail(photo: PhotoDef): Bitmap {
+		thumbnailCache.getThumbnail(photo)?.let { return it }
+
 		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
 		val thumbFile = getThumbnail(photo)
 
-		return if (thumbFile.exists()) {
+		val thumbnailBitmap = if (thumbFile.exists()) {
+			// Decrypt the thumbnail file, not the full image
 			val plainBytes = decryptFile(
 				plainPin = pin.plainPin,
 				hashedPin = pin.hashedPin,
-				encryptedFile = photo.photoFile,
+				encryptedFile = thumbFile,
 			)
 			BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size)
 		} else {
+			// Create thumbnail from the full image
 			val plainBytes = decryptFile(
 				plainPin = pin.plainPin,
 				hashedPin = pin.hashedPin,
@@ -232,6 +238,10 @@ class SecureImageManager(
 
 			thumbnailBitmap
 		}
+
+		thumbnailCache.putThumbnail(photo, thumbnailBitmap)
+
+		return thumbnailBitmap
 	}
 
 	fun getPhotos(): List<PhotoDef> {
@@ -254,6 +264,8 @@ class SecureImageManager(
 	}
 
 	fun deleteImage(photoDef: PhotoDef): Boolean {
+		thumbnailCache.evictThumbnail(photoDef)
+
 		return if (photoDef.photoFile.exists()) {
 			getThumbnail(photoDef).delete()
 			photoDef.photoFile.delete()
