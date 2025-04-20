@@ -326,7 +326,7 @@ private fun BottomControls(
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
-			.padding(bottom = 32.dp),
+			.padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
 	) {
 		IconButton(
 			onClick = { navController.navigate(AppDestinations.SETTINGS_ROUTE) },
