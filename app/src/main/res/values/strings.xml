@@ -82,6 +82,7 @@
     <string name="intro_finish">Finish</string>
 
     <!-- Introduction Slides -->
+    <string name="intro_slide_icon">Slide Icon</string>
     <string name="intro_slide1_title">Privacy Focused</string>
     <string name="intro_slide1_description">SecureCamera is designed with your privacy in mind. All photos are stored
         securely. They are not available to other apps, and are never backed up to the cloud.
@@ -112,6 +113,7 @@
     <string name="pin_creation_button">Create PIN</string>
 
     <!-- PIN Verification -->
+    <string name="pin_verification_icon">Secure Camera Logo</string>
     <string name="pin_verification_title">Enter your PIN</string>
     <string name="pin_verification_label">PIN</string>
     <string name="pin_verification_empty_error">PIN cannot be empty</string>

@@ -4,10 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -43,7 +48,12 @@ fun PinVerificationContent(
 	val pinInvalidError = stringResource(R.string.pin_verification_invalid_error)
 	val verifyButtonText = stringResource(R.string.pin_verification_button)
 
+	val focusRequester = remember { FocusRequester() }
 	val keyboardController = LocalSoftwareKeyboardController.current
+
+	LaunchedEffect(Unit) {
+		focusRequester.requestFocus()
+	}
 
 	fun verify() {
 		if (pin.isBlank()) {
@@ -81,6 +91,15 @@ fun PinVerificationContent(
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center
 		) {
+			Icon(
+				modifier = Modifier
+					.size(96.dp)
+					.padding(16.dp),
+				imageVector = Icons.Filled.Camera,
+				contentDescription = stringResource(id = R.string.pin_verification_icon),
+				tint = Color.White
+			)
+
 			Text(
 				text = pinVerificationTitle,
 				style = MaterialTheme.typography.headlineMedium,
@@ -107,7 +126,9 @@ fun PinVerificationContent(
 				),
 				isError = errorMessage != null,
 				enabled = !isVerifying,
-				modifier = Modifier.fillMaxWidth()
+				modifier = Modifier
+					.fillMaxWidth()
+					.focusRequester(focusRequester)
 			)
 
 			errorMessage?.let {

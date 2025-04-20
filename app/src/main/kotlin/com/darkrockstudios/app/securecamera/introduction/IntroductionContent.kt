@@ -4,9 +4,17 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,20 +48,23 @@ fun IntroductionContent(
 
 	val slides = listOf(
 		IntroductionSlide(
+			icon = Icons.Filled.PrivacyTip,
 			title = stringResource(R.string.intro_slide1_title),
 			description = stringResource(R.string.intro_slide1_description)
 		),
 		IntroductionSlide(
+			icon = Icons.Filled.Lock,
 			title = stringResource(R.string.intro_slide2_title),
 			description = stringResource(R.string.intro_slide2_description)
 		),
 		IntroductionSlide(
+			icon = Icons.Filled.LocationOff,
 			title = stringResource(R.string.intro_slide3_title),
 			description = stringResource(R.string.intro_slide3_description),
 		)
 	)
 
-	val pagerState = rememberPagerState(pageCount = { slides.size + 1 }) // +1 for PIN creation page
+	val pagerState = rememberPagerState(pageCount = { slides.size + 1 })
 
 	Column(
 		modifier = modifier.fillMaxSize(),
@@ -139,6 +150,15 @@ fun IntroductionSlideContent(
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
+		Icon(
+			modifier = Modifier
+				.size(96.dp)
+				.padding(16.dp),
+			imageVector = slide.icon,
+			contentDescription = stringResource(id = R.string.intro_slide_icon),
+			tint = Color.White
+		)
+
 		Text(
 			text = slide.title,
 			style = MaterialTheme.typography.headlineMedium,
@@ -162,15 +182,24 @@ fun PinCreationContent(
 	onPinCreated: (String) -> Unit,
 	modifier: Modifier = Modifier
 ) {
-	var pin by remember { mutableStateOf("") }
-	var confirmPin by remember { mutableStateOf("") }
-	var showError by remember { mutableStateOf(false) }
+	var pin by rememberSaveable { mutableStateOf("") }
+	var confirmPin by rememberSaveable { mutableStateOf("") }
+	var showError by rememberSaveable { mutableStateOf(false) }
 
 	Column(
-		modifier = modifier,
+		modifier = modifier.verticalScroll(rememberScrollState()),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
+		Icon(
+			modifier = Modifier
+				.size(96.dp)
+				.padding(16.dp),
+			imageVector = Icons.Filled.Camera,
+			contentDescription = stringResource(id = R.string.pin_verification_icon),
+			tint = Color.White
+		)
+
 		Text(
 			text = stringResource(R.string.pin_creation_title),
 			style = MaterialTheme.typography.headlineMedium,
