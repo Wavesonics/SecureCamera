@@ -24,7 +24,7 @@ fun ViewPhotoTopBar(
 		title = {
 			Text(
 				stringResource(id = R.string.photo_title),
-				color = MaterialTheme.colorScheme.onSurface,
+				color = MaterialTheme.colorScheme.onPrimaryContainer,
 			)
 		},
 		colors = TopAppBarDefaults.topAppBarColors(
@@ -39,7 +39,7 @@ fun ViewPhotoTopBar(
 				Icon(
 					imageVector = Icons.Filled.Close,
 					contentDescription = stringResource(id = R.string.close_photo_content_description),
-					tint = MaterialTheme.colorScheme.onSurface,
+					tint = MaterialTheme.colorScheme.onPrimaryContainer,
 				)
 			}
 		},
@@ -51,7 +51,7 @@ fun ViewPhotoTopBar(
 				Icon(
 					imageVector = Icons.Filled.Share,
 					contentDescription = stringResource(id = R.string.share_photo_content_description),
-					tint = MaterialTheme.colorScheme.onSurface,
+					tint = MaterialTheme.colorScheme.onPrimaryContainer,
 				)
 			}
 			IconButton(
@@ -61,7 +61,7 @@ fun ViewPhotoTopBar(
 				Icon(
 					imageVector = Icons.Filled.Delete,
 					contentDescription = stringResource(id = R.string.delete_photo_content_description),
-					tint = MaterialTheme.colorScheme.onSurface,
+					tint = MaterialTheme.colorScheme.onPrimaryContainer,
 				)
 			}
 		}

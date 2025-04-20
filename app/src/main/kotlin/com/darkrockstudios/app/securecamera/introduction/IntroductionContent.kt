@@ -169,7 +169,7 @@ fun IntroductionSlideContent(
 				.padding(16.dp),
 			imageVector = slide.icon,
 			contentDescription = stringResource(id = R.string.intro_slide_icon),
-			tint = Color.White
+			tint = MaterialTheme.colorScheme.onBackground
 		)
 
 		Text(

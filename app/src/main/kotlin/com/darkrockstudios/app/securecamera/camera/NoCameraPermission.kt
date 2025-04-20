@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -77,7 +76,7 @@ fun NoPermissionBottomBar(modifier: Modifier, navController: NavHostController) 
 			Icon(
 				imageVector = Icons.Filled.Settings,
 				contentDescription = stringResource(R.string.camera_settings_button),
-				tint = Color.White
+				tint = MaterialTheme.colorScheme.onPrimary,
 			)
 		}
 
@@ -91,7 +90,7 @@ fun NoPermissionBottomBar(modifier: Modifier, navController: NavHostController) 
 			Icon(
 				imageVector = Icons.Filled.PhotoLibrary,
 				contentDescription = stringResource(id = R.string.camera_gallery_content_description),
-				tint = Color.White
+				tint = MaterialTheme.colorScheme.onPrimary,
 			)
 		}
 	}

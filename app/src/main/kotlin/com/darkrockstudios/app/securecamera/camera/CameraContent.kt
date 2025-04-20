@@ -197,7 +197,7 @@ fun EnhancedCameraScreen(
 				Icon(
 					imageVector = Icons.Filled.MoreVert,
 					contentDescription = stringResource(id = R.string.camera_more_options_content_description),
-					tint = Color.White
+					tint = MaterialTheme.colorScheme.onPrimary,
 				)
 			}
 		}
@@ -293,7 +293,7 @@ private fun TopControlsBar(
 						Icon(
 							imageVector = Icons.Filled.Cameraswitch,
 							contentDescription = stringResource(id = R.string.camera_toggle_content_description),
-							tint = Color.White
+							tint = MaterialTheme.colorScheme.onPrimary,
 						)
 					}
 
@@ -306,7 +306,7 @@ private fun TopControlsBar(
 						Icon(
 							imageVector = Icons.Filled.Close,
 							contentDescription = stringResource(id = R.string.camera_close_controls_content_description),
-							tint = Color.White
+							tint = MaterialTheme.colorScheme.onPrimary,
 						)
 					}
 				}
@@ -370,7 +370,7 @@ private fun BottomControls(
 			Icon(
 				imageVector = Icons.Filled.Settings,
 				contentDescription = stringResource(R.string.camera_settings_button),
-				tint = Color.White
+				tint = MaterialTheme.colorScheme.onPrimary
 			)
 		}
 
@@ -392,7 +392,7 @@ private fun BottomControls(
 				Icon(
 					imageVector = Icons.Filled.Camera,
 					contentDescription = stringResource(id = R.string.camera_capture_content_description),
-					tint = Color.White,
+					tint = MaterialTheme.colorScheme.onPrimary,
 					modifier = Modifier.size(32.dp)
 				)
 			}
@@ -408,7 +408,7 @@ private fun BottomControls(
 			Icon(
 				imageVector = Icons.Filled.PhotoLibrary,
 				contentDescription = stringResource(id = R.string.camera_gallery_content_description),
-				tint = Color.White
+				tint = MaterialTheme.colorScheme.onPrimary,
 			)
 		}
 	}

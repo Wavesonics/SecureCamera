@@ -31,7 +31,7 @@ fun GalleryTopNav(
 				} else {
 					stringResource(id = R.string.gallery_title)
 				},
-				color = MaterialTheme.colorScheme.onSurface,
+				color = MaterialTheme.colorScheme.onPrimaryContainer,
 			)
 		},
 		colors = TopAppBarDefaults.topAppBarColors(
@@ -57,7 +57,7 @@ fun GalleryTopNav(
 					} else {
 						stringResource(id = R.string.gallery_close_content_description)
 					},
-					tint = MaterialTheme.colorScheme.onSurface,
+					tint = MaterialTheme.colorScheme.onPrimaryContainer,
 				)
 			}
 		},

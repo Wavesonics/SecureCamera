@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -103,7 +102,7 @@ fun PinVerificationContent(
 					.padding(16.dp),
 				imageVector = Icons.Filled.Camera,
 				contentDescription = stringResource(id = R.string.pin_verification_icon),
-				tint = Color.White
+				tint = MaterialTheme.colorScheme.onBackground
 			)
 
 			Text(
