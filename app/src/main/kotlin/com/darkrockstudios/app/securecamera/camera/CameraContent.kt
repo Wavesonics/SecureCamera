@@ -124,6 +124,7 @@ fun EnhancedCameraScreen(
 	var isFlashOn by rememberSaveable(cameraController.getFlashMode()) { mutableStateOf(cameraController.getFlashMode() == FlashMode.ON) }
 	var isTopControlsVisible by rememberSaveable { mutableStateOf(false) }
 	var activeJobs by remember { mutableStateOf(0) }
+	val isLoading by derivedStateOf { activeJobs > 0 }
 	var isFlashing by rememberSaveable { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
@@ -183,7 +184,7 @@ fun EnhancedCameraScreen(
 		FlashEffect(isFlashing = isFlashing)
 
 		if (!isTopControlsVisible) {
-			FilledTonalButton(
+			ElevatedButton(
 				onClick = { isTopControlsVisible = true },
 				modifier = Modifier
 					.align(Alignment.TopEnd)
@@ -191,15 +192,10 @@ fun EnhancedCameraScreen(
 						top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
 						end = 16.dp
 					)
-					.background(MaterialTheme.colorScheme.primary, CircleShape),
-				colors = ButtonDefaults.filledTonalButtonColors(
-					containerColor = MaterialTheme.colorScheme.primary
-				)
 			) {
 				Icon(
 					imageVector = Icons.Filled.MoreVert,
 					contentDescription = stringResource(id = R.string.camera_more_options_content_description),
-					tint = MaterialTheme.colorScheme.onPrimary,
 				)
 			}
 		}
@@ -227,6 +223,7 @@ fun EnhancedCameraScreen(
 
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
+			isLoading = isLoading,
 			navController = navController,
 			onCapture = { doCapturePhoto() }
 		)
@@ -359,6 +356,7 @@ private fun CameraControlSwitch(
 fun BottomControls(
 	modifier: Modifier = Modifier,
 	onCapture: (() -> Unit)?,
+	isLoading: Boolean,
 	navController: NavHostController,
 ) {
 	Box(
@@ -366,19 +364,14 @@ fun BottomControls(
 			.fillMaxWidth()
 			.padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
 	) {
-		FilledTonalButton(
+		ElevatedButton(
 			onClick = { navController.navigate(AppDestinations.SETTINGS_ROUTE) },
-			modifier = Modifier
-				.background(MaterialTheme.colorScheme.primary, CircleShape)
-				.align(Alignment.BottomStart),
-			colors = ButtonDefaults.filledTonalButtonColors(
-				containerColor = MaterialTheme.colorScheme.primary
-			)
+			enabled = isLoading.not(),
+			modifier = Modifier.align(Alignment.BottomStart),
 		) {
 			Icon(
 				imageVector = Icons.Filled.Settings,
 				contentDescription = stringResource(R.string.camera_settings_button),
-				tint = MaterialTheme.colorScheme.onPrimary,
 				modifier = Modifier.size(32.dp),
 			)
 		}
@@ -391,8 +384,8 @@ fun BottomControls(
 					.clip(CircleShape)
 					.align(Alignment.BottomCenter),
 				colors = ButtonDefaults.filledTonalButtonColors(
-					containerColor = MaterialTheme.colorScheme.primary
-				)
+					containerColor = MaterialTheme.colorScheme.primary,
+				),
 			) {
 				Icon(
 					imageVector = Icons.Filled.Camera,
@@ -403,19 +396,14 @@ fun BottomControls(
 			}
 		}
 
-		FilledTonalButton(
+		ElevatedButton(
 			onClick = { navController.navigate(AppDestinations.GALLERY_ROUTE) },
-			modifier = Modifier
-				.background(MaterialTheme.colorScheme.primary, CircleShape)
-				.align(Alignment.BottomEnd),
-			colors = ButtonDefaults.filledTonalButtonColors(
-				containerColor = MaterialTheme.colorScheme.primary
-			)
+			enabled = isLoading.not(),
+			modifier = Modifier.align(Alignment.BottomEnd),
 		) {
 			Icon(
 				imageVector = Icons.Filled.PhotoLibrary,
 				contentDescription = stringResource(id = R.string.camera_gallery_content_description),
-				tint = MaterialTheme.colorScheme.onPrimary,
 				modifier = Modifier.size(32.dp),
 			)
 		}

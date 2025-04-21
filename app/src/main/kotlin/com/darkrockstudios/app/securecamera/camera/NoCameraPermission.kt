@@ -20,7 +20,10 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun NoCameraPermission(navController: NavHostController, permissionsState: MultiplePermissionsState) {
+fun NoCameraPermission(
+	navController: NavHostController,
+	permissionsState: MultiplePermissionsState,
+) {
 	val context = LocalContext.current
 
 	Box(
@@ -54,7 +57,8 @@ fun NoCameraPermission(navController: NavHostController, permissionsState: Multi
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
 			navController = navController,
-			onCapture = null
+			onCapture = null,
+			isLoading = false,
 		)
 	}
 }

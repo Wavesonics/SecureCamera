@@ -1,12 +1,13 @@
-# Secure Camera
+# Snap Safe
 
 *The camera that minds its own business.*
 
-Secure Camera is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on **your** device.
+Snap Safe is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on **your**
+device.
 
 ---
 
-## Why Secure Camera?
+## Why Snap Safe?
 
 | We do…                                                          | We never do…                         |
 |-----------------------------------------------------------------|--------------------------------------|
@@ -45,7 +46,7 @@ Start with an issue or draft PR and we can talk it through.
 
 ## License
 
-Secure Camera is released under the [MIT License](LICENSE). Use it, fork it, improve it—just keep it open.
+Snap Safe is released under the [MIT License](LICENSE). Use it, fork it, improve it—just keep it open.
 
 ---
 
