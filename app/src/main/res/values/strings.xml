@@ -73,6 +73,25 @@
     <string name="settings_session_timeout_5_min">5 Minutes</string>
     <string name="settings_session_timeout_10_min">10 Minutes</string>
 
+    <!-- About Screen -->
+    <string name="settings_about_button">About SnapSafe</string>
+    <string name="about_title">About SnapSafe</string>
+    <string name="about_description">SnapSafe is a privacy-focused camera app designed to protect your sensitive photos
+        with strong encryption and secure storage.
+    </string>
+    <string name="about_version">Version</string>
+    <string name="about_back_description">Back</string>
+    <string name="about_open_source">Open Source</string>
+    <string name="about_open_source_description">SnapSafe is an open source project. View the source code on GitHub:
+    </string>
+    <string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_privacy_policy_description">Read our privacy policy:</string>
+    <string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+    <string name="about_report_bugs">Report Bugs</string>
+    <string name="about_report_bugs_description">Found a bug? Report it on GitHub:</string>
+    <string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+
     <!-- Location Dialog -->
     <string name="location_dialog_title_denied">Request Location Permission</string>
     <string name="location_dialog_title_coarse">Request Precise Location</string>

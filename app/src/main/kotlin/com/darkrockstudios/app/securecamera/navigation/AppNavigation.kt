@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.about.AboutContent
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.auth.PinVerificationContent
 import com.darkrockstudios.app.securecamera.camera.CameraContent
@@ -36,6 +37,7 @@ object AppDestinations {
 	const val GALLERY_ROUTE = "gallery"
 	const val VIEW_PHOTO_ROUTE = "viewphoto/{photoName}"
 	const val SETTINGS_ROUTE = "settings"
+	const val ABOUT_ROUTE = "about"
 	const val PIN_VERIFICATION_ROUTE = "pin_verification/{returnRoute}"
 
 	fun createViewPhotoRoute(photoName: String): String {
@@ -191,6 +193,13 @@ fun AppNavHost(
 				paddingValues = paddingValues,
 				preferencesManager = preferencesManager,
 				locationRepository = locationRepository
+			)
+		}
+
+		composable(AppDestinations.ABOUT_ROUTE) {
+			AboutContent(
+				navController = navController,
+				modifier = Modifier.fillMaxSize(),
 			)
 		}
 	}
