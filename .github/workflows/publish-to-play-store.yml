@@ -28,6 +28,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        
+      - name: Grant Permission to Execute
+        run: chmod +x gradlew
 
       - name: Decode Keystore
         env:
