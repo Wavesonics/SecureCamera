@@ -1,0 +1,2 @@
+package_name("com.darkrockstudios.app.securecamera")
+json_key_file("play-store-config.json")

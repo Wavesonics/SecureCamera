@@ -1,0 +1,17 @@
+Snap Safe is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on YOUR device.
+
+Key Features:
+• Zero‑Leak Design – The manifest skips android.permission.INTERNET; nothing leaves your device.
+• Fully Encrypted – Shots are written to encrypted, app‑private storage.
+• Metadata Scrub‑A‑Dub – EXIF and other identifiers are wiped the instant you hit Share.
+• PIN‑Locked Gallery – A separate PIN stands between curious thumbs and your photos.
+• Secure Sharing – When you do share, we hand the file off via Android's native share sheet—no detours.
+• Granular Location – Add coarse, fine, or zero location data—your call.
+• 100% Open Source – Auditable code in plain sight.
+
+Why Snap Safe?
+We capture photos locally, encrypt everything in private storage, let YOU decide if GPS tags are added (precision optional), and strip out tell‑tale metadata automatically.
+
+We NEVER phone home or talk to servers, slurp analytics or usage stats, sprinkle ads or trackers in the code, or read files outside our sandbox.
+
+Privacy Policy: We collect nothing.
