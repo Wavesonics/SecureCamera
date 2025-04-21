@@ -192,7 +192,8 @@ fun AppNavHost(
 				modifier = Modifier.fillMaxSize(),
 				paddingValues = paddingValues,
 				preferencesManager = preferencesManager,
-				locationRepository = locationRepository
+				locationRepository = locationRepository,
+				snackbarHostState = snackbarHostState,
 			)
 		}
 

@@ -25,6 +25,7 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,6 +44,8 @@ fun PinVerificationContent(
 ) {
 	val authManager = koinInject<AuthorizationManager>()
 	val imageManager = koinInject<SecureImageManager>()
+	val securityResetUseCase = koinInject<SecurityResetUseCase>()
+
 	val coroutineScope = rememberCoroutineScope()
 	val context = LocalContext.current
 
@@ -153,8 +156,7 @@ fun PinVerificationContent(
 					}
 				} else {
 					// Nuke it all
-					authManager.securityFailureReset()
-					imageManager.securityFailureReset()
+					securityResetUseCase.reset()
 					withContext(Dispatchers.Main) {
 						snackbarHostState.showSnackbar(message = allDataDeletedText, duration = SnackbarDuration.Long)
 						navController.navigate(AppDestinations.INTRODUCTION_ROUTE)

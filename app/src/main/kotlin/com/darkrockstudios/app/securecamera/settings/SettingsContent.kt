@@ -1,9 +1,5 @@
 package com.darkrockstudios.app.securecamera.settings
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
@@ -31,7 +27,9 @@ import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Co
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_1_MIN
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_5_MIN
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_DEFAULT
+import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 /**
  * Settings screen content
@@ -43,10 +41,12 @@ fun SettingsContent(
 	modifier: Modifier = Modifier,
 	paddingValues: PaddingValues,
 	preferencesManager: AppPreferencesManager,
-	locationRepository: LocationRepository
+	locationRepository: LocationRepository,
+	snackbarHostState: SnackbarHostState,
 ) {
 	val coroutineScope = rememberCoroutineScope()
 	val context = LocalContext.current
+	val securityResetUseCase = koinInject<SecurityResetUseCase>()
 
 	val sanitizeFileName by preferencesManager.sanitizeFileName.collectAsState(initial = true)
 	val sanitizeMetadata by preferencesManager.sanitizeMetadata.collectAsState(initial = true)
@@ -55,6 +55,7 @@ fun SettingsContent(
 	val locationPermissionStatus by locationRepository.locationPermissionStatus.collectAsState()
 
 	var showLocationDialog by rememberSaveable { mutableStateOf(false) }
+	var showSecurityResetDialog by rememberSaveable { mutableStateOf(false) }
 
 	LaunchedEffect(Unit) {
 		locationRepository.refreshPermissionStatus()
@@ -69,7 +70,8 @@ fun SettingsContent(
 	Column(
 		modifier = modifier
 			.fillMaxSize()
-			.background(MaterialTheme.colorScheme.background)
+			.background(MaterialTheme.colorScheme.background),
+		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
 		TopAppBar(
 			title = {
@@ -108,6 +110,7 @@ fun SettingsContent(
 		// Settings content
 		Column(
 			modifier = Modifier
+				.widthIn(max = 512.dp)
 				.fillMaxSize()
 				.verticalScroll(rememberScrollState())
 				.padding(
@@ -299,76 +302,53 @@ fun SettingsContent(
 				}
 			}
 
+			Spacer(modifier = Modifier.height(16.dp))
+
+			// Security Reset option
+			Row(
+				modifier = Modifier
+					.fillMaxWidth()
+					.clickable { showSecurityResetDialog = true },
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.SpaceBetween
+			) {
+				Column(modifier = Modifier.weight(1f)) {
+					Text(
+						text = stringResource(id = R.string.settings_security_reset),
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Text(
+						text = stringResource(id = R.string.settings_security_reset_description),
+						style = MaterialTheme.typography.bodyMedium,
+						color = MaterialTheme.colorScheme.onSurfaceVariant
+					)
+				}
+				Icon(
+					imageVector = Icons.Filled.Warning,
+					contentDescription = null,
+					tint = MaterialTheme.colorScheme.error,
+					modifier = Modifier.size(32.dp)
+				)
+			}
+
 			Spacer(modifier = Modifier.height(24.dp))
 		}
 	}
-}
 
-@Composable
-private fun LocationDialog(
-	locationPermissionStatus: LocationPermissionStatus,
-	context: Context,
-	onDismiss: () -> Unit
-) {
-	Dialog(onDismissRequest = onDismiss) {
-		Card(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(16.dp),
-			shape = MaterialTheme.shapes.medium
-		) {
-			Column(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(16.dp)
-			) {
-				Text(
-					text = when (locationPermissionStatus) {
-						LocationPermissionStatus.DENIED -> stringResource(id = R.string.location_dialog_title_denied)
-						LocationPermissionStatus.COARSE -> stringResource(id = R.string.location_dialog_title_coarse)
-						LocationPermissionStatus.FINE -> stringResource(id = R.string.location_dialog_title_fine)
-					},
-					style = MaterialTheme.typography.headlineSmall
-				)
-
-				Spacer(modifier = Modifier.height(8.dp))
-
-				Text(
-					text = when (locationPermissionStatus) {
-						LocationPermissionStatus.DENIED -> stringResource(id = R.string.location_dialog_message_denied)
-						LocationPermissionStatus.COARSE -> stringResource(id = R.string.location_dialog_message_coarse)
-						LocationPermissionStatus.FINE -> stringResource(id = R.string.location_dialog_message_fine)
-					},
-					style = MaterialTheme.typography.bodyMedium
-				)
-
-				Spacer(modifier = Modifier.height(16.dp))
-
-				Row(
-					modifier = Modifier.fillMaxWidth(),
-					horizontalArrangement = Arrangement.End
-				) {
-					TextButton(onClick = onDismiss) {
-						Text(stringResource(id = R.string.cancel_button))
-					}
-
-					Spacer(modifier = Modifier.width(8.dp))
-
-					Button(
-						onClick = {
-							val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-								data = Uri.fromParts("package", context.packageName, null)
-							}
-							context.startActivity(intent)
-							onDismiss()
-						}
-					) {
-						Text(
-							text = stringResource(id = R.string.location_dialog_change_settings)
-						)
+	// Show Security Reset Dialog if needed
+	if (showSecurityResetDialog) {
+		val msg = stringResource(R.string.security_reset_complete_toast)
+		SecurityResetDialog(
+			onDismiss = { showSecurityResetDialog = false },
+			onConfirm = {
+				coroutineScope.launch {
+					securityResetUseCase.reset()
+					snackbarHostState.showSnackbar(msg, duration = SnackbarDuration.Long)
+					navController.navigate(AppDestinations.INTRODUCTION_ROUTE) {
+						popUpTo(0) { inclusive = true }
 					}
 				}
 			}
-		}
+		)
 	}
 }

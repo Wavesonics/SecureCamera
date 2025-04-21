@@ -73,6 +73,17 @@
     <string name="settings_session_timeout_5_min">5 Minutes</string>
     <string name="settings_session_timeout_10_min">10 Minutes</string>
 
+    <!-- Security Reset -->
+    <string name="settings_security_reset">Security Reset</string>
+    <string name="settings_security_reset_description">Wipe all data and create a new PIN</string>
+    <string name="security_reset_dialog_title">Security Reset</string>
+    <string name="security_reset_dialog_message">This will wipe all data and require you to create a new PIN.\n\nAll
+        photos will be permanently deleted and cannot be recovered.
+    </string>
+    <string name="security_reset_understand">I Understand</string>
+    <string name="security_reset_destroy_button">Destroy All Data</string>
+    <string name="security_reset_complete_toast">Security Reset complete.</string>
+
     <!-- About Screen -->
     <string name="settings_about_button">About SnapSafe</string>
     <string name="about_title">About SnapSafe</string>
