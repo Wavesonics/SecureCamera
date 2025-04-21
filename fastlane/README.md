@@ -37,10 +37,14 @@ To deploy a new version to Google Play:
    ```bash
    ./gradlew bundleRelease
    ```
-3. Run the deploy lane:
+3. Run the deploy lane from the project root directory:
    ```bash
    fastlane deploy
    ```
+
+> **Note**: The Fastfile is configured to look for the AAB file at `app/build/outputs/bundle/release/app-release.aab`
+> relative to the project root directory. Make sure you run the `fastlane deploy` command from the project root, not from
+> the fastlane directory.
 
 ### Automated Deployment
 

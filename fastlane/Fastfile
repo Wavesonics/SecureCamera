@@ -5,7 +5,7 @@ platform :android do
   lane :deploy do
     upload_to_play_store(
       track: 'production',
-      aab: '../app/build/outputs/bundle/release/app-release.aab',
+      aab: 'app/build/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: false,
       skip_upload_images: false,
       skip_upload_screenshots: false,
