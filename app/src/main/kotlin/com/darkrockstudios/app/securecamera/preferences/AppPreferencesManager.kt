@@ -31,6 +31,12 @@ class AppPreferencesManager(private val context: Context) {
 		private val SANITIZE_METADATA = booleanPreferencesKey("sanitize_metadata")
 		private val FAILED_PIN_ATTEMPTS = stringPreferencesKey("failed_pin_attempts")
 		private val LAST_FAILED_ATTEMPT_TIMESTAMP = stringPreferencesKey("last_failed_attempt_timestamp")
+		private val SESSION_TIMEOUT = stringPreferencesKey("session_timeout")
+
+		const val SESSION_TIMEOUT_1_MIN = 60000L // 1 minute
+		const val SESSION_TIMEOUT_5_MIN = 300000L // 5 minutes
+		const val SESSION_TIMEOUT_10_MIN = 600000L // 10 minutes
+		const val SESSION_TIMEOUT_DEFAULT = SESSION_TIMEOUT_5_MIN
 	}
 
 	private val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
@@ -68,6 +74,14 @@ class AppPreferencesManager(private val context: Context) {
 			preferences[SANITIZE_METADATA] ?: sanitizeMetadataDefault
 		}
 	val sanitizeMetadataDefault = true
+
+	/**
+	 * Get the session timeout preference
+	 */
+	val sessionTimeout: Flow<Long> = context.dataStore.data
+		.map { preferences ->
+			preferences[SESSION_TIMEOUT]?.toLongOrNull() ?: SESSION_TIMEOUT_DEFAULT
+		}
 
 	/**
 	 * Set the introduction completion status
@@ -192,6 +206,24 @@ class AppPreferencesManager(private val context: Context) {
 	suspend fun securityFailureReset() {
 		context.dataStore.edit { preferences ->
 			preferences.clear()
+		}
+	}
+
+	/**
+	 * Get the current session timeout value
+	 */
+	suspend fun getSessionTimeout(): Long {
+		val timeout =
+			context.dataStore.data.firstOrNull()?.get(SESSION_TIMEOUT)?.toLongOrNull() ?: SESSION_TIMEOUT_DEFAULT
+		return timeout
+	}
+
+	/**
+	 * Set the session timeout value
+	 */
+	suspend fun setSessionTimeout(timeoutMs: Long) {
+		context.dataStore.edit { preferences ->
+			preferences[SESSION_TIMEOUT] = timeoutMs.toString()
 		}
 	}
 }

@@ -5,7 +5,7 @@ import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.runBlocking
 
 /**
  * Manages user authorization state, including PIN verification and session expiration.
@@ -14,14 +14,12 @@ class AuthorizationManager(
 	private val preferencesManager: AppPreferencesManager
 ) {
 	companion object {
-		private val DEFAULT_SESSION_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(5)
 		const val MAX_FAILED_ATTEMPTS = 10
 	}
 
 	private val _isAuthorized = MutableStateFlow(false)
 	val isAuthorized: StateFlow<Boolean> = _isAuthorized.asStateFlow()
 
-	private var sessionTimeoutMs: Long = DEFAULT_SESSION_TIMEOUT_MS
 	private var lastAuthTimeMs: Long = 0
 
 	var securityPin: SecurityPin? = null
@@ -132,11 +130,12 @@ class AuthorizationManager(
 	 * Checks if the current session is still valid or has expired.
 	 * @return True if the session is valid, false if it has expired
 	 */
-	fun checkSessionValidity(): Boolean {
+	fun checkSessionValidity(): Boolean = runBlocking {
 		if (!_isAuthorized.value) {
-			return false
+			return@runBlocking false
 		}
 
+		val sessionTimeoutMs = preferencesManager.getSessionTimeout()
 		val currentTime = System.currentTimeMillis()
 		val sessionValid = (currentTime - lastAuthTimeMs) < sessionTimeoutMs
 
@@ -144,15 +143,7 @@ class AuthorizationManager(
 			_isAuthorized.value = false
 		}
 
-		return sessionValid
-	}
-
-	/**
-	 * Sets a custom session timeout duration.
-	 * @param timeoutMs The timeout duration in milliseconds
-	 */
-	fun setSessionTimeout(timeoutMs: Long) {
-		sessionTimeoutMs = timeoutMs
+		return@runBlocking sessionValid
 	}
 
 	/**

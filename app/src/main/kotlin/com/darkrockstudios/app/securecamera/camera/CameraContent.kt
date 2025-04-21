@@ -183,7 +183,7 @@ fun EnhancedCameraScreen(
 		FlashEffect(isFlashing = isFlashing)
 
 		if (!isTopControlsVisible) {
-			IconButton(
+			FilledTonalButton(
 				onClick = { isTopControlsVisible = true },
 				modifier = Modifier
 					.align(Alignment.TopEnd)
@@ -191,8 +191,10 @@ fun EnhancedCameraScreen(
 						top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
 						end = 16.dp
 					)
-					.background(MaterialTheme.colorScheme.primary, CircleShape)
-					.padding(8.dp)
+					.background(MaterialTheme.colorScheme.primary, CircleShape),
+				colors = ButtonDefaults.filledTonalButtonColors(
+					containerColor = MaterialTheme.colorScheme.primary
+				)
 			) {
 				Icon(
 					imageVector = Icons.Filled.MoreVert,
@@ -284,11 +286,13 @@ private fun TopControlsBar(
 					horizontalArrangement = Arrangement.spacedBy(16.dp),
 					verticalAlignment = Alignment.CenterVertically
 				) {
-					IconButton(
+					FilledTonalButton(
 						onClick = onLensToggle,
 						modifier = Modifier
-							.background(MaterialTheme.colorScheme.primary, CircleShape)
-							.padding(8.dp)
+							.background(MaterialTheme.colorScheme.primary, CircleShape),
+						colors = ButtonDefaults.filledTonalButtonColors(
+							containerColor = MaterialTheme.colorScheme.primary
+						)
 					) {
 						Icon(
 							imageVector = Icons.Filled.Cameraswitch,
@@ -297,11 +301,13 @@ private fun TopControlsBar(
 						)
 					}
 
-					IconButton(
+					FilledTonalButton(
 						onClick = onClose,
 						modifier = Modifier
-							.background(MaterialTheme.colorScheme.primary, CircleShape)
-							.padding(8.dp)
+							.background(MaterialTheme.colorScheme.primary, CircleShape),
+						colors = ButtonDefaults.filledTonalButtonColors(
+							containerColor = MaterialTheme.colorScheme.primary
+						)
 					) {
 						Icon(
 							imageVector = Icons.Filled.Close,
@@ -350,9 +356,9 @@ private fun CameraControlSwitch(
 }
 
 @Composable
-private fun BottomControls(
+fun BottomControls(
 	modifier: Modifier = Modifier,
-	onCapture: () -> Unit,
+	onCapture: (() -> Unit)?,
 	navController: NavHostController,
 ) {
 	Box(
@@ -360,31 +366,30 @@ private fun BottomControls(
 			.fillMaxWidth()
 			.padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
 	) {
-		IconButton(
+		FilledTonalButton(
 			onClick = { navController.navigate(AppDestinations.SETTINGS_ROUTE) },
 			modifier = Modifier
 				.background(MaterialTheme.colorScheme.primary, CircleShape)
-				.padding(8.dp)
 				.align(Alignment.BottomStart),
+			colors = ButtonDefaults.filledTonalButtonColors(
+				containerColor = MaterialTheme.colorScheme.primary
+			)
 		) {
 			Icon(
 				imageVector = Icons.Filled.Settings,
 				contentDescription = stringResource(R.string.camera_settings_button),
-				tint = MaterialTheme.colorScheme.onPrimary
+				tint = MaterialTheme.colorScheme.onPrimary,
+				modifier = Modifier.size(32.dp),
 			)
 		}
 
-		Row(
-			modifier = Modifier.align(Alignment.BottomCenter),
-			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.spacedBy(8.dp)
-		) {
-
+		if (onCapture != null) {
 			FilledTonalButton(
 				onClick = onCapture,
 				modifier = Modifier
 					.size(80.dp)
-					.clip(CircleShape),
+					.clip(CircleShape)
+					.align(Alignment.BottomCenter),
 				colors = ButtonDefaults.filledTonalButtonColors(
 					containerColor = MaterialTheme.colorScheme.primary
 				)
@@ -393,22 +398,25 @@ private fun BottomControls(
 					imageVector = Icons.Filled.Camera,
 					contentDescription = stringResource(id = R.string.camera_capture_content_description),
 					tint = MaterialTheme.colorScheme.onPrimary,
-					modifier = Modifier.size(32.dp)
+					modifier = Modifier.size(32.dp),
 				)
 			}
 		}
 
-		IconButton(
+		FilledTonalButton(
 			onClick = { navController.navigate(AppDestinations.GALLERY_ROUTE) },
 			modifier = Modifier
 				.background(MaterialTheme.colorScheme.primary, CircleShape)
-				.padding(8.dp)
 				.align(Alignment.BottomEnd),
+			colors = ButtonDefaults.filledTonalButtonColors(
+				containerColor = MaterialTheme.colorScheme.primary
+			)
 		) {
 			Icon(
 				imageVector = Icons.Filled.PhotoLibrary,
 				contentDescription = stringResource(id = R.string.camera_gallery_content_description),
 				tint = MaterialTheme.colorScheme.onPrimary,
+				modifier = Modifier.size(32.dp),
 			)
 		}
 	}

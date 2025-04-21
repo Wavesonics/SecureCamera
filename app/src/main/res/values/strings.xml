@@ -46,7 +46,6 @@
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
-    <string name="settings_description">Customize application and security options.</string>
     <string name="settings_back_description">Back</string>
     <string name="settings_sharing_section">Sharing</string>
     <string name="settings_sanitize_filename">Sanitize file name</string>
@@ -65,6 +64,14 @@
     <string name="settings_location_status_coarse">Approximate</string>
     <string name="settings_location_status_fine">Precise</string>
     <string name="settings_location_description">Current location access</string>
+
+    <!-- Security Settings -->
+    <string name="settings_security_section">Security</string>
+    <string name="settings_session_timeout">Session Timeout</string>
+    <string name="settings_session_timeout_description">Time before requiring PIN re-entry</string>
+    <string name="settings_session_timeout_1_min">1 Minute</string>
+    <string name="settings_session_timeout_5_min">5 Minutes</string>
+    <string name="settings_session_timeout_10_min">10 Minutes</string>
 
     <!-- Location Dialog -->
     <string name="location_dialog_title_denied">Request Location Permission</string>

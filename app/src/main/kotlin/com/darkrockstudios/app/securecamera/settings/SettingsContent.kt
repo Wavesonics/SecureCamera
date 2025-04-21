@@ -25,6 +25,10 @@ import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_10_MIN
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_1_MIN
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_5_MIN
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_DEFAULT
 import kotlinx.coroutines.launch
 
 /**
@@ -44,6 +48,7 @@ fun SettingsContent(
 
 	val sanitizeFileName by preferencesManager.sanitizeFileName.collectAsState(initial = true)
 	val sanitizeMetadata by preferencesManager.sanitizeMetadata.collectAsState(initial = true)
+	val sessionTimeout by preferencesManager.sessionTimeout.collectAsState(initial = SESSION_TIMEOUT_DEFAULT)
 
 	val locationPermissionStatus by locationRepository.locationPermissionStatus.collectAsState()
 
@@ -68,7 +73,7 @@ fun SettingsContent(
 			title = {
 				Text(
 					text = stringResource(id = R.string.settings_title),
-					color = MaterialTheme.colorScheme.onSurface
+					color = MaterialTheme.colorScheme.onPrimaryContainer
 				)
 			},
 			colors = TopAppBarDefaults.topAppBarColors(
@@ -80,7 +85,7 @@ fun SettingsContent(
 					Icon(
 						imageVector = Icons.AutoMirrored.Filled.ArrowBack,
 						contentDescription = stringResource(id = R.string.settings_back_description),
-						tint = MaterialTheme.colorScheme.onSurface
+						tint = MaterialTheme.colorScheme.onPrimaryContainer
 					)
 				}
 			}
@@ -100,18 +105,6 @@ fun SettingsContent(
 			verticalArrangement = Arrangement.Top,
 			horizontalAlignment = Alignment.Start
 		) {
-			Text(
-				text = stringResource(id = R.string.settings_title),
-				style = MaterialTheme.typography.headlineMedium
-			)
-
-			Spacer(modifier = Modifier.height(16.dp))
-
-			Text(
-				text = stringResource(id = R.string.settings_description),
-				style = MaterialTheme.typography.bodyLarge
-			)
-
 			Spacer(modifier = Modifier.height(24.dp))
 
 			// Sharing section
@@ -213,6 +206,83 @@ fun SettingsContent(
 					style = MaterialTheme.typography.bodyMedium,
 					color = MaterialTheme.colorScheme.primary
 				)
+			}
+
+			Spacer(modifier = Modifier.height(24.dp))
+
+			// Security section
+			Text(
+				text = stringResource(id = R.string.settings_security_section),
+				style = MaterialTheme.typography.titleLarge
+			)
+
+			Spacer(modifier = Modifier.height(8.dp))
+
+			// Session timeout dropdown
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Column(modifier = Modifier.weight(1f)) {
+					Text(
+						text = stringResource(id = R.string.settings_session_timeout),
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Text(
+						text = stringResource(id = R.string.settings_session_timeout_description),
+						style = MaterialTheme.typography.bodyMedium,
+						color = MaterialTheme.colorScheme.onSurfaceVariant
+					)
+				}
+
+				// Dropdown menu for session timeout
+				var expanded by remember { mutableStateOf(false) }
+				Box {
+					Text(
+						text = when (sessionTimeout) {
+							SESSION_TIMEOUT_1_MIN -> stringResource(id = R.string.settings_session_timeout_1_min)
+							SESSION_TIMEOUT_5_MIN -> stringResource(id = R.string.settings_session_timeout_5_min)
+							SESSION_TIMEOUT_10_MIN -> stringResource(id = R.string.settings_session_timeout_10_min)
+							else -> stringResource(id = R.string.settings_session_timeout_5_min)
+						},
+						modifier = Modifier
+							.clickable { expanded = true }
+							.padding(8.dp),
+						color = MaterialTheme.colorScheme.primary
+					)
+					DropdownMenu(
+						expanded = expanded,
+						onDismissRequest = { expanded = false }
+					) {
+						DropdownMenuItem(
+							text = { Text(stringResource(id = R.string.settings_session_timeout_1_min)) },
+							onClick = {
+								coroutineScope.launch {
+									preferencesManager.setSessionTimeout(SESSION_TIMEOUT_1_MIN)
+								}
+								expanded = false
+							}
+						)
+						DropdownMenuItem(
+							text = { Text(stringResource(id = R.string.settings_session_timeout_5_min)) },
+							onClick = {
+								coroutineScope.launch {
+									preferencesManager.setSessionTimeout(SESSION_TIMEOUT_5_MIN)
+								}
+								expanded = false
+							}
+						)
+						DropdownMenuItem(
+							text = { Text(stringResource(id = R.string.settings_session_timeout_10_min)) },
+							onClick = {
+								coroutineScope.launch {
+									preferencesManager.setSessionTimeout(SESSION_TIMEOUT_10_MIN)
+								}
+								expanded = false
+							}
+						)
+					}
+				}
 			}
 		}
 	}
