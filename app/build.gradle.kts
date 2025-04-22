@@ -104,4 +104,5 @@ dependencies {
 	androidTestImplementation(libs.mockk.agent)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
+	testImplementation(kotlin("test"))
 }

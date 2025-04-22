@@ -129,9 +129,9 @@ class SecureImageManager(
 
 	suspend fun saveImage(
 		byteArray: ByteArray,
-		quality: Int = 90,
 		orientation: TiffOrientation,
-		latLng: GpsCoordinates?
+		latLng: GpsCoordinates?,
+		quality: Int = 90,
 	): File {
 		val dir = getGalleryDirectory()
 
