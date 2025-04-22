@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 val appModule = module {
 	singleOf(::SecureImageManager)
-	singleOf(::AppPreferencesManager)
+	single<AppPreferencesManager> { AppPreferencesManager(context = get()) }
 	singleOf(::AuthorizationManager)
 	singleOf(::LocationRepository)
 
