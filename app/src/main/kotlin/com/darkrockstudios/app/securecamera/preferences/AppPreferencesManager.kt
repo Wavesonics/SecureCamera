@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import kotlin.time.Duration.Companion.minutes
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences")
 
@@ -37,10 +38,10 @@ class AppPreferencesManager(
 		private val LAST_FAILED_ATTEMPT_TIMESTAMP = stringPreferencesKey("last_failed_attempt_timestamp")
 		private val SESSION_TIMEOUT = stringPreferencesKey("session_timeout")
 
-		const val SESSION_TIMEOUT_1_MIN = 60000L // 1 minute
-		const val SESSION_TIMEOUT_5_MIN = 300000L // 5 minutes
-		const val SESSION_TIMEOUT_10_MIN = 600000L // 10 minutes
-		const val SESSION_TIMEOUT_DEFAULT = SESSION_TIMEOUT_5_MIN
+		val SESSION_TIMEOUT_1_MIN = 1.minutes.inWholeMilliseconds
+		val SESSION_TIMEOUT_5_MIN = 5.minutes.inWholeMilliseconds
+		val SESSION_TIMEOUT_10_MIN = 10.minutes.inWholeMilliseconds
+		val SESSION_TIMEOUT_DEFAULT = SESSION_TIMEOUT_5_MIN
 	}
 
 	private val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
