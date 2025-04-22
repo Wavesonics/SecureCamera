@@ -170,6 +170,7 @@
     <string name="pin_creation_hint">Enter PIN</string>
     <string name="pin_creation_confirm_hint">Confirm PIN</string>
     <string name="pin_creation_error">PINs do not match. Please try again.</string>
+    <string name="pin_creation_error_weak_pin">PIN is too weak, Please pick another.</string>
     <string name="pin_creation_success">PIN created successfully!</string>
     <string name="pin_creation_button">Create PIN</string>
 

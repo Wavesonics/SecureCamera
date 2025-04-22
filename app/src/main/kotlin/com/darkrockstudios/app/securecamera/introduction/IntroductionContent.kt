@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -28,6 +29,7 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.auth.pinSize
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -201,7 +203,9 @@ fun PinCreationContent(
 ) {
 	var pin by rememberSaveable { mutableStateOf("") }
 	var confirmPin by rememberSaveable { mutableStateOf("") }
-	var showError by rememberSaveable { mutableStateOf(false) }
+	var showError by rememberSaveable { mutableStateOf<String?>(null) }
+	val pinStrengthCheck = koinInject<PinStrengthCheckUseCase>()
+
 	Box(modifier = modifier) {
 		Column(
 			modifier = Modifier
@@ -249,7 +253,7 @@ fun PinCreationContent(
 				onValueChange = {
 					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
 						pin = it
-						showError = false
+						showError = null
 					}
 				},
 				label = { Text(stringResource(R.string.pin_creation_hint)) },
@@ -270,7 +274,7 @@ fun PinCreationContent(
 				onValueChange = {
 					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
 						confirmPin = it
-						showError = false
+						showError = null
 					}
 				},
 				label = { Text(stringResource(R.string.pin_creation_confirm_hint)) },
@@ -286,22 +290,26 @@ fun PinCreationContent(
 			)
 
 			// Error message
-			if (showError) {
+			if (showError != null) {
 				Text(
-					text = stringResource(R.string.pin_creation_error),
+					text = showError ?: "",
 					color = MaterialTheme.colorScheme.error,
 					style = MaterialTheme.typography.bodyMedium,
 					modifier = Modifier.padding(bottom = 16.dp)
 				)
 			}
 
+			val context = LocalContext.current
 			// Create PIN button
 			Button(
 				onClick = {
-					if (pin == confirmPin && pin.length in pinSize) {
-						onPinCreated(pin)
+					val strongPin = pinStrengthCheck.isPinStrongEnough(pin)
+					if (pin != confirmPin || (pin.length in pinSize).not()) {
+						showError = context.getString(R.string.pin_creation_error)
+					} else if (strongPin.not()) {
+						showError = context.getString(R.string.pin_creation_error_weak_pin)
 					} else {
-						showError = true
+						onPinCreated(pin)
 					}
 				},
 				enabled = pin.length in pinSize && confirmPin.length in pinSize,
