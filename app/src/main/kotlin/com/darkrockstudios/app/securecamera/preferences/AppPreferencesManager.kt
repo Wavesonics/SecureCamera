@@ -23,7 +23,10 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 /**
  * Manages app preferences using DataStore
  */
-class AppPreferencesManager(private val context: Context) {
+class AppPreferencesManager(
+	private val context: Context,
+	private val dataStore: DataStore<Preferences> = context.dataStore,
+) {
 	companion object {
 		private val HAS_COMPLETED_INTRO = booleanPreferencesKey("has_completed_intro")
 		private val APP_PIN = stringPreferencesKey("app_pin")
@@ -53,7 +56,7 @@ class AppPreferencesManager(private val context: Context) {
 	/**
 	 * Get the app PIN
 	 */
-	val appPin: Flow<String?> = context.dataStore.data
+	val appPin: Flow<String?> = dataStore.data
 		.map { preferences ->
 			preferences[APP_PIN]
 		}
@@ -61,7 +64,7 @@ class AppPreferencesManager(private val context: Context) {
 	/**
 	 * Get the sanitize file name preference
 	 */
-	val sanitizeFileName: Flow<Boolean> = context.dataStore.data
+	val sanitizeFileName: Flow<Boolean> = dataStore.data
 		.map { preferences ->
 			preferences[SANITIZE_FILE_NAME] ?: sanitizeFileNameDefault
 		}
@@ -70,7 +73,7 @@ class AppPreferencesManager(private val context: Context) {
 	/**
 	 * Get the sanitize metadata preference
 	 */
-	val sanitizeMetadata: Flow<Boolean> = context.dataStore.data
+	val sanitizeMetadata: Flow<Boolean> = dataStore.data
 		.map { preferences ->
 			preferences[SANITIZE_METADATA] ?: sanitizeMetadataDefault
 		}
@@ -79,7 +82,7 @@ class AppPreferencesManager(private val context: Context) {
 	/**
 	 * Get the session timeout preference
 	 */
-	val sessionTimeout: Flow<Long> = context.dataStore.data
+	val sessionTimeout: Flow<Long> = dataStore.data
 		.map { preferences ->
 			preferences[SESSION_TIMEOUT]?.toLongOrNull() ?: SESSION_TIMEOUT_DEFAULT
 		}
@@ -88,7 +91,7 @@ class AppPreferencesManager(private val context: Context) {
 	 * Set the introduction completion status
 	 */
 	suspend fun setIntroCompleted(completed: Boolean) {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[HAS_COMPLETED_INTRO] = completed
 		}
 	}
@@ -98,13 +101,13 @@ class AppPreferencesManager(private val context: Context) {
 	 */
 	suspend fun setAppPin(pin: String) {
 		val hashedPin = hashPin(pin)
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[APP_PIN] = Json.encodeToString(HashedPin.serializer(), hashedPin)
 		}
 	}
 
 	suspend fun getHashedPin(): HashedPin? {
-		val preferences = context.dataStore.data.firstOrNull() ?: return null
+		val preferences = dataStore.data.firstOrNull() ?: return null
 		val storedPinJson = preferences[APP_PIN] ?: return null
 		return try {
 			Json.decodeFromString(HashedPin.serializer(), storedPinJson)
@@ -138,7 +141,7 @@ class AppPreferencesManager(private val context: Context) {
 	 * Set the sanitize file name preference
 	 */
 	suspend fun setSanitizeFileName(sanitize: Boolean) {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[SANITIZE_FILE_NAME] = sanitize
 		}
 	}
@@ -147,7 +150,7 @@ class AppPreferencesManager(private val context: Context) {
 	 * Set the sanitize metadata preference
 	 */
 	suspend fun setSanitizeMetadata(sanitize: Boolean) {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[SANITIZE_METADATA] = sanitize
 		}
 	}
@@ -155,7 +158,7 @@ class AppPreferencesManager(private val context: Context) {
 	/**
 	 * Get the failed PIN attempts count
 	 */
-	val failedPinAttempts: Flow<Int> = context.dataStore.data
+	val failedPinAttempts: Flow<Int> = dataStore.data
 		.map { preferences ->
 			preferences[FAILED_PIN_ATTEMPTS]?.toIntOrNull() ?: 0
 		}
@@ -164,14 +167,14 @@ class AppPreferencesManager(private val context: Context) {
 	 * Get the current failed PIN attempts count
 	 */
 	suspend fun getFailedPinAttempts(): Int {
-		return context.dataStore.data.firstOrNull()?.get(FAILED_PIN_ATTEMPTS)?.toIntOrNull() ?: 0
+		return dataStore.data.firstOrNull()?.get(FAILED_PIN_ATTEMPTS)?.toIntOrNull() ?: 0
 	}
 
 	/**
 	 * Set the failed PIN attempts count
 	 */
 	suspend fun setFailedPinAttempts(count: Int) {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[FAILED_PIN_ATTEMPTS] = count.toString()
 		}
 	}
@@ -179,7 +182,7 @@ class AppPreferencesManager(private val context: Context) {
 	/**
 	 * Get the timestamp of the last failed PIN attempt
 	 */
-	val lastFailedAttemptTimestamp: Flow<Long> = context.dataStore.data
+	val lastFailedAttemptTimestamp: Flow<Long> = dataStore.data
 		.map { preferences ->
 			preferences[LAST_FAILED_ATTEMPT_TIMESTAMP]?.toLongOrNull() ?: 0L
 		}
@@ -188,14 +191,14 @@ class AppPreferencesManager(private val context: Context) {
 	 * Get the current timestamp of the last failed PIN attempt
 	 */
 	suspend fun getLastFailedAttemptTimestamp(): Long {
-		return context.dataStore.data.firstOrNull()?.get(LAST_FAILED_ATTEMPT_TIMESTAMP)?.toLongOrNull() ?: 0L
+		return dataStore.data.firstOrNull()?.get(LAST_FAILED_ATTEMPT_TIMESTAMP)?.toLongOrNull() ?: 0L
 	}
 
 	/**
 	 * Set the timestamp of the last failed PIN attempt
 	 */
 	suspend fun setLastFailedAttemptTimestamp(timestamp: Long) {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[LAST_FAILED_ATTEMPT_TIMESTAMP] = timestamp.toString()
 		}
 	}
@@ -205,7 +208,7 @@ class AppPreferencesManager(private val context: Context) {
 	 * This deletes all stored preferences including PIN, intro completion status, and security settings.
 	 */
 	suspend fun securityFailureReset() {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences.clear()
 		}
 	}
@@ -215,7 +218,7 @@ class AppPreferencesManager(private val context: Context) {
 	 */
 	suspend fun getSessionTimeout(): Long {
 		val timeout =
-			context.dataStore.data.firstOrNull()?.get(SESSION_TIMEOUT)?.toLongOrNull() ?: SESSION_TIMEOUT_DEFAULT
+			dataStore.data.firstOrNull()?.get(SESSION_TIMEOUT)?.toLongOrNull() ?: SESSION_TIMEOUT_DEFAULT
 		return timeout
 	}
 
@@ -223,7 +226,7 @@ class AppPreferencesManager(private val context: Context) {
 	 * Set the session timeout value
 	 */
 	suspend fun setSessionTimeout(timeoutMs: Long) {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[SESSION_TIMEOUT] = timeoutMs.toString()
 		}
 	}
@@ -233,7 +236,7 @@ class AppPreferencesManager(private val context: Context) {
 	 */
 	suspend fun setPoisonPillPin(pin: String) {
 		val hashedPin = hashPin(pin)
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[POISON_PILL_PIN] = Json.encodeToString(HashedPin.serializer(), hashedPin)
 		}
 	}
@@ -242,7 +245,7 @@ class AppPreferencesManager(private val context: Context) {
 	 * Get the hashed Poison Pill PIN
 	 */
 	suspend fun getHashedPoisonPillPin(): HashedPin? {
-		val preferences = context.dataStore.data.firstOrNull() ?: return null
+		val preferences = dataStore.data.firstOrNull() ?: return null
 		val storedPinJson = preferences[POISON_PILL_PIN] ?: return null
 		return try {
 			Json.decodeFromString(HashedPin.serializer(), storedPinJson)
@@ -272,7 +275,7 @@ class AppPreferencesManager(private val context: Context) {
 	 */
 	suspend fun activatePoisonPill() {
 		val poisonPillPin = getHashedPoisonPillPin() ?: return
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[APP_PIN] = Json.encodeToString(HashedPin.serializer(), poisonPillPin)
 			preferences.remove(POISON_PILL_PIN)
 		}
@@ -282,7 +285,7 @@ class AppPreferencesManager(private val context: Context) {
 	 * Remove the Poison Pill PIN
 	 */
 	suspend fun removePoisonPillPin() {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences.remove(POISON_PILL_PIN)
 		}
 	}
