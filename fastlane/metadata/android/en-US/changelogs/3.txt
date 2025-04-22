@@ -1,0 +1,4 @@
+- Added Security Reset option
+- Added Poison Pill: A second PIN that when entered, wipes your data
+- Added weak PIN check
+- Improved session timeout handling
