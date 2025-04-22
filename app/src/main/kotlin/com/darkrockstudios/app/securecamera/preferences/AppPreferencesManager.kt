@@ -27,6 +27,7 @@ class AppPreferencesManager(private val context: Context) {
 	companion object {
 		private val HAS_COMPLETED_INTRO = booleanPreferencesKey("has_completed_intro")
 		private val APP_PIN = stringPreferencesKey("app_pin")
+		private val POISON_PILL_PIN = stringPreferencesKey("poison_pill_pin")
 		private val SANITIZE_FILE_NAME = booleanPreferencesKey("sanitize_file_name")
 		private val SANITIZE_METADATA = booleanPreferencesKey("sanitize_metadata")
 		private val FAILED_PIN_ATTEMPTS = stringPreferencesKey("failed_pin_attempts")
@@ -224,6 +225,65 @@ class AppPreferencesManager(private val context: Context) {
 	suspend fun setSessionTimeout(timeoutMs: Long) {
 		context.dataStore.edit { preferences ->
 			preferences[SESSION_TIMEOUT] = timeoutMs.toString()
+		}
+	}
+
+	/**
+	 * Set the Poison Pill PIN
+	 */
+	suspend fun setPoisonPillPin(pin: String) {
+		val hashedPin = hashPin(pin)
+		context.dataStore.edit { preferences ->
+			preferences[POISON_PILL_PIN] = Json.encodeToString(HashedPin.serializer(), hashedPin)
+		}
+	}
+
+	/**
+	 * Get the hashed Poison Pill PIN
+	 */
+	suspend fun getHashedPoisonPillPin(): HashedPin? {
+		val preferences = context.dataStore.data.firstOrNull() ?: return null
+		val storedPinJson = preferences[POISON_PILL_PIN] ?: return null
+		return try {
+			Json.decodeFromString(HashedPin.serializer(), storedPinJson)
+		} catch (e: Exception) {
+			Timber.w(e, "getHashedPoisonPillPin failed to get hashed PIN")
+			null
+		}
+	}
+
+	/**
+	 * Check if a Poison Pill PIN is set
+	 */
+	suspend fun hasPoisonPillPin(): Boolean {
+		return getHashedPoisonPillPin() != null
+	}
+
+	/**
+	 * Verify if the input PIN matches the Poison Pill PIN
+	 */
+	suspend fun verifyPoisonPillPin(pin: String): Boolean {
+		val storedHashedPin = getHashedPoisonPillPin() ?: return false
+		return verifyPin(pin, storedHashedPin)
+	}
+
+	/**
+	 * Activate the Poison Pill - replaces the regular PIN with the Poison Pill PIN
+	 */
+	suspend fun activatePoisonPill() {
+		val poisonPillPin = getHashedPoisonPillPin() ?: return
+		context.dataStore.edit { preferences ->
+			preferences[APP_PIN] = Json.encodeToString(HashedPin.serializer(), poisonPillPin)
+			preferences.remove(POISON_PILL_PIN)
+		}
+	}
+
+	/**
+	 * Remove the Poison Pill PIN
+	 */
+	suspend fun removePoisonPillPin() {
+		context.dataStore.edit { preferences ->
+			preferences.remove(POISON_PILL_PIN)
 		}
 	}
 }

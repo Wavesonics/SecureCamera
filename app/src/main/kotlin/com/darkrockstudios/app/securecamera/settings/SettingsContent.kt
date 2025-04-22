@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_10_MIN
@@ -47,6 +48,7 @@ fun SettingsContent(
 	val coroutineScope = rememberCoroutineScope()
 	val context = LocalContext.current
 	val securityResetUseCase = koinInject<SecurityResetUseCase>()
+	val authorizationManager = koinInject<AuthorizationManager>()
 
 	val sanitizeFileName by preferencesManager.sanitizeFileName.collectAsState(initial = true)
 	val sanitizeMetadata by preferencesManager.sanitizeMetadata.collectAsState(initial = true)
@@ -56,6 +58,15 @@ fun SettingsContent(
 
 	var showLocationDialog by rememberSaveable { mutableStateOf(false) }
 	var showSecurityResetDialog by rememberSaveable { mutableStateOf(false) }
+	var showPoisonPillDialog by rememberSaveable { mutableStateOf(false) }
+	var showPoisonPillPinCreationDialog by rememberSaveable { mutableStateOf(false) }
+	var showRemovePoisonPillDialog by rememberSaveable { mutableStateOf(false) }
+	var hasPoisonPillPin by remember { mutableStateOf(false) }
+
+	// Check if a Poison Pill PIN is set
+	LaunchedEffect(Unit) {
+		hasPoisonPillPin = preferencesManager.hasPoisonPillPin()
+	}
 
 	LaunchedEffect(Unit) {
 		locationRepository.refreshPermissionStatus()
@@ -304,6 +315,47 @@ fun SettingsContent(
 
 			Spacer(modifier = Modifier.height(16.dp))
 
+			// Poison Pill option
+			Row(
+				modifier = Modifier
+					.fillMaxWidth()
+					.clickable {
+						if (hasPoisonPillPin) {
+							showRemovePoisonPillDialog = true
+						} else {
+							showPoisonPillDialog = true
+						}
+					},
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.SpaceBetween
+			) {
+				Column(modifier = Modifier.weight(1f)) {
+					Text(
+						text = stringResource(
+							id = if (hasPoisonPillPin) {
+								R.string.settings_remove_poison_pill
+							} else {
+								R.string.settings_poison_pill
+							}
+						),
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Text(
+						text = stringResource(
+							id = if (hasPoisonPillPin) {
+								R.string.settings_remove_poison_pill_description
+							} else {
+								R.string.settings_poison_pill_description
+							}
+						),
+						style = MaterialTheme.typography.bodyMedium,
+						color = MaterialTheme.colorScheme.onSurfaceVariant
+					)
+				}
+			}
+
+			Spacer(modifier = Modifier.height(16.dp))
+
 			// Security Reset option
 			Row(
 				modifier = Modifier
@@ -347,6 +399,57 @@ fun SettingsContent(
 					navController.navigate(AppDestinations.INTRODUCTION_ROUTE) {
 						popUpTo(0) { inclusive = true }
 					}
+				}
+			}
+		)
+	}
+
+	// Show Poison Pill Dialog if needed
+	if (showPoisonPillDialog) {
+		PoisonPillDialog(
+			onDismiss = { showPoisonPillDialog = false },
+			onContinue = {
+				showPoisonPillDialog = false
+				showPoisonPillPinCreationDialog = true
+			}
+		)
+	}
+
+	// Show Poison Pill PIN Creation Dialog if needed
+	if (showPoisonPillPinCreationDialog) {
+		val currentPin = authorizationManager.securityPin?.plainPin ?: ""
+		val setupCompleteMsg = stringResource(R.string.poison_pill_setup_complete)
+		PoisonPillPinCreationDialog(
+			currentPin = currentPin,
+			onDismiss = { showPoisonPillPinCreationDialog = false },
+			onPinCreated = { pin ->
+				coroutineScope.launch {
+					preferencesManager.setPoisonPillPin(pin)
+					showPoisonPillPinCreationDialog = false
+					hasPoisonPillPin = true
+					snackbarHostState.showSnackbar(
+						setupCompleteMsg,
+						duration = SnackbarDuration.Long
+					)
+				}
+			}
+		)
+	}
+
+	// Show Remove Poison Pill Dialog if needed
+	if (showRemovePoisonPillDialog) {
+		val removeCompleteMsg = stringResource(R.string.remove_poison_pill_complete)
+		RemovePoisonPillDialog(
+			onDismiss = { showRemovePoisonPillDialog = false },
+			onConfirm = {
+				coroutineScope.launch {
+					preferencesManager.removePoisonPillPin()
+					showRemovePoisonPillDialog = false
+					hasPoisonPillPin = false
+					snackbarHostState.showSnackbar(
+						removeCompleteMsg,
+						duration = SnackbarDuration.Long
+					)
 				}
 			}
 		)

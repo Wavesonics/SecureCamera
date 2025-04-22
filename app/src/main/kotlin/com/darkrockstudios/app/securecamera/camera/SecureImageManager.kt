@@ -52,19 +52,27 @@ class SecureImageManager(
 	 * Deletes all images and thumbnails and evicts all in-memory data.
 	 */
 	fun securityFailureReset() {
-		// Delete all images
-		val photos = getPhotos()
-		deleteImages(photos)
+		deleteAllImages()
+		clearAllThumbnails()
+		evictKey()
+	}
 
-		// Delete thumbnails directory
+	/**
+	 * Deleted all images that haven't been flagged as benign
+	 */
+	fun activatePoisonPill() {
+		// TODO add the concept of benign photos which will not be deleted
+		deleteAllImages()
+		clearAllThumbnails()
+		evictKey()
+	}
+
+	private fun clearAllThumbnails() {
 		val thumbnailsDir = getThumbnailsDir()
 		if (thumbnailsDir.exists()) {
 			thumbnailsDir.deleteRecursively()
 		}
-
-		// Evict in-memory data
 		thumbnailCache.clear()
-		evictKey()
 	}
 
 	/**
@@ -296,6 +304,11 @@ class SecureImageManager(
 
 	fun deleteImages(photos: List<PhotoDef>): Boolean {
 		return photos.map { deleteImage(it) }.all { it }
+	}
+
+	fun deleteAllImages() {
+		val photos = getPhotos()
+		deleteImages(photos)
 	}
 
 	fun getPhotoByName(photoName: String): PhotoDef? {

@@ -29,6 +29,10 @@ class AuthorizationManager(
 		preferencesManager.securityFailureReset()
 	}
 
+	suspend fun activatePoisonPill() {
+		preferencesManager.activatePoisonPill()
+	}
+
 	/**
 	 * Gets the current number of failed PIN attempts
 	 * @return The number of failed attempts

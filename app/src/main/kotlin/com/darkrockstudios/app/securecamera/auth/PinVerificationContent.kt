@@ -26,6 +26,7 @@ import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
+import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -45,6 +46,7 @@ fun PinVerificationContent(
 	val authManager = koinInject<AuthorizationManager>()
 	val imageManager = koinInject<SecureImageManager>()
 	val securityResetUseCase = koinInject<SecurityResetUseCase>()
+	val verifyPinUseCase = koinInject<VerifyPinUseCase>()
 
 	val coroutineScope = rememberCoroutineScope()
 	val context = LocalContext.current
@@ -128,7 +130,7 @@ fun PinVerificationContent(
 
 		isVerifying = true
 		coroutineScope.launch(Dispatchers.Default) {
-			val isValid = authManager.verifyPin(pin)
+			val isValid = verifyPinUseCase.verifyPin(pin)
 			isVerifying = false
 
 			if (isValid) {

@@ -84,6 +84,31 @@
     <string name="security_reset_destroy_button">Destroy All Data</string>
     <string name="security_reset_complete_toast">Security Reset complete.</string>
 
+    <!-- Poison Pill -->
+    <string name="settings_poison_pill">Set-up Poison Pill</string>
+    <string name="settings_poison_pill_description">This is an advanced security feature for high threat models</string>
+    <string name="settings_remove_poison_pill">Remove Poison Pill</string>
+    <string name="settings_remove_poison_pill_description">Remove the emergency security feature</string>
+    <string name="poison_pill_dialog_title">Poison Pill Setup</string>
+    <string name="poison_pill_dialog_message">Poison Pill will create a second PIN that if entered, will wipe all of
+        your data, and replace your current real PIN, with the Poison Pill PIN. It will look as if you just entered your
+        normal PIN, and you will be logged in, but all photos and settings will be gone.\n\nAfter using the Poison Pill
+        PIN, it is now your real PIN. It is recommended to do a Security Reset of the app once the situation that forced
+        you to use the Pill is over.
+    </string>
+    <string name="poison_pill_continue_button">Continue Setup</string>
+    <string name="poison_pill_cancel_button">Cancel</string>
+    <string name="poison_pill_creation_title">Create Poison Pill PIN</string>
+    <string name="poison_pill_creation_description">Create a PIN different from your current PIN</string>
+    <string name="poison_pill_creation_error">PIN cannot be the same as your current PIN</string>
+    <string name="poison_pill_setup_complete">Poison Pill setup complete</string>
+    <string name="remove_poison_pill_dialog_title">Remove Poison Pill</string>
+    <string name="remove_poison_pill_dialog_message">Are you sure you want to remove the Poison Pill? This will delete
+        the emergency PIN.
+    </string>
+    <string name="remove_poison_pill_confirm_button">Remove</string>
+    <string name="remove_poison_pill_complete">Poison Pill removed</string>
+
     <!-- About Screen -->
     <string name="settings_about_button">About SnapSafe</string>
     <string name="about_title">About SnapSafe</string>

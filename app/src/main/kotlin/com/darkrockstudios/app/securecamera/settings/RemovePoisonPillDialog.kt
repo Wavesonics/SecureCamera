@@ -17,7 +17,7 @@ import androidx.compose.ui.window.Dialog
 import com.darkrockstudios.app.securecamera.R
 
 @Composable
-fun SecurityResetDialog(
+fun RemovePoisonPillDialog(
 	onDismiss: () -> Unit,
 	onConfirm: () -> Unit
 ) {
@@ -25,15 +25,15 @@ fun SecurityResetDialog(
 
 	Dialog(onDismissRequest = onDismiss) {
 		Card(
-			modifier = Modifier.Companion
-				.fillMaxWidth()
-				.padding(16.dp),
+			modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
 			shape = MaterialTheme.shapes.medium
 		) {
 			Column(
-				modifier = Modifier.Companion
-					.fillMaxWidth()
-					.padding(16.dp)
+				modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
 			) {
 				Row(
 					verticalAlignment = Alignment.CenterVertically,
@@ -47,29 +47,29 @@ fun SecurityResetDialog(
 					)
 					Spacer(modifier = Modifier.width(8.dp))
 					Text(
-						text = stringResource(id = R.string.security_reset_dialog_title),
+						text = stringResource(id = R.string.remove_poison_pill_dialog_title),
 						style = MaterialTheme.typography.headlineSmall
 					)
 				}
 
-				Spacer(modifier = Modifier.Companion.height(8.dp))
+				Spacer(modifier = Modifier.height(8.dp))
 
 				Text(
-					text = stringResource(id = R.string.security_reset_dialog_message),
+					text = stringResource(id = R.string.remove_poison_pill_dialog_message),
 					style = MaterialTheme.typography.bodyMedium
 				)
 
-				Spacer(modifier = Modifier.Companion.height(16.dp))
+				Spacer(modifier = Modifier.height(16.dp))
 
 				// "I Understand" switch
 				Row(
-					modifier = Modifier.Companion.fillMaxWidth(),
-					verticalAlignment = Alignment.Companion.CenterVertically
+					modifier = Modifier.fillMaxWidth(),
+					verticalAlignment = Alignment.CenterVertically
 				) {
 					Text(
 						text = stringResource(id = R.string.security_reset_understand),
 						style = MaterialTheme.typography.bodyLarge,
-						modifier = Modifier.Companion.weight(1f)
+						modifier = Modifier.weight(1f)
 					)
 					Switch(
 						checked = understandChecked,
@@ -77,17 +77,17 @@ fun SecurityResetDialog(
 					)
 				}
 
-				Spacer(modifier = Modifier.Companion.height(16.dp))
+				Spacer(modifier = Modifier.height(16.dp))
 
 				Row(
-					modifier = Modifier.Companion.fillMaxWidth(),
+					modifier = Modifier.fillMaxWidth(),
 					horizontalArrangement = Arrangement.End
 				) {
 					TextButton(onClick = onDismiss) {
 						Text(stringResource(id = R.string.cancel_button))
 					}
 
-					Spacer(modifier = Modifier.Companion.width(8.dp))
+					Spacer(modifier = Modifier.width(8.dp))
 
 					Button(
 						onClick = onConfirm,
@@ -98,7 +98,7 @@ fun SecurityResetDialog(
 						)
 					) {
 						Text(
-							text = stringResource(id = R.string.security_reset_destroy_button),
+							text = stringResource(id = R.string.remove_poison_pill_confirm_button),
 						)
 					}
 				}
