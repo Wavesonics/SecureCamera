@@ -25,6 +25,21 @@ class PinStrengthCheckUseCase {
 			return false
 		}
 
+		if (blackList.contains(pin)) {
+			return false
+		}
+
 		return true
+	}
+
+	companion object {
+		/**
+		 * These are some of the most frequently chosen PINs in data leaks
+		 * that are not already covered by our other heuristics.
+		 */
+		val blackList = listOf(
+			"1212",
+			"6969",
+		)
 	}
 }
