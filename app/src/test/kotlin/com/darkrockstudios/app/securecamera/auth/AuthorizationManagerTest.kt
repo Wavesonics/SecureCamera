@@ -8,6 +8,7 @@ import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
@@ -35,9 +36,9 @@ class AuthorizationManagerTest {
 		context = mockk(relaxed = true)
 		dataStore = PreferenceDataStoreFactory.create(
 			scope = testScope,
-			produceFile = { File.createTempFile("prefs_test", ".pb") }
+			produceFile = { File.createTempFile("prefs_test", ".preferences_pb") }
 		)
-		preferencesManager = AppPreferencesManager(context, dataStore)
+		preferencesManager = spyk(AppPreferencesManager(context, dataStore))
 		authManager = AuthorizationManager(preferencesManager)
 	}
 
