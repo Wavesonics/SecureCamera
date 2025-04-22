@@ -124,7 +124,7 @@ fun EnhancedCameraScreen(
 	var isFlashOn by rememberSaveable(cameraController.getFlashMode()) { mutableStateOf(cameraController.getFlashMode() == FlashMode.ON) }
 	var isTopControlsVisible by rememberSaveable { mutableStateOf(false) }
 	var activeJobs by remember { mutableStateOf(0) }
-	val isLoading by derivedStateOf { activeJobs > 0 }
+	val isLoading by remember { derivedStateOf { activeJobs > 0 } }
 	var isFlashing by rememberSaveable { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
