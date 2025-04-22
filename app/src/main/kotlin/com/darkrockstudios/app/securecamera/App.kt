@@ -7,6 +7,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
@@ -38,6 +40,8 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 				}
 			}
 
+			VerifySessionOnResume(navController, hasCompletedIntro, authorizationManager)
+
 			if (hasCompletedIntro != null) {
 				Scaffold(
 					snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -53,6 +57,29 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 					)
 				}
 			}
+		}
+	}
+}
+
+@Composable
+fun VerifySessionOnResume(
+	navController: NavHostController,
+	hasCompletedIntro: Boolean?,
+	authorizationManager: AuthorizationManager
+) {
+	var requireAuthCheck = remember { false }
+	LifecycleResumeEffect(hasCompletedIntro) {
+		if (hasCompletedIntro == true && requireAuthCheck) {
+			if (
+				authorizationManager.checkSessionValidity().not()
+				&& AppDestinations.isPinVerificationRoute(navController.currentBackStackEntry).not()
+			) {
+				val returnRoute = navController.currentDestination?.route ?: AppDestinations.CAMERA_ROUTE
+				navController.navigate(AppDestinations.createPinVerificationRoute(returnRoute))
+			}
+		}
+		onPauseOrDispose {
+			requireAuthCheck = true
 		}
 	}
 }

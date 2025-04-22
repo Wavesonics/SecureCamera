@@ -90,7 +90,7 @@ class AuthorizationManager(
 		val backoffTime = (2 * Math.pow(2.0, failedAttempts - 1.0)).toInt()
 		val elapsedSeconds = ((System.currentTimeMillis() - lastFailedTimestamp) / 1000).toInt()
 		val remainingSeconds = backoffTime - elapsedSeconds
-		1337
+
 		return if (remainingSeconds > 0) remainingSeconds else 0
 	}
 

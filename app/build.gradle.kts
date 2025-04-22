@@ -90,6 +90,7 @@ dependencies {
 	implementation(libs.kotlinx.serialization.json)
 	implementation(libs.androidx.core.splashscreen)
 	implementation(libs.accompanist.permissions)
+	implementation(libs.androidx.lifecycle.runtime.compose)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

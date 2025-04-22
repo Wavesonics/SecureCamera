@@ -27,31 +27,12 @@ import com.darkrockstudios.app.securecamera.settings.SettingsContent
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoContent
 import kotlinx.coroutines.flow.combine
 import org.koin.compose.koinInject
-
-/**
- * Navigation destinations for the app
- */
-object AppDestinations {
-	const val INTRODUCTION_ROUTE = "introduction"
-	const val CAMERA_ROUTE = "camera"
-	const val GALLERY_ROUTE = "gallery"
-	const val VIEW_PHOTO_ROUTE = "viewphoto/{photoName}"
-	const val SETTINGS_ROUTE = "settings"
-	const val ABOUT_ROUTE = "about"
-	const val PIN_VERIFICATION_ROUTE = "pin_verification/{returnRoute}"
-
-	fun createViewPhotoRoute(photoName: String): String {
-		return "viewphoto/$photoName"
-	}
-
-	fun createPinVerificationRoute(returnRoute: String): String {
-		return "pin_verification/$returnRoute"
-	}
-}
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * Main navigation component for the app
  */
+@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun AppNavHost(
 	navController: NavHostController,
@@ -76,29 +57,27 @@ fun AppNavHost(
 					destination
 				)
 			}
-			.collect { (isAuthorized, destination) ->
-				when (destination.destination.route) {
-					AppDestinations.GALLERY_ROUTE -> {
-						if (authManager.checkSessionValidity().not()) {
-							navController.navigate(AppDestinations.createPinVerificationRoute(AppDestinations.GALLERY_ROUTE)) {
-								popUpTo(AppDestinations.CAMERA_ROUTE)
-								launchSingleTop = true
-							}
+			.collect { (_, backStackEntry) ->
+				if (
+					authManager.checkSessionValidity().not()
+					&& AppDestinations.isPinVerificationRoute(backStackEntry).not()
+					&& backStackEntry.destination.route != AppDestinations.INTRODUCTION_ROUTE
+				) {
+					val returnRoute = when (backStackEntry.destination.route) {
+						AppDestinations.VIEW_PHOTO_ROUTE -> {
+							navController.currentBackStackEntry?.arguments?.getString("photoName")
+								?.let { photoName ->
+									AppDestinations.createViewPhotoRoute(photoName)
+								} ?: AppDestinations.CAMERA_ROUTE
+						}
+
+						else -> {
+							backStackEntry.destination.route ?: AppDestinations.CAMERA_ROUTE
 						}
 					}
 
-					AppDestinations.VIEW_PHOTO_ROUTE -> {
-						if (authManager.checkSessionValidity().not()) {
-							val photoName = destination.destination.arguments["photoName"]?.toString() ?: ""
-							navController.navigate(
-								AppDestinations.createPinVerificationRoute(
-									AppDestinations.createViewPhotoRoute(photoName)
-								)
-							) {
-								popUpTo(AppDestinations.CAMERA_ROUTE)
-								launchSingleTop = true
-							}
-						}
+					navController.navigate(AppDestinations.createPinVerificationRoute(returnRoute)) {
+						launchSingleTop = true
 					}
 				}
 			}
@@ -174,9 +153,13 @@ fun AppNavHost(
 
 		composable(
 			route = AppDestinations.PIN_VERIFICATION_ROUTE,
-			arguments = listOf(navArgument("returnRoute") { defaultValue = AppDestinations.CAMERA_ROUTE })
+			arguments = listOf(navArgument("returnRoute") {
+				defaultValue = AppDestinations.encodeReturnRoute(AppDestinations.CAMERA_ROUTE)
+			})
 		) { backStackEntry ->
-			val returnRoute = backStackEntry.arguments?.getString("returnRoute") ?: AppDestinations.CAMERA_ROUTE
+			val returnRoute = backStackEntry.arguments?.getString("returnRoute")?.let { encodedRoute ->
+				AppDestinations.decodeReturnRoute(encodedRoute)
+			} ?: AppDestinations.CAMERA_ROUTE
 
 			PinVerificationContent(
 				navController = navController,
