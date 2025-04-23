@@ -29,6 +29,10 @@ device.
 * **Secure Sharing** – When you *do* share, we hand the file off via Android’s native share sheet—no detours.
 * **Granular Location** – Add coarse, fine, or zero location data—your call.
 * **100 % Open Source** – Auditable code in plain sight.
+* **Poison Pill** – Set a special PIN, that when entered, appears to work normally but actually deletes your existing
+  photos.
+* **Decoy Photos** – Select innocuous decoy photos, these will be preserved when your Poison Pill is activated. That way
+  your Gallery is not suspiciously empty.
 
 ### On the Roadmap
 
