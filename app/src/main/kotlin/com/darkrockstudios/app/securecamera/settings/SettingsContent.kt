@@ -22,6 +22,7 @@ import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_10_MIN
@@ -49,6 +50,7 @@ fun SettingsContent(
 	val context = LocalContext.current
 	val securityResetUseCase = koinInject<SecurityResetUseCase>()
 	val authorizationManager = koinInject<AuthorizationManager>()
+	val imageManager = koinInject<SecureImageManager>()
 
 	val sanitizeFileName by preferencesManager.sanitizeFileName.collectAsState(initial = true)
 	val sanitizeMetadata by preferencesManager.sanitizeMetadata.collectAsState(initial = true)
@@ -60,8 +62,9 @@ fun SettingsContent(
 	var showSecurityResetDialog by rememberSaveable { mutableStateOf(false) }
 	var showPoisonPillDialog by rememberSaveable { mutableStateOf(false) }
 	var showPoisonPillPinCreationDialog by rememberSaveable { mutableStateOf(false) }
+	var showDecoyPhotoExplanationDialog by rememberSaveable { mutableStateOf(false) }
 	var showRemovePoisonPillDialog by rememberSaveable { mutableStateOf(false) }
-	var hasPoisonPillPin by remember { mutableStateOf(false) }
+	var hasPoisonPillPin by rememberSaveable { mutableStateOf(false) }
 
 	// Check if a Poison Pill PIN is set
 	LaunchedEffect(Unit) {
@@ -418,7 +421,6 @@ fun SettingsContent(
 	// Show Poison Pill PIN Creation Dialog if needed
 	if (showPoisonPillPinCreationDialog) {
 		val currentPin = authorizationManager.securityPin?.plainPin ?: ""
-		val setupCompleteMsg = stringResource(R.string.poison_pill_setup_complete)
 		PoisonPillPinCreationDialog(
 			currentPin = currentPin,
 			onDismiss = { showPoisonPillPinCreationDialog = false },
@@ -427,6 +429,19 @@ fun SettingsContent(
 					preferencesManager.setPoisonPillPin(pin)
 					showPoisonPillPinCreationDialog = false
 					hasPoisonPillPin = true
+					showDecoyPhotoExplanationDialog = true
+				}
+			}
+		)
+	}
+
+	// Show Decoy Photo Explanation Dialog if needed
+	if (showDecoyPhotoExplanationDialog) {
+		val setupCompleteMsg = stringResource(R.string.poison_pill_setup_complete)
+		DecoyPhotoExplanationDialog(
+			onDismiss = {
+				showDecoyPhotoExplanationDialog = false
+				coroutineScope.launch {
 					snackbarHostState.showSnackbar(
 						setupCompleteMsg,
 						duration = SnackbarDuration.Long
@@ -444,6 +459,7 @@ fun SettingsContent(
 			onConfirm = {
 				coroutineScope.launch {
 					preferencesManager.removePoisonPillPin()
+					imageManager.removeAllDecoyPhotos()
 					showRemovePoisonPillDialog = false
 					hasPoisonPillPin = false
 					snackbarHostState.showSnackbar(

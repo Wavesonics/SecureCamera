@@ -12,11 +12,13 @@ import dev.whyoleg.cryptography.algorithms.SHA512
 import dev.whyoleg.cryptography.operations.Hasher
 import dev.whyoleg.cryptography.random.CryptographyRandom
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.minutes
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences")
@@ -32,11 +34,13 @@ class AppPreferencesManager(
 		private val HAS_COMPLETED_INTRO = booleanPreferencesKey("has_completed_intro")
 		private val APP_PIN = stringPreferencesKey("app_pin")
 		private val POISON_PILL_PIN = stringPreferencesKey("poison_pill_pin")
+		private val POISON_PILL_PIN_PLAIN = stringPreferencesKey("poison_pill_pin_plain")
 		private val SANITIZE_FILE_NAME = booleanPreferencesKey("sanitize_file_name")
 		private val SANITIZE_METADATA = booleanPreferencesKey("sanitize_metadata")
 		private val FAILED_PIN_ATTEMPTS = stringPreferencesKey("failed_pin_attempts")
 		private val LAST_FAILED_ATTEMPT_TIMESTAMP = stringPreferencesKey("last_failed_attempt_timestamp")
 		private val SESSION_TIMEOUT = stringPreferencesKey("session_timeout")
+		private val SYMMETRIC_CIPHER_KEY = stringPreferencesKey("symmetric_cipher_key")
 
 		val SESSION_TIMEOUT_1_MIN = 1.minutes.inWholeMilliseconds
 		val SESSION_TIMEOUT_5_MIN = 5.minutes.inWholeMilliseconds
@@ -45,6 +49,19 @@ class AppPreferencesManager(
 	}
 
 	private val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
+
+	@OptIn(ExperimentalStdlibApi::class)
+	private suspend fun getCipherKey(): String {
+		val preferences = dataStore.data.first()
+
+		return preferences[SYMMETRIC_CIPHER_KEY] ?: run {
+			val newKey = CryptographyRandom.nextBytes(128).toHexString()
+			dataStore.edit { preferences ->
+				preferences[SYMMETRIC_CIPHER_KEY] = newKey
+			}
+			newKey
+		}
+	}
 
 	/**
 	 * Check if the user has completed the introduction
@@ -235,11 +252,22 @@ class AppPreferencesManager(
 	/**
 	 * Set the Poison Pill PIN
 	 */
+	@OptIn(ExperimentalEncodingApi::class)
 	suspend fun setPoisonPillPin(pin: String) {
 		val hashedPin = hashPin(pin)
+		val cipherKey = getCipherKey()
 		dataStore.edit { preferences ->
 			preferences[POISON_PILL_PIN] = Json.encodeToString(HashedPin.serializer(), hashedPin)
+			preferences[POISON_PILL_PIN_PLAIN] = XorCipher.encrypt(pin, cipherKey)
 		}
+	}
+
+	@OptIn(ExperimentalEncodingApi::class)
+	suspend fun getPlainPoisonPillPin(): String? {
+		val preferences = dataStore.data.firstOrNull() ?: return null
+		val storedPin = preferences[POISON_PILL_PIN_PLAIN] ?: return null
+		val cipherKey = getCipherKey()
+		return XorCipher.decrypt(storedPin, cipherKey)
 	}
 
 	/**
@@ -278,8 +306,8 @@ class AppPreferencesManager(
 		val poisonPillPin = getHashedPoisonPillPin() ?: return
 		dataStore.edit { preferences ->
 			preferences[APP_PIN] = Json.encodeToString(HashedPin.serializer(), poisonPillPin)
-			preferences.remove(POISON_PILL_PIN)
 		}
+		removePoisonPillPin()
 	}
 
 	/**
@@ -288,6 +316,8 @@ class AppPreferencesManager(
 	suspend fun removePoisonPillPin() {
 		dataStore.edit { preferences ->
 			preferences.remove(POISON_PILL_PIN)
+			preferences.remove(POISON_PILL_PIN_PLAIN)
+			preferences.remove(SYMMETRIC_CIPHER_KEY)
 		}
 	}
 }

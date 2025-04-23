@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -216,6 +219,7 @@ private fun PhotoItem(
 	modifier: Modifier = Modifier
 ) {
 	var thumbnailBitmap by remember(photo.photoName) { mutableStateOf<ImageBitmap?>(null) }
+	val isDecoy = remember(photo) { imageManager.isDecoyPhoto(photo) }
 
 	LaunchedEffect(photo.photoName) {
 		if (thumbnailBitmap == null) {
@@ -242,19 +246,49 @@ private fun PhotoItem(
 					onLongClick = onLongClick,
 				),
 		) {
-			thumbnailBitmap?.let {
-				Image(
-					bitmap = it,
-					contentDescription = stringResource(
-						id = R.string.gallery_photo_content_description,
-						photo.photoName
-					),
-					contentScale = ContentScale.Crop,
-					modifier = Modifier.fillMaxSize()
-				)
-			} ?: run {
-				Box(modifier = Modifier.fillMaxSize()) {
-					CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+			Box(modifier = Modifier.fillMaxSize()) {
+				thumbnailBitmap?.let {
+					Image(
+						bitmap = it,
+						contentDescription = stringResource(
+							id = R.string.gallery_photo_content_description,
+							photo.photoName
+						),
+						contentScale = ContentScale.Crop,
+						modifier = Modifier.fillMaxSize()
+					)
+				} ?: run {
+					Box(modifier = Modifier.fillMaxSize()) {
+						CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+					}
+				}
+
+				Box(
+					modifier = Modifier
+						.padding(8.dp)
+						.fillMaxSize()
+				) {
+					if (isDecoy) {
+						Icon(
+							imageVector = Icons.Filled.Warning,
+							contentDescription = stringResource(R.string.gallery_decoy_indicator),
+							tint = Color.LightGray,
+							modifier = Modifier
+								.size(24.dp)
+								.align(Alignment.BottomEnd)
+						)
+					}
+
+					if (isSelected) {
+						Icon(
+							imageVector = Icons.Filled.CheckCircle,
+							contentDescription = stringResource(R.string.gallery_decoy_indicator),
+							tint = MaterialTheme.colorScheme.primary,
+							modifier = Modifier
+								.size(24.dp)
+								.align(Alignment.TopEnd)
+						)
+					}
 				}
 			}
 		}

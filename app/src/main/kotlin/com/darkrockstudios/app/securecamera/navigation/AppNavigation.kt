@@ -136,7 +136,8 @@ fun AppNavHost(
 						photo = photo,
 						navController = navController,
 						modifier = Modifier.fillMaxSize(),
-						paddingValues = paddingValues
+						paddingValues = paddingValues,
+						snackbarHostState = snackbarHostState,
 					)
 				} else {
 					Text(text = stringResource(R.string.photo_content_none_selected))

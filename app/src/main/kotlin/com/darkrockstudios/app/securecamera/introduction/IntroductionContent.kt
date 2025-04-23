@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -63,7 +64,7 @@ fun IntroductionContent(
 			description = stringResource(R.string.intro_slide2_description)
 		),
 		IntroductionSlide(
-			icon = Icons.Filled.Send,
+			icon = Icons.AutoMirrored.Filled.Send,
 			title = stringResource(R.string.intro_slide3_title),
 			description = stringResource(R.string.intro_slide3_description),
 		),

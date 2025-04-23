@@ -10,6 +10,8 @@ import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.MetadataUpdate.TakenDate
 import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
+import com.darkrockstudios.app.securecamera.auth.AuthorizationManager.SecurityPin
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import dev.whyoleg.cryptography.BinarySize
 import dev.whyoleg.cryptography.BinarySize.Companion.bytes
@@ -32,19 +34,26 @@ private data class KeyParams(
 
 class SecureImageManager(
 	private val appContext: Context,
+	private val preferencesManager: AppPreferencesManager,
 	private val authorizationManager: AuthorizationManager,
+	internal val thumbnailCache: ThumbnailCache,
 ) {
 
 	private val provider = CryptographyProvider.Default
-	private var keyFlow: ByteArray? = null
+	private var key: ByteArray? = null
 	private val keyMutex = Mutex()
-
-	val thumbnailCache = ThumbnailCache()
 
 	fun getGalleryDirectory(): File = File(appContext.filesDir, PHOTOS_DIR)
 
+	fun getDecoyDirectory(): File {
+		val dir = File(appContext.filesDir, DECOYS_DIR)
+		dir.mkdirs()
+		return dir
+	}
+
+
 	fun evictKey() {
-		keyFlow = null
+		key = null
 	}
 
 	/**
@@ -61,8 +70,7 @@ class SecureImageManager(
 	 * Deleted all images that haven't been flagged as benign
 	 */
 	fun activatePoisonPill() {
-		// TODO add the concept of benign photos which will not be deleted
-		deleteAllImages()
+		deleteNonDecoyImages()
 		clearAllThumbnails()
 		evictKey()
 	}
@@ -78,13 +86,16 @@ class SecureImageManager(
 	/**
 	 * Derives the encryption key from the user's PIN, then encrypted the plainText bytes and writes it to targetFile
 	 */
-	private suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File) {
-		val secrete = deriveKey(plainPin, hashedPin)
+	internal suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File) {
+		val keyBytes = deriveKey(plainPin, hashedPin)
+		encryptToFile(plain = plain, keyBytes = keyBytes, targetFile = targetFile)
+	}
 
+	private suspend fun encryptToFile(plain: ByteArray, keyBytes: ByteArray, targetFile: File) {
 		val aesKey = provider
 			.get(AES.GCM)
 			.keyDecoder()
-			.decodeFromByteArray(AES.Key.Format.RAW, secrete)
+			.decodeFromByteArray(AES.Key.Format.RAW, keyBytes)
 		val encryptedBytes = aesKey.cipher().encrypt(plain)
 		targetFile.writeBytes(encryptedBytes)
 	}
@@ -107,24 +118,32 @@ class SecureImageManager(
 		hashedPin: HashedPin,
 		keyParams: KeyParams = KeyParams(),
 	): ByteArray {
-		keyFlow?.let { return it }
+		key?.let { return it }
 
 		return keyMutex.withLock {
-			keyFlow?.let { return@withLock it }
+			key?.let { return@withLock it }
 
-			val secretDerivation = provider.get(PBKDF2).secretDerivation(
-				digest = SHA256,
-				iterations = keyParams.iterations,
-				outputSize = keyParams.outputSize,
-				salt = hashedPin.salt.toByteArray()
-			)
-
-			// Double the input length
-			val keyInput = plainPin + plainPin.reversed()
-			val derivedKey = secretDerivation.deriveSecret(keyInput.toByteArray()).toByteArray()
-			keyFlow = derivedKey
+			val derivedKey = deriveKeyRaw(plainPin, hashedPin, keyParams)
+			key = derivedKey
 			derivedKey
 		}
+	}
+
+	private suspend fun deriveKeyRaw(
+		plainPin: String,
+		hashedPin: HashedPin,
+		keyParams: KeyParams = KeyParams(),
+	): ByteArray {
+		val secretDerivation = provider.get(PBKDF2).secretDerivation(
+			digest = SHA256,
+			iterations = keyParams.iterations,
+			outputSize = keyParams.outputSize,
+			salt = hashedPin.salt.toByteArray()
+		)
+
+		// Double the input length
+		val keyInput = plainPin + plainPin.reversed()
+		return secretDerivation.deriveSecret(keyInput.toByteArray()).toByteArray()
 	}
 
 	suspend fun saveImage(
@@ -202,9 +221,10 @@ class SecureImageManager(
 		return BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size)
 	}
 
-	suspend fun decryptJpg(photo: PhotoDef): ByteArray {
-		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
-
+	suspend fun decryptJpg(
+		photo: PhotoDef,
+		pin: SecurityPin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+	): ByteArray {
 		val plainBytes = decryptFile(
 			plainPin = pin.plainPin,
 			hashedPin = pin.hashedPin,
@@ -219,7 +239,7 @@ class SecureImageManager(
 		return thumbnailsDir
 	}
 
-	private fun getThumbnail(photoDef: PhotoDef): File {
+	internal fun getThumbnail(photoDef: PhotoDef): File {
 		val dir = getThumbnailsDir()
 		return File(dir, photoDef.photoName)
 	}
@@ -291,8 +311,11 @@ class SecureImageManager(
 			} ?: emptyList()
 	}
 
-	fun deleteImage(photoDef: PhotoDef): Boolean {
+	fun deleteImage(photoDef: PhotoDef, deleteDecoy: Boolean = true): Boolean {
 		thumbnailCache.evictThumbnail(photoDef)
+		if (deleteDecoy && isDecoyPhoto(photoDef)) {
+			getDecoyFile(photoDef).delete()
+		}
 
 		return if (photoDef.photoFile.exists()) {
 			getThumbnail(photoDef).delete()
@@ -302,13 +325,23 @@ class SecureImageManager(
 		}
 	}
 
-	fun deleteImages(photos: List<PhotoDef>): Boolean {
-		return photos.map { deleteImage(it) }.all { it }
+	fun deleteImages(photos: List<PhotoDef>, deleteDecoy: Boolean = true): Boolean {
+		return photos.map { deleteImage(it, deleteDecoy) }.all { it }
 	}
 
-	fun deleteAllImages() {
+	fun deleteAllImages(deleteDecoy: Boolean = true) {
 		val photos = getPhotos()
-		deleteImages(photos)
+		deleteImages(photos, deleteDecoy)
+	}
+
+	fun deleteNonDecoyImages() {
+		deleteAllImages(deleteDecoy = false)
+
+		val galleryDir = getGalleryDirectory()
+		getDecoyFiles().forEach { file ->
+			val targetFile = File(galleryDir, file.name)
+			file.renameTo(targetFile)
+		}
 	}
 
 	fun getPhotoByName(photoName: String): PhotoDef? {
@@ -330,8 +363,48 @@ class SecureImageManager(
 		)
 	}
 
+	fun isDecoyPhoto(photoDef: PhotoDef): Boolean = getDecoyFile(photoDef).exists()
+	internal fun getDecoyFile(photoDef: PhotoDef) = File(getDecoyDirectory(), photoDef.photoName)
+	private fun getDecoyFiles(): List<File> {
+		val dir = getDecoyDirectory()
+		if (!dir.exists()) {
+			return emptyList()
+		}
+
+		return dir.listFiles()?.filter { it.isFile && it.name.endsWith("jpg") } ?: emptyList()
+	}
+
+	fun numDecoys(): Int = getDecoyFiles().count()
+
+	suspend fun addDecoyPhoto(photoDef: PhotoDef): Boolean {
+		return if (numDecoys() < MAX_DECOY_PHOTOS) {
+			val jpgBytes = decryptJpg(photoDef)
+			val decoyFile = getDecoyFile(photoDef)
+
+			val ppp = preferencesManager.getHashedPoisonPillPin() ?: return false
+			val pin = preferencesManager.getPlainPoisonPillPin() ?: return false
+			val poisonPillKey = deriveKeyRaw(plainPin = pin, hashedPin = ppp)
+			encryptToFile(plain = jpgBytes, keyBytes = poisonPillKey, targetFile = decoyFile)
+			true
+		} else {
+			false
+		}
+	}
+
+	suspend fun removeDecoyPhoto(photoDef: PhotoDef): Boolean {
+		return getDecoyFile(photoDef).delete()
+	}
+
+	suspend fun removeAllDecoyPhotos() {
+		getDecoyFiles().forEach { file ->
+			file.delete()
+		}
+	}
+
 	companion object {
 		const val PHOTOS_DIR = "photos"
+		const val DECOYS_DIR = "decoys"
 		const val THUMBNAILS_DIR = ".thumbnails"
+		const val MAX_DECOY_PHOTOS = 10
 	}
 }

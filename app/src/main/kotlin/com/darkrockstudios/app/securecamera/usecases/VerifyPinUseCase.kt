@@ -11,8 +11,8 @@ class VerifyPinUseCase(
 ) {
 	suspend fun verifyPin(pin: String): Boolean {
 		if (preferencesManager.hasPoisonPillPin() && preferencesManager.verifyPoisonPillPin(pin)) {
-			authManager.activatePoisonPill()
 			imageManager.activatePoisonPill()
+			authManager.activatePoisonPill()
 		}
 
 		return authManager.verifyPin(pin)

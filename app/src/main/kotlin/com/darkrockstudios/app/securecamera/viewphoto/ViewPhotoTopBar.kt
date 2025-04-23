@@ -1,10 +1,9 @@
 package com.darkrockstudios.app.securecamera.viewphoto
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +18,10 @@ fun ViewPhotoTopBar(
 	navController: NavController,
 	onDeleteClick: () -> Unit,
 	onShareClick: () -> Unit,
+	showDecoyButton: Boolean = false,
+	isDecoy: Boolean = false,
+	isDecoyLoading: Boolean = false,
+	onDecoyClick: () -> Unit = {},
 ) {
 	TopAppBar(
 		title = {
@@ -44,6 +47,34 @@ fun ViewPhotoTopBar(
 			}
 		},
 		actions = {
+			if (showDecoyButton) {
+				if (isDecoyLoading) {
+					// Show loading spinner
+					IconButton(
+						onClick = { /* Disabled during loading */ },
+						modifier = Modifier.padding(8.dp),
+						enabled = false
+					) {
+						CircularProgressIndicator(
+							modifier = Modifier.size(24.dp),
+							color = MaterialTheme.colorScheme.onPrimaryContainer,
+							strokeWidth = 2.dp
+						)
+					}
+				} else {
+					// Show decoy button
+					IconButton(
+						onClick = onDecoyClick,
+						modifier = Modifier.padding(8.dp)
+					) {
+						Icon(
+							imageVector = if (isDecoy) Icons.Filled.AddCircle else Icons.Filled.AddCircleOutline,
+							contentDescription = stringResource(id = R.string.decoy_photo_content_description),
+							tint = MaterialTheme.colorScheme.onPrimaryContainer,
+						)
+					}
+				}
+			}
 			IconButton(
 				onClick = onShareClick,
 				modifier = Modifier.padding(8.dp)

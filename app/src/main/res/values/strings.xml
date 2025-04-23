@@ -19,6 +19,12 @@
     <string name="delete_photo_content_description">Delete Photos</string>
     <string name="photo_content_none_selected">No photo selected</string>
     <string name="unauthorized">Unauthorized</string>
+    <string name="mark_as_decoy">Mark as Decoy</string>
+    <string name="unmark_as_decoy">Unmark as Decoy</string>
+    <string name="decoy_photo_content_description">Toggle Decoy Status</string>
+    <string name="decoy_limit_reached">Decoy limit reached: %1$d</string>
+    <string name="decoy_added">Decoy added</string>
+    <string name="decoy_removed">Decoy removed</string>
 
     <!-- Gallery Screen -->
     <string name="gallery_title">Gallery</string>
@@ -30,6 +36,7 @@
     <string name="gallery_cancel_selection_content_description">Cancel Selection</string>
     <string name="gallery_delete_selected_content_description">Delete Selected</string>
     <string name="gallery_share_selected_content_description">Share Selected</string>
+    <string name="gallery_decoy_indicator">Is Decoy Photo</string>
 
     <!-- Camera Screen -->
     <string name="camera_more_options_content_description">More Options</string>
@@ -108,6 +115,16 @@
     </string>
     <string name="remove_poison_pill_confirm_button">Remove</string>
     <string name="remove_poison_pill_complete">Poison Pill removed</string>
+
+    <!-- Decoy Photo Explanation Dialog -->
+    <string name="decoy_explanation_dialog_title">Decoy Photos System</string>
+    <string name="decoy_explanation_dialog_message">In the case where you are coerced for your PIN, and you give over
+        your Poison Pill PIN instead, it might be suspicious that there are no photos whatsoever in the Gallery.\n\nTo
+        solve this it is recommended you take several photos of various innocuous things, and then go into those photos
+        in the Gallery, and mark them as \"Decoy\" photos.\n\nWhen your Poison Pill is activated, all photos EXCEPT for
+        your Decoys will be deleted, leaving a less suspicious situation.
+    </string>
+    <string name="decoy_explanation_dialog_ok_button">Okay</string>
 
     <!-- About Screen -->
     <string name="settings_about_button">About SnapSafe</string>

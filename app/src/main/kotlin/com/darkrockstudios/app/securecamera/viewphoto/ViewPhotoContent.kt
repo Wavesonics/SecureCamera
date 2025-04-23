@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,6 +30,7 @@ import com.zhangke.imageviewer.ImageViewer
 import com.zhangke.imageviewer.rememberImageViewerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @Composable
@@ -36,6 +38,7 @@ fun ViewPhotoContent(
 	photo: PhotoDef,
 	navController: NavController,
 	modifier: Modifier = Modifier,
+	snackbarHostState: SnackbarHostState,
 	paddingValues: PaddingValues
 ) {
 	val imageManager = koinInject<SecureImageManager>()
@@ -48,6 +51,23 @@ fun ViewPhotoContent(
 	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeFileNameDefault)
 	val sanitizeMetadata by
 	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeMetadataDefault)
+
+	var hasPoisonPill by remember { mutableStateOf(false) }
+	var isDecoy by remember { mutableStateOf(false) }
+	var isDecoyLoading by remember { mutableStateOf(false) }
+
+	val decoyAddedMessage = stringResource(id = R.string.decoy_added)
+	val decoyRemovedMessage = stringResource(id = R.string.decoy_removed)
+	// Prepare the decoy limit reached message
+	val decoyLimitReachedMessage = stringResource(
+		id = R.string.decoy_limit_reached,
+		SecureImageManager.MAX_DECOY_PHOTOS
+	)
+
+	LaunchedEffect(Unit) {
+		hasPoisonPill = preferencesManager.hasPoisonPillPin()
+		isDecoy = imageManager.isDecoyPhoto(photo)
+	}
 
 	Column(
 		modifier = modifier
@@ -70,6 +90,33 @@ fun ViewPhotoContent(
 					)
 				}
 			},
+			showDecoyButton = hasPoisonPill,
+			isDecoy = isDecoy,
+			isDecoyLoading = isDecoyLoading,
+			onDecoyClick = {
+				isDecoyLoading = true
+				scope.launch(Dispatchers.Default) {
+					if (isDecoy) {
+						imageManager.removeDecoyPhoto(photo)
+						withContext(Dispatchers.Main) {
+							isDecoy = false
+							isDecoyLoading = false
+							snackbarHostState.showSnackbar(decoyRemovedMessage)
+						}
+					} else {
+						val success = imageManager.addDecoyPhoto(photo)
+						withContext(Dispatchers.Main) {
+							isDecoyLoading = false
+							isDecoy = success
+							if (!success) {
+								snackbarHostState.showSnackbar(decoyLimitReachedMessage)
+							} else {
+								snackbarHostState.showSnackbar(decoyAddedMessage)
+							}
+						}
+					}
+				}
+			}
 		)
 
 		if (showDeleteConfirmation) {
