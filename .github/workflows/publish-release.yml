@@ -62,7 +62,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-publish-play-store:
-    if: ${{ false }}
     name: Build and publish to Play Store
     runs-on: ubuntu-latest
 
