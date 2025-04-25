@@ -44,6 +44,9 @@ android {
 			)
 			signingConfig = signingConfigs.getByName("release")
 		}
+		debug {
+			applicationIdSuffix = ".debug"
+		}
 	}
 	compileOptions {
 		sourceCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
@@ -55,6 +58,10 @@ android {
 	buildFeatures {
 		compose = true
 		buildConfig = true
+	}
+	dependenciesInfo {
+		includeInApk = false
+		includeInBundle = false
 	}
 }
 
