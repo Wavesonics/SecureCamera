@@ -87,7 +87,6 @@ dependencies {
 	implementation(libs.koin.androidx.compose)
 	implementation(libs.koin.androidx.compose.navigation)
 	implementation(libs.koin.core.coroutines)
-	implementation(libs.imageviewer)
 	implementation(libs.androidx.material.icons.extended)
 	implementation(platform(libs.cryptography.bom))
 	implementation(libs.cryptography.core)

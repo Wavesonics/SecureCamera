@@ -1,6 +1,5 @@
 package com.darkrockstudios.app.securecamera.viewphoto
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -26,8 +24,6 @@ import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.sharePhotoData
-import com.zhangke.imageviewer.ImageViewer
-import com.zhangke.imageviewer.rememberImageViewerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -145,28 +141,25 @@ fun ViewPhotoContent(
 			contentAlignment = Alignment.Center
 		) {
 			if (photo.photoFile.exists()) {
-				val state = rememberImageViewerState {
-					navController.navigateUp()
-				}
-				ImageViewer(
-					state = state,
-					modifier = Modifier
-						.fillMaxSize()
-						.clipToBounds()
-				) {
-					imageBitmap?.let {
-						Image(
-							bitmap = it,
-							contentDescription = stringResource(id = R.string.photo_content_description),
-							contentScale = ContentScale.Fit,
+				val state = rememberImageViewerState(
+//					onDismiss = {
+//						navController.navigateUp()
+//					}
+				)
+				imageBitmap?.let {
+					ImageViewer(
+						bitmap = it,
+						state = state,
+						modifier = Modifier
+							.fillMaxSize()
+							.clipToBounds()
+					)
+				} ?: run {
+					Box(modifier = Modifier.fillMaxSize()) {
+						Text(
+							text = stringResource(R.string.photo_content_loading),
+							modifier = Modifier.align(Alignment.Center)
 						)
-					} ?: run {
-						Box(modifier = Modifier.fillMaxSize()) {
-							Text(
-								text = stringResource(R.string.photo_content_loading),
-								modifier = Modifier.align(Alignment.Center)
-							)
-						}
 					}
 				}
 			} else {
