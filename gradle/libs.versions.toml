@@ -30,7 +30,7 @@ navigationCompose = "2.8.9"
 qr_scanner_plugin = "0.0.7"
 koin-bom = "4.0.4"
 cryptographyBom = "0.4.0"
-datastorePreferences = "1.1.5"
+datastorePreferences = "1.1.4"
 timber = "5.0.1"
 
 [libraries]
