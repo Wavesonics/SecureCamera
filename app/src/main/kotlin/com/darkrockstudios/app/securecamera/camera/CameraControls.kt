@@ -99,21 +99,27 @@ fun CameraControls(
 		}
 	}
 
-	Box(modifier = Modifier.Companion.fillMaxSize()) {
+	Box(modifier = Modifier.fillMaxSize()) {
 		FlashEffect(isFlashing = isFlashing)
 
-		// Add the level indicator
+		ZoomMeter(
+			cameraController,
+			modifier = Modifier
+				.align(Alignment.TopCenter)
+				.padding(top = 64.dp)
+		)
+
 		LevelIndicator(
-			modifier = Modifier.Companion
-				.align(Alignment.Companion.Center)
+			modifier = Modifier
+				.align(Alignment.Center)
 				.padding(top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp)
 		)
 
 		if (!isTopControlsVisible) {
 			ElevatedButton(
 				onClick = { isTopControlsVisible = true },
-				modifier = Modifier.Companion
-					.align(Alignment.Companion.TopEnd)
+				modifier = Modifier
+					.align(Alignment.TopEnd)
 					.padding(
 						top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
 						end = 16.dp
@@ -128,10 +134,10 @@ fun CameraControls(
 
 		if (activeJobs > 0) {
 			CircularProgressIndicator(
-				modifier = Modifier.Companion
+				modifier = Modifier
 					.padding(start = 16.dp, top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp)
 					.size(40.dp)
-					.align(Alignment.Companion.TopStart),
+					.align(Alignment.TopStart),
 				color = MaterialTheme.colorScheme.primary
 			)
 		}
@@ -148,7 +154,7 @@ fun CameraControls(
 		)
 
 		BottomCameraControls(
-			modifier = Modifier.Companion.align(Alignment.Companion.BottomCenter),
+			modifier = Modifier.align(Alignment.BottomCenter),
 			isLoading = isLoading,
 			navController = navController,
 			onCapture = { doCapturePhoto() }
@@ -202,3 +208,4 @@ private fun FlashEffect(isFlashing: Boolean) {
 		) {}
 	}
 }
+

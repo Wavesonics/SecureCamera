@@ -99,6 +99,7 @@ dependencies {
 	implementation(libs.accompanist.permissions)
 	implementation(libs.androidx.lifecycle.runtime.compose)
 	implementation(libs.zoomable)
+	implementation(libs.androidx.runtime.livedata)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

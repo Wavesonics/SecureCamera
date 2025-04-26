@@ -1,13 +1,7 @@
 package com.darkrockstudios.app.securecamera.camera
 
 import android.annotation.SuppressLint
-import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.FocusMeteringAction
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Stable
@@ -92,6 +86,8 @@ class CameraState internal constructor(
 	fun setZoomRatio(ratio: Float) {
 		camera?.cameraControl?.setZoomRatio(ratio)
 	}
+
+	fun getZoomState() = camera?.cameraInfo?.zoomState
 
 	/** Focus + meter at the given px location from Compose coordinates. */
 	fun focusAt(offset: Offset) {
