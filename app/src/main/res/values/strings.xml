@@ -14,6 +14,7 @@
     <string name="photo_date_label">Date Taken:</string>
     <string name="photo_location_label">Location:</string>
     <string name="photo_orientation_label">Orientation:</string>
+    <string name="photo_resolution_label">Resolution:</string>
     <string name="photo_no_data">[no data]</string>
     <string name="ok_button">OK</string>
 

@@ -3,6 +3,8 @@ package com.darkrockstudios.app.securecamera.viewphoto
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,59 +41,31 @@ fun PhotoInfoDialog(
 		onDismissRequest = dismiss,
 		title = { Text(stringResource(id = R.string.info_dialog_title)) },
 		text = {
-			Column {
-				Text(
-					text = stringResource(id = R.string.photo_name_label),
-					style = MaterialTheme.typography.bodyLarge,
-					color = MaterialTheme.colorScheme.onSurface
-				)
-				Spacer(modifier = Modifier.Companion.height(4.dp))
-				Text(
-					text = photo.photoName,
-					style = MaterialTheme.typography.bodyMedium,
-					color = MaterialTheme.colorScheme.onSurfaceVariant
+			Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+
+				InfoRow(
+					title = stringResource(id = R.string.photo_name_label),
+					value = photo.photoName,
 				)
 
-				Spacer(modifier = Modifier.Companion.height(16.dp))
-
-				Text(
-					text = stringResource(id = R.string.photo_date_label),
-					style = MaterialTheme.typography.bodyLarge,
-					color = MaterialTheme.colorScheme.onSurface
-				)
-				Spacer(modifier = Modifier.Companion.height(4.dp))
-				Text(
-					text = metadata?.dateTaken?.toString() ?: stringResource(R.string.photo_no_data),
-					style = MaterialTheme.typography.bodyMedium,
-					color = MaterialTheme.colorScheme.onSurfaceVariant
+				InfoRow(
+					title = stringResource(id = R.string.photo_resolution_label),
+					value = metadata?.resolutionString() ?: stringResource(R.string.photo_no_data),
 				)
 
-				Spacer(modifier = Modifier.Companion.height(16.dp))
-
-				Text(
-					text = stringResource(id = R.string.photo_location_label),
-					style = MaterialTheme.typography.bodyLarge,
-					color = MaterialTheme.colorScheme.onSurface
-				)
-				Spacer(modifier = Modifier.Companion.height(4.dp))
-				Text(
-					text = metadata?.location?.latLongString ?: stringResource(R.string.photo_no_data),
-					style = MaterialTheme.typography.bodyMedium,
-					color = MaterialTheme.colorScheme.onSurfaceVariant
+				InfoRow(
+					title = stringResource(id = R.string.photo_date_label),
+					value = metadata?.dateTaken?.toString() ?: stringResource(R.string.photo_no_data),
 				)
 
-				Spacer(modifier = Modifier.Companion.height(16.dp))
-
-				Text(
-					text = stringResource(id = R.string.photo_orientation_label),
-					style = MaterialTheme.typography.bodyLarge,
-					color = MaterialTheme.colorScheme.onSurface
+				InfoRow(
+					title = stringResource(id = R.string.photo_location_label),
+					value = metadata?.location?.latLongString ?: stringResource(R.string.photo_no_data),
 				)
-				Spacer(modifier = Modifier.Companion.height(4.dp))
-				Text(
-					text = metadata?.orientation?.toString() ?: stringResource(R.string.photo_no_data),
-					style = MaterialTheme.typography.bodyMedium,
-					color = MaterialTheme.colorScheme.onSurfaceVariant
+
+				InfoRow(
+					title = stringResource(id = R.string.photo_orientation_label),
+					value = metadata?.orientation?.toString() ?: stringResource(R.string.photo_no_data),
 				)
 			}
 		},
@@ -101,4 +75,25 @@ fun PhotoInfoDialog(
 			}
 		}
 	)
+}
+
+@Composable
+private fun InfoRow(
+	title: String,
+	value: String
+) {
+	Text(
+		text = title,
+		style = MaterialTheme.typography.bodyLarge,
+		color = MaterialTheme.colorScheme.onSurface
+	)
+	Spacer(modifier = Modifier.Companion.height(4.dp))
+
+	Text(
+		text = value,
+		style = MaterialTheme.typography.bodyLarge,
+		color = MaterialTheme.colorScheme.onSurface
+	)
+
+	Spacer(modifier = Modifier.Companion.height(16.dp))
 }

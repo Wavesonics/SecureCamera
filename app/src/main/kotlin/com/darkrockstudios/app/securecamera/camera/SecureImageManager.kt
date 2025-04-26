@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
+import android.util.Size
 import com.ashampoo.kim.Kim
 import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
@@ -370,15 +371,21 @@ class SecureImageManager(
 
 		var orientation: TiffOrientation? = null
 		var coords: GpsCoordinates? = null
+		var size = Size(0, 0)
 
 		val jpgBytes = decryptJpg(photoDef)
 		Kim.readMetadata(jpgBytes)?.convertToPhotoMetadata()?.let { imageMetadata ->
 			orientation = imageMetadata.orientation
 			coords = imageMetadata.gpsCoordinates
+			size = Size(
+				imageMetadata.widthPx ?: 0,
+				imageMetadata.heightPx ?: 0,
+			)
 		}
 
 		return PhotoMetaData(
 			name = name,
+			resolution = size,
 			dateTaken = dateTaken,
 			location = coords,
 			orientation = orientation,

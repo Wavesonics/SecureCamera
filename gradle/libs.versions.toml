@@ -7,15 +7,12 @@ agp = "8.9.2"
 targetSdk = "35"
 
 accompanistPermissions = "0.37.0"
-camerak = "0.0.11"
 compileSdk = "35"
 coreSplashscreen = "1.0.1"
 lifecycleRuntimeCompose = "2.8.7"
 materialIconsExtended = "1.7.8"
 minSdk = "29"
 mockk = "1.14.0"
-image_saver_plugin = "0.0.6"
-imageviewer = "1.0.3"
 kim = "0.24"
 kotlin = "2.1.10"
 kotlinx-serialization = "1.7.3"
@@ -25,29 +22,32 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.04.00"
+composeBom = "2025.04.01"
 navigationCompose = "2.8.9"
-qr_scanner_plugin = "0.0.7"
 koin-bom = "4.0.4"
 cryptographyBom = "0.4.0"
 datastorePreferences = "1.1.4"
 timber = "5.0.1"
+zoomable = "2.6.0"
+cameraCamera2 = "1.4.2"
+cameraView = "1.4.2"
+foundation = "1.8.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraView" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
-camerak_image_saver_plugin = { module = "io.github.kashif-mehmood-km:image_saver_plugin", version.ref = "image_saver_plugin" }
-camerak_qr_scanner_plugin = { module = "io.github.kashif-mehmood-km:qr_scanner_plugin", version.ref = "qr_scanner_plugin" }
 cryptography-bom = { group = "dev.whyoleg.cryptography", name = "cryptography-bom", version.ref = "cryptographyBom" }
 cryptography-provider-jdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk" }
 cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core" }
-imageviewer = { module = "com.github.0xZhangKe:ImageViewer", version.ref = "imageviewer" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -76,6 +76,7 @@ mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferences" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
