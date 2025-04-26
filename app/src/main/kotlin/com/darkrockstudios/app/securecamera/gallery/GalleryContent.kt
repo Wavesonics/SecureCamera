@@ -1,20 +1,26 @@
 package com.darkrockstudios.app.securecamera.gallery
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -221,6 +227,12 @@ private fun PhotoItem(
 	var thumbnailBitmap by remember(photo.photoName) { mutableStateOf<ImageBitmap?>(null) }
 	val isDecoy = remember(photo) { imageManager.isDecoyPhoto(photo) }
 
+	val imageAlpha by animateFloatAsState(
+		targetValue = if (thumbnailBitmap != null) 1f else 0f,
+		animationSpec = tween(durationMillis = 500),
+		label = "imageAlpha"
+	)
+
 	LaunchedEffect(photo.photoName) {
 		if (thumbnailBitmap == null) {
 			scope.launch(limitedDispatcher) {
@@ -240,7 +252,7 @@ private fun PhotoItem(
 		Card(
 			modifier = Modifier
 				.fillMaxSize()
-				.border(width = borderWidth, color = borderColor)
+				.border(width = borderWidth, color = borderColor, shape = RoundedCornerShape(8.dp))
 				.combinedClickable(
 					onClick = onClick,
 					onLongClick = onLongClick,
@@ -255,7 +267,7 @@ private fun PhotoItem(
 							photo.photoName
 						),
 						contentScale = ContentScale.Crop,
-						modifier = Modifier.fillMaxSize()
+						modifier = Modifier.fillMaxSize().alpha(imageAlpha)
 					)
 				} ?: run {
 					Box(modifier = Modifier.fillMaxSize()) {

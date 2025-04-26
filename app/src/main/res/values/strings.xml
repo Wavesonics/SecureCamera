@@ -8,6 +8,14 @@
     <string name="delete_photo_message_plural">Are you sure you want to delete these %1$d photos?</string>
     <string name="delete_button">Delete</string>
     <string name="cancel_button">Cancel</string>
+    <string name="info_button">Info</string>
+    <string name="info_dialog_title">Photo Info</string>
+    <string name="photo_name_label">Photo Name:</string>
+    <string name="photo_date_label">Date Taken:</string>
+    <string name="photo_location_label">Location:</string>
+    <string name="photo_orientation_label">Orientation:</string>
+    <string name="photo_no_data">[no data]</string>
+    <string name="ok_button">OK</string>
 
     <!-- View Photo Screen -->
     <string name="photo_title">Photo</string>

@@ -6,6 +6,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -18,6 +22,7 @@ fun ViewPhotoTopBar(
 	navController: NavController,
 	onDeleteClick: () -> Unit,
 	onShareClick: () -> Unit,
+	onInfoClick: () -> Unit,
 	showDecoyButton: Boolean = false,
 	isDecoy: Boolean = false,
 	isDecoyLoading: Boolean = false,
@@ -85,14 +90,49 @@ fun ViewPhotoTopBar(
 					tint = MaterialTheme.colorScheme.onPrimaryContainer,
 				)
 			}
+
+			var showMoreMenu by remember { mutableStateOf(false) }
+
 			IconButton(
-				onClick = onDeleteClick,
+				onClick = { showMoreMenu = true },
 				modifier = Modifier.padding(8.dp)
 			) {
 				Icon(
-					imageVector = Icons.Filled.Delete,
-					contentDescription = stringResource(id = R.string.delete_photo_content_description),
+					imageVector = Icons.Filled.MoreVert,
+					contentDescription = stringResource(id = R.string.camera_more_options_content_description),
 					tint = MaterialTheme.colorScheme.onPrimaryContainer,
+				)
+			}
+
+			DropdownMenu(
+				expanded = showMoreMenu,
+				onDismissRequest = { showMoreMenu = false }
+			) {
+				DropdownMenuItem(
+					text = { Text(stringResource(id = R.string.info_button)) },
+					onClick = {
+						onInfoClick()
+						showMoreMenu = false
+					},
+					leadingIcon = {
+						Icon(
+							imageVector = Icons.Filled.Info,
+							contentDescription = null
+						)
+					}
+				)
+				DropdownMenuItem(
+					text = { Text(stringResource(id = R.string.delete_button)) },
+					onClick = {
+						onDeleteClick()
+						showMoreMenu = false
+					},
+					leadingIcon = {
+						Icon(
+							imageVector = Icons.Filled.Delete,
+							contentDescription = null
+						)
+					}
 				)
 			}
 		}

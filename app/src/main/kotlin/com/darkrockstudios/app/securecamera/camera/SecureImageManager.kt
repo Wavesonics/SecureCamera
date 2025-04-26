@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import com.ashampoo.kim.Kim
+import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.MetadataUpdate.TakenDate
@@ -360,6 +361,27 @@ class SecureImageManager(
 			photoName = photoName,
 			photoFormat = format,
 			photoFile = photoFile
+		)
+	}
+
+	suspend fun getPhotoMetaData(photoDef: PhotoDef): PhotoMetaData {
+		val name = photoDef.photoName
+		val dateTaken = photoDef.dateTaken()
+
+		var orientation: TiffOrientation? = null
+		var coords: GpsCoordinates? = null
+
+		val jpgBytes = decryptJpg(photoDef)
+		Kim.readMetadata(jpgBytes)?.convertToPhotoMetadata()?.let { imageMetadata ->
+			orientation = imageMetadata.orientation
+			coords = imageMetadata.gpsCoordinates
+		}
+
+		return PhotoMetaData(
+			name = name,
+			dateTaken = dateTaken,
+			location = coords,
+			orientation = orientation,
 		)
 	}
 

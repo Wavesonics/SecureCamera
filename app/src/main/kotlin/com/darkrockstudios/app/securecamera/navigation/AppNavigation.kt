@@ -133,7 +133,7 @@ fun AppNavHost(
 				val photo = imageManager.getPhotoByName(photoName)
 				if (photo != null) {
 					ViewPhotoContent(
-						photo = photo,
+						initialPhoto = photo,
 						navController = navController,
 						modifier = Modifier.fillMaxSize(),
 						paddingValues = paddingValues,
