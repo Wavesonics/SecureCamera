@@ -28,6 +28,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.ExperimentalTime
 
 private data class KeyParams(
 	val iterations: Int = 600_000,
@@ -148,10 +149,11 @@ class SecureImageManager(
 		return secretDerivation.deriveSecret(keyInput.toByteArray()).toByteArray()
 	}
 
+	@OptIn(ExperimentalTime::class)
 	suspend fun saveImage(
-		byteArray: ByteArray,
-		orientation: TiffOrientation,
+		image: CapturedImage,
 		latLng: GpsCoordinates?,
+		applyRotation: Boolean,
 		quality: Int = 90,
 	): File {
 		val dir = getGalleryDirectory()
@@ -161,21 +163,30 @@ class SecureImageManager(
 		}
 
 		val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss_SS", Locale.US)
-		val finalImageName: String = "photo_" + dateFormat.format(Date()) + ".jpg"
+		val finalImageName: String = "photo_" + dateFormat.format(Date(image.timestamp)) + ".jpg"
 
 		val photoFile = File(dir, finalImageName)
 		val tempFile = File(dir, "$finalImageName.tmp")
 
+		var rawSensorBitmap = image.sensorBitmap
+		if(applyRotation) {
+			rawSensorBitmap = rawSensorBitmap.rotate(image.rotationDegrees)
+		}
+
 		FileOutputStream(tempFile).use { outputStream ->
-			val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
+			rawSensorBitmap.compress(CompressFormat.JPEG, quality, outputStream)
 		}
 
 		val dateUpdate: MetadataUpdate = TakenDate(System.currentTimeMillis())
 		var updatedBytes = Kim.update(bytes = tempFile.readBytes(), dateUpdate)
 
-		val orientationUpdate: MetadataUpdate = MetadataUpdate.Orientation(orientation)
-		updatedBytes = Kim.update(bytes = updatedBytes, orientationUpdate)
+		if(applyRotation) {
+			updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(TiffOrientation.STANDARD))
+		} else {
+			val tiffOrientation = calculateTiffOrientation(image.rotationDegrees)
+			val orientationUpdate: MetadataUpdate = MetadataUpdate.Orientation(tiffOrientation)
+			updatedBytes = Kim.update(bytes = updatedBytes, orientationUpdate)
+		}
 
 		if (latLng != null) {
 			val gpsUpdate: MetadataUpdate = MetadataUpdate.GpsCoordinates(latLng)
@@ -183,7 +194,6 @@ class SecureImageManager(
 		}
 
 		tempFile.writeBytes(updatedBytes)
-		tempFile.renameTo(photoFile)
 
 //		val thumbnailBitmap = ThumbnailUtils.createImageThumbnail(photoFile, Size(640, 480), null)
 //		val thumbnailBytes = thumbnailBitmap.let { bitmap ->
@@ -205,9 +215,11 @@ class SecureImageManager(
 		encryptToFile(
 			plainPin = pin.plainPin,
 			hashedPin = pin.hashedPin,
-			plain = photoFile.readBytes(),
-			targetFile = photoFile,
+			plain = tempFile.readBytes(),
+			targetFile = tempFile,
 		)
+
+		tempFile.renameTo(photoFile)
 
 		return photoFile
 	}

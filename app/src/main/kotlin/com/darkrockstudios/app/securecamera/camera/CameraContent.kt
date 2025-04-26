@@ -3,6 +3,7 @@ package com.darkrockstudios.app.securecamera.camera
 import android.Manifest
 import android.content.Context
 import android.location.Location
+import androidx.camera.core.ImageCapture
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -24,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.ashampoo.kim.model.GpsCoordinates
-import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.*
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
@@ -32,14 +32,11 @@ import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.kashif.cameraK.controller.CameraController
-import com.kashif.cameraK.enums.*
-import com.kashif.cameraK.result.ImageCaptureResult
-import com.kashif.cameraK.ui.CameraPreview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import timber.log.Timber
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -52,7 +49,7 @@ internal fun CameraContent(
 ) {
 	KeepScreenOnEffect()
 
-	val cameraController = remember { mutableStateOf<CameraController?>(null) }
+	val cameraState = rememberCameraState()
 
 	val permissionsState = rememberMultiplePermissionsState(
 		permissions = listOf(
@@ -87,26 +84,15 @@ internal fun CameraContent(
 		if (permissionsState.allPermissionsGranted) {
 			CameraPreview(
 				modifier = Modifier.fillMaxSize(),
-				cameraConfiguration = {
-					setCameraLens(CameraLens.BACK)
-					setFlashMode(FlashMode.OFF)
-					setImageFormat(ImageFormat.JPEG)
-					setDirectory(Directory.PICTURES)
-					setTorchMode(TorchMode.OFF)
-				},
-				onCameraControllerReady = {
-					cameraController.value = it
-				}
+				state = cameraState
 			)
 
-			cameraController.value?.let { controller ->
-				EnhancedCameraScreen(
-					cameraController = controller,
-					capturePhoto = capturePhoto,
-					navController = navController,
-					paddingValues = paddingValues,
-				)
-			}
+			EnhancedCameraScreen(
+				cameraController = cameraState,
+				capturePhoto = capturePhoto,
+				navController = navController,
+				paddingValues = paddingValues,
+			)
 		} else {
 			NoCameraPermission(navController, permissionsState)
 		}
@@ -115,13 +101,13 @@ internal fun CameraContent(
 
 @Composable
 fun EnhancedCameraScreen(
-	cameraController: CameraController,
+	cameraController: CameraState,
 	capturePhoto: MutableState<Boolean?>,
 	navController: NavHostController,
 	paddingValues: PaddingValues? = null,
 ) {
 	val scope = rememberCoroutineScope()
-	var isFlashOn by rememberSaveable(cameraController.getFlashMode()) { mutableStateOf(cameraController.getFlashMode() == FlashMode.ON) }
+	var isFlashOn by rememberSaveable(cameraController.flashMode) { mutableStateOf(cameraController.flashMode == ImageCapture.FLASH_MODE_ON) }
 	var isTopControlsVisible by rememberSaveable { mutableStateOf(false) }
 	var activeJobs by remember { mutableStateOf(0) }
 	val isLoading by remember { derivedStateOf { activeJobs > 0 } }
@@ -130,7 +116,6 @@ fun EnhancedCameraScreen(
 	val authManager = koinInject<AuthorizationManager>()
 	val locationRepository = koinInject<LocationRepository>()
 	val context = LocalContext.current
-	val orientation = rememberCurrentTiffOrientation()
 
 	var locationPermissionState by rememberSaveable { mutableStateOf(false) }
 	RequestLocationPermission {
@@ -153,7 +138,6 @@ fun EnhancedCameraScreen(
 					handleImageCapture(
 						cameraController = cameraController,
 						imageSaver = imageSaver,
-						orientation = orientation,
 						location = location,
 						isFlashOn = isFlashOn,
 						context = context,
@@ -200,17 +184,6 @@ fun EnhancedCameraScreen(
 			}
 		}
 
-		TopControlsBar(
-			isFlashOn = isFlashOn,
-			isVisible = isTopControlsVisible,
-			onFlashToggle = {
-				isFlashOn = !isFlashOn
-			},
-			onLensToggle = { cameraController.toggleCameraLens() },
-			onClose = { isTopControlsVisible = false },
-			paddingValues = paddingValues
-		)
-
 		if (activeJobs > 0) {
 			CircularProgressIndicator(
 				modifier = Modifier
@@ -220,6 +193,17 @@ fun EnhancedCameraScreen(
 				color = MaterialTheme.colorScheme.primary
 			)
 		}
+
+		TopControlsBar(
+			isFlashOn = isFlashOn,
+			isVisible = isTopControlsVisible,
+			onFlashToggle = {
+				isFlashOn = !isFlashOn
+			},
+			onLensToggle = { cameraController.toggleLens() },
+			onClose = { isTopControlsVisible = false },
+			paddingValues = paddingValues
+		)
 
 		BottomControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
@@ -426,10 +410,9 @@ private fun FlashEffect(isFlashing: Boolean) {
 
 @OptIn(ExperimentalUuidApi::class)
 private suspend fun handleImageCapture(
-	cameraController: CameraController,
+	cameraController: CameraState,
 	imageSaver: SecureImageManager,
 	context: Context,
-	orientation: TiffOrientation,
 	location: Location?,
 	isFlashOn: Boolean,
 ) {
@@ -440,22 +423,20 @@ private suspend fun handleImageCapture(
 		)
 	}
 
-	cameraController.setFlashMode(if (isFlashOn) FlashMode.ON else FlashMode.OFF)
+	cameraController.flashMode = if (isFlashOn) ImageCapture.FLASH_MODE_ON else ImageCapture.FLASH_MODE_OFF
+	val result = cameraController.capturePhoto()
 
-	when (val result = cameraController.takePicture()) {
-		is ImageCaptureResult.Success -> {
-			vibrateDevice(context)
-			imageSaver.saveImage(
-				byteArray = result.byteArray,
-				orientation = orientation,
-				latLng = gpsCoordinates
-			).let { path ->
-				println("Image saved at: $path")
-			}
+	val image = result.getOrNull()
+	if (result.isSuccess && image != null) {
+		vibrateDevice(context)
+		imageSaver.saveImage(
+			image = image,
+			applyRotation = true,
+			latLng = gpsCoordinates,
+		).let { path ->
+			Timber.i("Image saved at: $path")
 		}
-
-		is ImageCaptureResult.Error -> {
-			println("Image Capture Error: ${result.exception.message}")
-		}
+	} else {
+		Timber.e(result.exceptionOrNull(), "Image Capture Error")
 	}
 }
