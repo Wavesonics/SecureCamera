@@ -44,8 +44,8 @@ fun CameraControls(
 	val scope = rememberCoroutineScope()
 	var isFlashOn by rememberSaveable(cameraController.flashMode) { mutableStateOf(cameraController.flashMode == ImageCapture.FLASH_MODE_ON) }
 	var isTopControlsVisible by rememberSaveable { mutableStateOf(false) }
-	var activeJobs by remember { mutableStateOf(0) }
-	val isLoading by remember { derivedStateOf { activeJobs > 0 } }
+	var activeJobs by remember { mutableStateOf(mutableListOf<kotlinx.coroutines.Job>()) }
+	val isLoading by remember { derivedStateOf { activeJobs.isNotEmpty() } }
 	var isFlashing by rememberSaveable { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
@@ -61,8 +61,7 @@ fun CameraControls(
 		if (authManager.checkSessionValidity()) {
 			isFlashing = true
 
-			activeJobs++
-			scope.launch(Dispatchers.IO) {
+			val job = scope.launch(Dispatchers.IO) {
 				val location = if (locationPermissionState) {
 					locationRepository.currentLocation()
 				} else {
@@ -78,9 +77,14 @@ fun CameraControls(
 						context = context,
 					)
 				} finally {
-					activeJobs--
+					activeJobs =
+						activeJobs
+							.filterNot { it === this }
+							.filter { it.isCompleted.not() && it.isCancelled.not() }
+							.toMutableList()
 				}
 			}
+			activeJobs = (activeJobs + job).toMutableList()
 		} else {
 			navController.navigate(AppDestinations.createPinVerificationRoute(AppDestinations.CAMERA_ROUTE))
 		}
@@ -132,7 +136,7 @@ fun CameraControls(
 			}
 		}
 
-		if (activeJobs > 0) {
+		if (activeJobs.isNotEmpty()) {
 			CircularProgressIndicator(
 				modifier = Modifier
 					.padding(start = 16.dp, top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp)
@@ -208,4 +212,3 @@ private fun FlashEffect(isFlashing: Boolean) {
 		) {}
 	}
 }
-
