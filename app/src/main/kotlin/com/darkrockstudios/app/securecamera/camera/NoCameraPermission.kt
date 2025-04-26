@@ -54,7 +54,7 @@ fun NoCameraPermission(
 			}
 		}
 
-		BottomControls(
+		BottomCameraControls(
 			modifier = Modifier.align(Alignment.BottomCenter),
 			navController = navController,
 			onCapture = null,
