@@ -7,9 +7,11 @@ import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager.SecurityPin
+import com.darkrockstudios.app.securecamera.camera.CapturedImage
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.camera.ThumbnailCache
+import com.darkrockstudios.app.securecamera.camera.rotate
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import io.mockk.*
@@ -318,11 +320,20 @@ class SecureImageManagerTest {
 			true
 		}
 
+		val image = CapturedImage(
+			sensorBitmap = mockBitmap,
+			timestamp = 1L,
+			rotationDegrees = 0
+		)
+
+		mockkStatic(Bitmap::rotate)
+		every { mockBitmap.rotate(any()) } returns image.sensorBitmap
+
 		// When
 		val photoFile = secureImageManager.saveImage(
-			byteArray = testBytes,
-			orientation = orientation,
-			latLng = coordinates
+			image = image,
+			latLng = coordinates,
+			applyRotation = true,
 		)
 
 		// Then
@@ -688,6 +699,52 @@ class SecureImageManagerTest {
 		val field = SecureImageManager::class.java.getDeclaredField("key")
 		field.isAccessible = true
 		assertNull(field.get(secureImageManager))
+	}
+
+	@Test
+	fun `getPhotoMetaData should return metadata for a photo`() = runTest {
+		// Given
+		val galleryDir = secureImageManager.getGalleryDirectory()
+		galleryDir.mkdirs()
+
+		val photoName = "photo_20230101_120000_00.jpg"
+		val photoFile = File(galleryDir, photoName)
+
+		// Mock security PIN
+		val hashedPin = HashedPin(hash = "hash", salt = "salt")
+		val securityPin = SecurityPin("1234", hashedPin)
+		every { authorizationManager.securityPin } returns securityPin
+
+		// Create an encrypted file
+		val jpgBytes = readResourceBytes("red.jpg")
+		secureImageManager.encryptToFile(
+			plainPin = securityPin.plainPin,
+			hashedPin = securityPin.hashedPin,
+			plain = jpgBytes,
+			targetFile = photoFile,
+		)
+
+		val photoDef = PhotoDef(
+			photoName = photoName,
+			photoFormat = "jpg",
+			photoFile = photoFile
+		)
+
+		// When
+		val result = secureImageManager.getPhotoMetaData(photoDef)
+
+		// Then
+		assertEquals(photoName, result.name)
+		// The date should be parsed from the photo name
+		assertEquals(2023, result.dateTaken.year + 1900) // Java Date year is offset by 1900
+		assertEquals(0, result.dateTaken.month) // Java Date month is 0-based (0 = January)
+		assertEquals(1, result.dateTaken.date) // day of month
+		assertEquals(12, result.dateTaken.hours)
+		assertEquals(0, result.dateTaken.minutes)
+		assertEquals(0, result.dateTaken.seconds)
+		// Check the new properties
+		assertNull(result.orientation)
+		assertNull(result.location)
 	}
 
 	@Test

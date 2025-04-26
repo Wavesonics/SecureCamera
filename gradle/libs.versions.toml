@@ -1,4 +1,5 @@
 [versions]
+kotlinxCoroutinesTest = "1.10.2"
 versionCode = "6"
 versionName = "1.3.2"
 
@@ -44,6 +45,7 @@ androidx-foundation = { module = "androidx.compose.foundation:foundation", versi
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 cryptography-bom = { group = "dev.whyoleg.cryptography", name = "cryptography-bom", version.ref = "cryptographyBom" }
 cryptography-provider-jdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk" }

@@ -129,7 +129,6 @@ class CameraState internal constructor(
 						val captured = CapturedImage(
 							sensorBitmap = image.toBitmap(),
 							timestamp = image.imageInfo.timestamp,
-							rotationMatrix = image.imageInfo.sensorToBufferTransformMatrix,
 							rotationDegrees = image.imageInfo.rotationDegrees,
 						)
 						continuation.resume(Result.success(captured))

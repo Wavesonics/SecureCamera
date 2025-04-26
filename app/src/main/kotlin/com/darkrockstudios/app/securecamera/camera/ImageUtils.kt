@@ -8,14 +8,10 @@ import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 
 internal fun Bitmap.rotate(degrees: Int): Bitmap {
-	val m = Matrix(); m.postRotate(degrees.toFloat())
+	val m = Matrix();
+	m.postRotate(degrees.toFloat())
 	return Bitmap.createBitmap(this, 0, 0, width, height, m, true)
 }
-
-internal fun Bitmap.rotate(m: Matrix): Bitmap {
-	return Bitmap.createBitmap(this, 0, 0, width, height, m, true)
-}
-
 
 internal fun Bitmap.toJpegByteArray(quality: Int = 90): ByteArray {
 	val out = ByteArrayOutputStream()

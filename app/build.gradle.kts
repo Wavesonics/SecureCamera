@@ -104,6 +104,8 @@ dependencies {
 	testImplementation(libs.koin.test.junit4)
 	testImplementation(libs.koin.android.test)
 	testImplementation(libs.mockk)
+	testImplementation(libs.kotlinx.coroutines.test)
+	testImplementation(kotlin("test"))
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -112,5 +114,4 @@ dependencies {
 	androidTestImplementation(libs.mockk.agent)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
-	testImplementation(kotlin("test"))
 }
