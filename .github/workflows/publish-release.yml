@@ -64,6 +64,7 @@ jobs:
   build-and-publish-play-store:
     name: Build and publish to Play Store
     runs-on: ubuntu-latest
+    needs: build-and-publish-github-release
 
     steps:
       - name: Checkout code
