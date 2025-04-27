@@ -5,10 +5,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -47,39 +52,21 @@ fun AppNavHost(
 	val preferencesManager = koinInject<AppPreferencesManager>()
 	val locationRepository = koinInject<LocationRepository>()
 
+	/**
+	 * Continually enforce auth as the user navigates around the app
+	 */
 	LaunchedEffect(Unit) {
 		authManager.checkSessionValidity()
 
 		authManager.isAuthorized
-			.combine(navController.currentBackStackEntryFlow) { isAuthorized, destination ->
+			.combine(navController.currentBackStackEntryFlow) { isAuthorized, backStackEntry ->
 				Pair(
 					isAuthorized,
-					destination
+					backStackEntry
 				)
 			}
 			.collect { (_, backStackEntry) ->
-				if (
-					authManager.checkSessionValidity().not()
-					&& AppDestinations.isPinVerificationRoute(backStackEntry).not()
-					&& backStackEntry.destination.route != AppDestinations.INTRODUCTION_ROUTE
-				) {
-					val returnRoute = when (backStackEntry.destination.route) {
-						AppDestinations.VIEW_PHOTO_ROUTE -> {
-							navController.currentBackStackEntry?.arguments?.getString("photoName")
-								?.let { photoName ->
-									AppDestinations.createViewPhotoRoute(photoName)
-								} ?: AppDestinations.CAMERA_ROUTE
-						}
-
-						else -> {
-							backStackEntry.destination.route ?: AppDestinations.CAMERA_ROUTE
-						}
-					}
-
-					navController.navigate(AppDestinations.createPinVerificationRoute(returnRoute)) {
-						launchSingleTop = true
-					}
-				}
+				enforceAuth(authManager, backStackEntry.destination, navController)
 			}
 	}
 
@@ -186,6 +173,42 @@ fun AppNavHost(
 				navController = navController,
 				modifier = Modifier.fillMaxSize(),
 			)
+		}
+	}
+}
+
+/**
+ * Check for session validity, send user to PinVerification
+ * if needed.
+ *
+ * This also calculates the return path for successful
+ * PinVerification.
+ */
+fun enforceAuth(
+	authManager: AuthorizationManager,
+	destination: NavDestination?,
+	navController: NavHostController
+) {
+	if (
+		authManager.checkSessionValidity().not()
+		&& AppDestinations.isPinVerificationRoute(destination).not()
+		&& destination?.route != AppDestinations.INTRODUCTION_ROUTE
+	) {
+		val returnRoute = when (destination?.route) {
+			AppDestinations.VIEW_PHOTO_ROUTE -> {
+				navController.currentBackStackEntry?.arguments?.getString("photoName")
+					?.let { photoName ->
+						AppDestinations.createViewPhotoRoute(photoName)
+					} ?: AppDestinations.CAMERA_ROUTE
+			}
+
+			else -> {
+				destination?.route ?: AppDestinations.CAMERA_ROUTE
+			}
+		}
+
+		navController.navigate(AppDestinations.createPinVerificationRoute(returnRoute)) {
+			launchSingleTop = true
 		}
 	}
 }

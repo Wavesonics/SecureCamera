@@ -1,6 +1,6 @@
 package com.darkrockstudios.app.securecamera.navigation
 
-import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -25,9 +25,9 @@ object AppDestinations {
 		return "pin_verification/$encoded"
 	}
 
-	fun isPinVerificationRoute(entry: NavBackStackEntry?): Boolean {
-		if (entry == null) return false
-		return entry.destination.route?.startsWith("pin_verification/") ?: false
+	fun isPinVerificationRoute(destination: NavDestination?): Boolean {
+		if (destination == null) return false
+		return destination.route?.startsWith("pin_verification/") ?: false
 	}
 
 	@OptIn(ExperimentalEncodingApi::class)
