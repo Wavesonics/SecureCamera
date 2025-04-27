@@ -21,8 +21,6 @@ internal fun CameraContent(
 ) {
 	KeepScreenOnEffect()
 
-	val cameraState = rememberCameraState()
-
 	val permissionsState = rememberMultiplePermissionsState(
 		permissions = listOf(
 			Manifest.permission.CAMERA,
@@ -54,6 +52,7 @@ internal fun CameraContent(
 			.fillMaxSize()
 	) {
 		if (permissionsState.allPermissionsGranted) {
+			val cameraState = rememberCameraState()
 			CameraPreview(
 				modifier = Modifier.fillMaxSize(),
 				state = cameraState
