@@ -1,7 +1,7 @@
 [versions]
 kotlinxCoroutinesTest = "1.10.2"
-versionCode = "8"
-versionName = "1.4.1"
+versionCode = "9"
+versionName = "1.4.2"
 
 javaVersion = "11"
 agp = "8.9.2"
