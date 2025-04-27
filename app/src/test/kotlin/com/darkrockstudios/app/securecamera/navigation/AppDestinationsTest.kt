@@ -1,6 +1,5 @@
 package com.darkrockstudios.app.securecamera.navigation
 
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations.decodeReturnRoute
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations.encodeReturnRoute
@@ -111,11 +110,8 @@ class AppDestinationsTest {
 		val navDestination = mockk<NavDestination>()
 		every { navDestination.route } returns "pin_verification/Y2FtZXJh"
 
-		val navBackStackEntry = mockk<NavBackStackEntry>()
-		every { navBackStackEntry.destination } returns navDestination
-
 		// When
-		val result = isPinVerificationRoute(navBackStackEntry)
+		val result = isPinVerificationRoute(navDestination)
 
 		// Then
 		assertTrue(result)
@@ -127,11 +123,8 @@ class AppDestinationsTest {
 		val navDestination = mockk<NavDestination>()
 		every { navDestination.route } returns "camera"
 
-		val navBackStackEntry = mockk<NavBackStackEntry>()
-		every { navBackStackEntry.destination } returns navDestination
-
 		// When
-		val result = isPinVerificationRoute(navBackStackEntry)
+		val result = isPinVerificationRoute(navDestination)
 
 		// Then
 		assertFalse(result)
@@ -143,11 +136,8 @@ class AppDestinationsTest {
 		val navDestination = mockk<NavDestination>()
 		every { navDestination.route } returns null
 
-		val navBackStackEntry = mockk<NavBackStackEntry>()
-		every { navBackStackEntry.destination } returns navDestination
-
 		// When
-		val result = isPinVerificationRoute(navBackStackEntry)
+		val result = isPinVerificationRoute(navDestination)
 
 		// Then
 		assertFalse(result)
