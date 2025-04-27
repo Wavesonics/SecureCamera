@@ -1,0 +1,4 @@
+- Rewrote the Camera
+    + Added pinch to zoom, tap to focus, Level
+- Rewrote Photo Viewer
+- Fixed some bugs
