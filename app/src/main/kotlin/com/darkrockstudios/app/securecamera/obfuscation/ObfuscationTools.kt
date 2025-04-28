@@ -7,6 +7,8 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import androidx.core.graphics.scale
+import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceLandmark
 import java.security.SecureRandom
 
 enum class MaskMode {
@@ -39,12 +41,13 @@ fun coerceRectToBitmap(rect: Rect, bitmap: Bitmap): Rect {
 	return Rect(left, top, right, bottom)
 }
 
-fun maskFace(bitmap: Bitmap, rect: Rect, context: Context, vararg modes: MaskMode) {
+fun maskFace(bitmap: Bitmap, face: Face, context: Context, vararg modes: MaskMode) {
+	val rect = face.boundingBox
 	val safeRect = coerceRectToBitmap(rect, bitmap)
 	modes.forEach { mode ->
 		when (mode) {
 			MaskMode.BLACKOUT -> blackout(bitmap, safeRect)
-			MaskMode.PIXELATE -> pixelate(bitmap, safeRect)
+			MaskMode.PIXELATE -> pixelate(bitmap, safeRect, face)
 			MaskMode.NOISE -> noise(bitmap, safeRect)
 			MaskMode.BLUR -> blur(bitmap, safeRect, context)
 		}
@@ -58,19 +61,18 @@ private fun blackout(bitmap: Bitmap, rect: Rect) {
 	canvas.drawRect(safeRect, paint)
 }
 
-private fun pixelate(bitmap: Bitmap, rect: Rect, targetBlockSize: Int = 8, addNoise: Boolean = true) {
+private fun pixelate(bitmap: Bitmap, rect: Rect, face: Face, targetBlockSize: Int = 8, addNoise: Boolean = true) {
 	val faceBitmap = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
 
 	val small = faceBitmap.scale(targetBlockSize, targetBlockSize, false)
-	val pixelated = small.scale(rect.width(), rect.height(), false)
 
 	if (addNoise) {
 		val random = SecureRandom.getInstanceStrong()
-		val noiseCanvas = Canvas(pixelated)
+		val noiseCanvas = Canvas(small)
 		val paint = Paint()
 
 		// Replace random pixels entirely
-		val noiseProbability = 0.33f
+		val noiseProbability = 0.25f
 		for (y in 0 until small.height) {
 			for (x in 0 until small.width) {
 				if (random.nextFloat() <= noiseProbability) {
@@ -85,11 +87,64 @@ private fun pixelate(bitmap: Bitmap, rect: Rect, targetBlockSize: Int = 8, addNo
 		}
 	}
 
+	val leftEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.LEFT_EYE }
+	val rightEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.RIGHT_EYE }
+	if (leftEye != null && rightEye != null) {
+		val leftEyePosition = leftEye.position
+		val rightEyePosition = rightEye.position
+
+		val leftEyeInFace = PointF(
+			leftEyePosition.x - rect.left,
+			leftEyePosition.y - rect.top
+		)
+		val rightEyeInFace = PointF(
+			rightEyePosition.x - rect.left,
+			rightEyePosition.y - rect.top
+		)
+
+		val leftEyeInSmall = PointF(
+			leftEyeInFace.x * small.width / faceBitmap.width,
+			leftEyeInFace.y * small.height / faceBitmap.height
+		)
+		val rightEyeInSmall = PointF(
+			rightEyeInFace.x * small.width / faceBitmap.width,
+			rightEyeInFace.y * small.height / faceBitmap.height
+		)
+
+		// Blackout the eyes
+		val paint = Paint().apply { color = Color.BLACK }
+		val noiseCanvas = Canvas(small)
+
+		if (leftEyeInSmall.x >= 0 && leftEyeInSmall.x < small.width &&
+			leftEyeInSmall.y >= 0 && leftEyeInSmall.y < small.height &&
+			rightEyeInSmall.x >= 0 && rightEyeInSmall.x < small.width &&
+			rightEyeInSmall.y >= 0 && rightEyeInSmall.y < small.height
+		) {
+			noiseCanvas.drawLine(
+				0f, leftEyeInSmall.y, 7f, rightEyeInSmall.y, paint,
+			)
+		} else {
+			if (leftEyeInSmall.x >= 0 && leftEyeInSmall.x < small.width &&
+				leftEyeInSmall.y >= 0 && leftEyeInSmall.y < small.height
+			) {
+				noiseCanvas.drawPoint(leftEyeInSmall.x, leftEyeInSmall.y, paint)
+			}
+
+			if (rightEyeInSmall.x >= 0 && rightEyeInSmall.x < small.width &&
+				rightEyeInSmall.y >= 0 && rightEyeInSmall.y < small.height
+			) {
+				noiseCanvas.drawPoint(rightEyeInSmall.x, rightEyeInSmall.y, paint)
+			}
+		}
+	}
+
+	val pixelated = small.scale(rect.width(), rect.height(), false)
+
 	val canvas = Canvas(bitmap)
 	canvas.drawBitmap(pixelated, rect.left.toFloat(), rect.top.toFloat(), null)
 }
 
-private fun blur(bitmap: Bitmap, rect: Rect, context: Context, radius: Float = 25f, rounds: Int = 3) {
+private fun blur(bitmap: Bitmap, rect: Rect, context: Context, radius: Float = 25f, rounds: Int = 10) {
 	val safeRect = coerceRectToBitmap(rect, bitmap)
 	val faceBitmap = Bitmap.createBitmap(bitmap, safeRect.left, safeRect.top, safeRect.width(), safeRect.height())
 

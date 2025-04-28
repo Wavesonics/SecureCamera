@@ -34,6 +34,9 @@ import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.google.mlkit.vision.face.FaceDetectorOptions.LANDMARK_MODE_ALL
+import com.google.mlkit.vision.face.FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
@@ -54,7 +57,14 @@ fun ObfuscatePhotoContent(
 	var originalBitmap by remember { mutableStateOf<Bitmap?>(null) }
 	var isLoading by remember { mutableStateOf(true) }
 	var isFacesObscured by remember { mutableStateOf(false) }
-	val detector = remember { FaceDetection.getClient() }
+	val detector = remember {
+		FaceDetection.getClient(
+			FaceDetectorOptions.Builder()
+				.setLandmarkMode(LANDMARK_MODE_ALL)
+				.setPerformanceMode(PERFORMANCE_MODE_ACCURATE)
+				.build()
+		)
+	}
 
 	var faces by remember { mutableStateOf<List<Face>>(emptyList()) }
 
@@ -88,15 +98,12 @@ fun ObfuscatePhotoContent(
 	fun obscureFaces() {
 		originalBitmap?.let { bitmap ->
 			if (faces.isNotEmpty() && !isFacesObscured) {
-				// Create a mutable copy of the bitmap to modify
 				val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
 
-				// Pixelate each detected face
 				faces.forEach { face ->
-					maskFace(mutableBitmap, face.boundingBox, context, MaskMode.PIXELATE, MaskMode.BLUR)
+					maskFace(mutableBitmap, face, context, MaskMode.PIXELATE)
 				}
 
-				// Update the displayed image
 				imageBitmap = mutableBitmap.asImageBitmap()
 				isFacesObscured = true
 
