@@ -122,11 +122,14 @@
 	<string name="intro_title">Willkommen bei SnapSafe!</string>
 	<string name="intro_next">Weiter</string>
 	<string name="intro_skip">Überspringen</string>
-	<string name="intro_slide0_title">Snap Safe</string>
+    <string name="intro_slide0_title">SnapSafe</string>
 	<string name="intro_slide1_title">Datenschutzfokussiert</string>
 	<string name="intro_slide_icon">Folie Symbol</string>
 	<string name="intro_slide2_title">Sichere Speicherung</string>
-	<string name="intro_slide0_description">Willkommen bei Snap Safe! Eine kostenlose und Open-Source-App, die entwickelt wurde, um Ihre Privatsphäre zu schützen.\n\nNeben starker Verschlüsselung werden alle Maßnahmen ergriffen, um Ihre Fotos vor neugierigen Blicken zu schützen, selbst wenn Ihr Telefon beschlagnahmt und durchsucht wird.</string>
+    <string name="intro_slide0_description">Willkommen bei SnapSafe! Eine kostenlose und Open-Source-App, die entwickelt
+        wurde, um Ihre Privatsphäre zu schützen.\n\nNeben starker Verschlüsselung werden alle Maßnahmen ergriffen, um
+        Ihre Fotos vor neugierigen Blicken zu schützen, selbst wenn Ihr Telefon beschlagnahmt und durchsucht wird.
+    </string>
 	<string name="intro_slide1_description">Ihre PIN ist erforderlich, um die Fotos aufzunehmen und anzusehen, damit sie vor unbefugtem Zugriff geschützt sind, selbst wenn der Rest Ihres Geräts entsperrt ist.\n\nNach ein paar Minuten müssen Sie Ihre PIN erneut eingeben, um zu überprüfen, ob Sie es noch sind.</string>
 	<string name="intro_slide3_title">Immer noch teilbar</string>
 	<string name="intro_slide4_title">Meta-Daten</string>
@@ -134,7 +137,10 @@
 	<string name="intro_slide5_title">Standortdaten</string>
 	<string name="intro_slide4_description">Sie entscheiden, was Sie mit den Metadaten Ihrer Fotos in Abhängigkeit von Ihrem Bedrohungsmodell tun möchten.\n\nIntern werden Ihre Fotos mit einigen grundlegenden Metadaten gespeichert. Je nach Ihren Einstellungen können wir diese Daten automatisch entfernen, wenn Sie ein Foto außerhalb der App teilen.</string>
 	<string name="pin_creation_title">Erstellen Sie Ihre PIN</string>
-	<string name="intro_slide3_description">In den meisten Fällen müssen wir noch in der Lage sein, unsere sensiblen Fotos zu verschieben und sie mit einer anderen App oder Person zu teilen. Snap Safe ermöglicht es Ihnen weiterhin, dies sicher zu tun.\n\nSobald das Foto Snap Safe verlässt, liegt die Privatsphäre in Ihren Händen.</string>
+    <string name="intro_slide3_description">Die meisten Zeiten müssen wir immer noch in der Lage sein, unsere sensiblen
+        Fotos zu verschieben und sie mit einer anderen App oder Person zu teilen. SnapSafe ermöglicht es Ihnen
+        weiterhin, dies sicher zu tun.\n\nSobald das Foto SnapSafe verlässt, liegt die Privatsphäre bei Ihnen.
+    </string>
 	<string name="pin_creation_hint">PIN eingeben</string>
 	<string name="pin_creation_confirm_hint">PIN bestätigen</string>
 	<string name="pin_creation_warning">Verwenden Sie nicht denselben PIN wie Ihr Gerät.\n\nWenn Sie diesen PIN vergessen, gibt es keine Möglichkeit, ihn wiederherzustellen, alle Ihre Fotos gehen verloren.</string>

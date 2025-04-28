@@ -123,15 +123,19 @@
 	<string name="intro_finish">完成</string>
 	<string name="intro_skip">跳过</string>
 	<string name="intro_slide_icon">幻灯片图标</string>
-	<string name="intro_slide0_title">Snap Safe</string>
+    <string name="intro_slide0_title">SnapSafe</string>
 	<string name="intro_slide1_title">隐私专注</string>
 	<string name="intro_slide2_title">安全存储</string>
 	<string name="intro_slide3_title">仍然可以分享</string>
 	<string name="intro_slide1_description">您的 PIN 码是拍摄和查看照片所必需的，即使您的设备其余部分已解锁，也能确保它们免受未授权访问。\n\n几分钟后，您需要再次输入 PIN 码以验证仍然是您。</string>
-	<string name="intro_slide0_description">欢迎使用 Snap Safe！这是一个免费的开源应用程序，旨在保护您的隐私。\n\n除了强大的加密技术之外，采取了一切措施来保护您的照片免受窥探，即使您的手机被没收并被搜索。</string>
+    <string name="intro_slide0_description">欢迎使用
+        SnapSafe！这是一个免费且开源的应用程序，旨在保护您的隐私。\n\n除了强大的加密技术，我们采取了一切措施来保护您的照片不被偷窥，即使您的手机被没收并进行搜查。
+    </string>
 	<string name="intro_slide2_description">您的照片存储在应用私有的加密存储中。加密密钥来自您的 PIN，并且从未存储在磁盘上。\n\n没有数据，包括照片，永远不会上传或备份到任何地方。</string>
 	<string name="intro_slide4_title">元数据</string>
-	<string name="intro_slide3_description">大多数时候，我们仍然需要能够将敏感照片移出并分享给另一个应用或个人。Snap Safe 仍然允许您安全地这样做。\n\n一旦照片离开 Snap Safe，它的隐私就取决于您。</string>
+    <string name="intro_slide3_description">大多数时候，我们仍然需要能够将敏感照片转移并分享给其他应用或人。SnapSafe
+        仍然允许您安全地进行此操作。\n\n一旦照片离开 SnapSafe，其隐私就取决于您。
+    </string>
 	<string name="intro_slide5_title">位置数据</string>
 	<string name="intro_slide4_description">您可以根据您的威胁模型选择如何处理照片的元数据。\n\n您照片的元数据会在内部以一些基本信息存储。根据您的设置，我们可以在应用外共享照片时自动去除这些数据。</string>
 	<string name="pin_creation_title">创建您的 PIN</string>

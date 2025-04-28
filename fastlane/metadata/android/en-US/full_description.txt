@@ -1,4 +1,4 @@
-Snap Safe is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on YOUR device.
+SnapSafe is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on YOUR device.
 
 Key Features:
 • Zero‑Leak Design – The manifest skips android.permission.INTERNET; nothing leaves your device.
@@ -13,7 +13,7 @@ Key Features:
 • Decoy Photos – Select innocuous decoy photos, these will be preserved when your Poison Pill is activated. That way
   your Gallery is not suspiciously empty.
 
-Why Snap Safe?
+Why SnapSafe?
 We capture photos locally, encrypt everything in private storage, let YOU decide if GPS tags are added (precision optional), and strip out tell‑tale metadata automatically.
 
 We NEVER phone home or talk to servers, slurp analytics or usage stats, sprinkle ads or trackers in the code, or read files outside our sandbox.

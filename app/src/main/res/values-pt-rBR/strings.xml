@@ -123,15 +123,21 @@
 	<string name="intro_skip">Pular</string>
 	<string name="intro_slide_icon">Ícone do Slide</string>
 	<string name="intro_finish">Concluir</string>
-	<string name="intro_slide0_title">Snap Safe</string>
+    <string name="intro_slide0_title">SnapSafe</string>
 	<string name="intro_slide1_title">Focado em Privacidade</string>
 	<string name="intro_slide2_title">Armazenamento Seguro</string>
-	<string name="intro_slide0_description">Bem-vindo ao Snap Safe! Um aplicativo gratuito e de código aberto projetado para proteger sua privacidade.\n\nJuntamente com uma forte criptografia, todas as medidas são tomadas para proteger suas fotos de olhos curiosos, mesmo que seu telefone seja confiscado e investigado.</string>
+    <string name="intro_slide0_description">Bem-vindo ao SnapSafe! Um aplicativo gratuito e de código aberto projetado
+        para proteger sua privacidade.\n\nJuntamente com criptografia forte, todas as medidas são tomadas para proteger
+        suas fotos de olhares curiosos, mesmo que seu telefone seja confiscado e pesquisado.
+    </string>
 	<string name="intro_slide3_title">Ainda Compartilhável</string>
 	<string name="intro_slide1_description">Seu PIN é necessário para tirar e visualizar as fotos, mantendo-as seguras contra acesso não autorizado, mesmo que o restante do seu dispositivo esteja desbloqueado.\n\nApós alguns minutos, você será obrigado a inserir seu PIN novamente para verificar se ainda é você.</string>
 	<string name="intro_slide4_title">Meta Dados</string>
 	<string name="intro_slide2_description">Suas fotos são armazenadas em um armazenamento privado do app, criptografado. A chave de criptografia é derivada do seu PIN e nunca é armazenada em disco.\n\nNenhum dado, incluindo fotos, é enviado ou feito backup em nenhum lugar.</string>
-	<string name="intro_slide3_description">Na maioria das vezes, ainda precisamos ser capazes de mover nossas fotos sensíveis e compartilhá-las com outro aplicativo ou pessoa. O Snap Safe ainda permite que você faça isso com segurança.\n\nUma vez que a foto saia do Snap Safe, a privacidade fica por sua conta.</string>
+    <string name="intro_slide3_description">Na maioria das vezes, ainda precisamos ser capazes de mover nossas fotos
+        sensíveis para compartilhá-las com outro aplicativo ou pessoa. O SnapSafe ainda permite que você faça isso de
+        forma segura.\n\nUma vez que a foto sai do SnapSafe, sua privacidade depende de você.
+    </string>
 	<string name="intro_slide5_title">Dados de Localização</string>
 	<string name="pin_creation_title">Crie seu PIN</string>
 	<string name="pin_creation_description">Crie um PIN com pelo menos 4 dígitos para proteger suas fotos</string>

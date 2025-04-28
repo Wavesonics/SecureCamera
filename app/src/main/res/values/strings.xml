@@ -174,8 +174,8 @@
     <!-- Introduction Slides -->
     <string name="intro_slide_icon">Slide Icon</string>
 
-    <string name="intro_slide0_title">Snap Safe</string>
-    <string name="intro_slide0_description">Welcome to Snap Safe! A free and open source app designed to protect
+    <string name="intro_slide0_title">SnapSafe</string>
+    <string name="intro_slide0_description">Welcome to SnapSafe! A free and open source app designed to protect
         your privacy.\n\nAlong with strong encryption, every measure is taken to safeguard your photos from prying eyes
         even if your phone is confiscated and searched.
     </string>
@@ -194,8 +194,8 @@
 
     <string name="intro_slide3_title">Still Sharable</string>
     <string name="intro_slide3_description">Most times we still need to be able to move our sensitive photos out and
-        share them to another app or person. Snap Safe still allows you to do so safely.\n\nOnce the photo leaves
-        Snap Safe, its privacy is up to you.
+        share them to another app or person. SnapSafe still allows you to do so safely.\n\nOnce the photo leaves
+        SnapSafe, its privacy is up to you.
     </string>
 
     <string name="intro_slide4_title">Meta Data</string>

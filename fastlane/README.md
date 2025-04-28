@@ -1,6 +1,6 @@
-# FastLane Setup for Snap Safe
+# FastLane Setup for SnapSafe
 
-This directory contains the FastLane configuration for automating the deployment of Snap Safe to Google Play.
+This directory contains the FastLane configuration for automating the deployment of SnapSafe to Google Play.
 
 ## Directory Structure
 
