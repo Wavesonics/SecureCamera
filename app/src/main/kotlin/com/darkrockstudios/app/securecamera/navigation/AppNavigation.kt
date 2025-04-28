@@ -5,11 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +23,7 @@ import com.darkrockstudios.app.securecamera.camera.CameraContent
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.gallery.GalleryContent
 import com.darkrockstudios.app.securecamera.introduction.IntroductionContent
+import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoContent
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.settings.SettingsContent
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoContent
@@ -174,6 +171,27 @@ fun AppNavHost(
 				modifier = Modifier.fillMaxSize(),
 			)
 		}
+
+		composable(
+			route = AppDestinations.OBFUSCATE_PHOTO_ROUTE,
+			arguments = listOf(navArgument("photoName") { defaultValue = "" })
+		) { backStackEntry ->
+			val photoName = backStackEntry.arguments?.getString("photoName") ?: ""
+
+			if (authManager.checkSessionValidity()) {
+				ObfuscatePhotoContent(
+					photoName = photoName,
+					navController = navController,
+				)
+			} else {
+				Box(modifier = Modifier.fillMaxSize()) {
+					Text(
+						text = stringResource(R.string.unauthorized),
+						modifier = Modifier.align(Alignment.Center)
+					)
+				}
+			}
+		}
 	}
 }
 
@@ -199,6 +217,13 @@ fun enforceAuth(
 				navController.currentBackStackEntry?.arguments?.getString("photoName")
 					?.let { photoName ->
 						AppDestinations.createViewPhotoRoute(photoName)
+					} ?: AppDestinations.CAMERA_ROUTE
+			}
+
+			AppDestinations.OBFUSCATE_PHOTO_ROUTE -> {
+				navController.currentBackStackEntry?.arguments?.getString("photoName")
+					?.let { photoName ->
+						AppDestinations.createObfuscatePhotoRoute(photoName)
 					} ?: AppDestinations.CAMERA_ROUTE
 			}
 

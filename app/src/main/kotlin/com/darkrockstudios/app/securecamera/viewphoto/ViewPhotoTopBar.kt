@@ -5,11 +5,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,6 +19,7 @@ fun ViewPhotoTopBar(
 	onDeleteClick: () -> Unit,
 	onShareClick: () -> Unit,
 	onInfoClick: () -> Unit,
+	onObfuscateClick: () -> Unit,
 	showDecoyButton: Boolean = false,
 	isDecoy: Boolean = false,
 	isDecoyLoading: Boolean = false,
@@ -117,6 +114,19 @@ fun ViewPhotoTopBar(
 					leadingIcon = {
 						Icon(
 							imageVector = Icons.Filled.Info,
+							contentDescription = null
+						)
+					}
+				)
+				DropdownMenuItem(
+					text = { Text(stringResource(id = R.string.obfuscate_photo_button)) },
+					onClick = {
+						onObfuscateClick()
+						showMoreMenu = false
+					},
+					leadingIcon = {
+						Icon(
+							imageVector = Icons.Filled.BlurOn,
 							contentDescription = null
 						)
 					}

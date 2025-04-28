@@ -1,11 +1,11 @@
 package com.darkrockstudios.app.securecamera.viewphoto
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -31,6 +31,7 @@ import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.sharePhotoData
 import kotlinx.coroutines.CoroutineScope
@@ -100,6 +101,10 @@ fun ViewPhotoContent(
 			},
 			onInfoClick = {
 				showInfoDialog = true
+			},
+			onObfuscateClick = {
+				val photoName = curPhoto().photoName
+				navController.navigate(AppDestinations.createObfuscatePhotoRoute(photoName))
 			},
 			onShareClick = {
 				scope.launch {
@@ -238,4 +243,3 @@ private fun ViewPhoto(
 		}
 	}
 }
-

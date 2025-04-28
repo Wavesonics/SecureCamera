@@ -9,6 +9,8 @@
     <string name="delete_button">Delete</string>
     <string name="cancel_button">Cancel</string>
     <string name="info_button">Info</string>
+    <string name="obfuscate_photo_button">Obfuscate Photo</string>
+    <string name="obscure_action_button">Obscure</string>
     <string name="info_dialog_title">Photo Info</string>
     <string name="photo_name_label">Photo Name:</string>
     <string name="photo_date_label">Date Taken:</string>

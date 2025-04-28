@@ -9,7 +9,6 @@ import com.ashampoo.kim.Kim
 import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
-import com.ashampoo.kim.model.MetadataUpdate.TakenDate
 import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager.SecurityPin
@@ -177,7 +176,7 @@ class SecureImageManager(
 			rawSensorBitmap.compress(CompressFormat.JPEG, quality, outputStream)
 		}
 
-		val dateUpdate: MetadataUpdate = TakenDate(System.currentTimeMillis())
+		val dateUpdate: MetadataUpdate = MetadataUpdate.TakenDate(System.currentTimeMillis())
 		var updatedBytes = Kim.update(bytes = tempFile.readBytes(), dateUpdate)
 
 		if(applyRotation) {
@@ -222,6 +221,62 @@ class SecureImageManager(
 		tempFile.renameTo(photoFile)
 
 		return photoFile
+	}
+
+	suspend fun updateImage(
+		bitmap: Bitmap,
+		photoDef: PhotoDef,
+		quality: Int = 90
+	): PhotoDef {
+		val jpgBytes = decryptJpg(photoDef)
+
+		val metadata = Kim.readMetadata(jpgBytes)
+
+		val newJpgBytes = ByteArrayOutputStream().use { outputStream ->
+			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
+			outputStream.toByteArray()
+		}
+
+		val dir = getGalleryDirectory()
+		val tempFile = File(dir, "${photoDef.photoName}.tmp")
+
+		var updatedBytes = newJpgBytes
+
+		if (metadata != null) {
+			// Apply all existing metadata to the new image
+			metadata.convertToPhotoMetadata().let { photoMetadata ->
+				if (photoMetadata.takenDate != null) {
+					updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.TakenDate(photoMetadata.takenDate!!))
+				}
+
+				if (photoMetadata.orientation != null) {
+					updatedBytes =
+						Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(photoMetadata.orientation!!))
+				}
+
+				if (photoMetadata.gpsCoordinates != null) {
+					updatedBytes =
+						Kim.update(bytes = updatedBytes, MetadataUpdate.GpsCoordinates(photoMetadata.gpsCoordinates!!))
+				}
+			}
+		}
+
+		tempFile.writeBytes(updatedBytes)
+
+		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		encryptToFile(
+			plainPin = pin.plainPin,
+			hashedPin = pin.hashedPin,
+			plain = tempFile.readBytes(),
+			targetFile = tempFile,
+		)
+
+		tempFile.renameTo(photoDef.photoFile)
+
+		thumbnailCache.evictThumbnail(photoDef)
+		getThumbnail(photoDef).delete()
+
+		return photoDef
 	}
 
 	suspend fun readImage(photo: PhotoDef): Bitmap {

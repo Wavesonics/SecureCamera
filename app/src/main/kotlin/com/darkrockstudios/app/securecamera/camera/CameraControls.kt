@@ -187,13 +187,12 @@ private suspend fun handleImageCapture(
 	val image = result.getOrNull()
 	if (result.isSuccess && image != null) {
 		vibrateDevice(context)
-		imageSaver.saveImage(
+		val path = imageSaver.saveImage(
 			image = image,
 			applyRotation = true,
 			latLng = gpsCoordinates,
-		).let { path ->
-			Timber.i("Image saved at: $path")
-		}
+		)
+		Timber.i("Image saved at: $path")
 	} else {
 		Timber.e(result.exceptionOrNull(), "Image Capture Error")
 	}

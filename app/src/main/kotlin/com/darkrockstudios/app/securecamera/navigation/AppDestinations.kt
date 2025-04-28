@@ -12,12 +12,17 @@ object AppDestinations {
 	const val CAMERA_ROUTE = "camera"
 	const val GALLERY_ROUTE = "gallery"
 	const val VIEW_PHOTO_ROUTE = "viewphoto/{photoName}"
+	const val OBFUSCATE_PHOTO_ROUTE = "obfuscatephoto/{photoName}"
 	const val SETTINGS_ROUTE = "settings"
 	const val ABOUT_ROUTE = "about"
 	const val PIN_VERIFICATION_ROUTE = "pin_verification/{returnRoute}"
 
 	fun createViewPhotoRoute(photoName: String): String {
 		return "viewphoto/$photoName"
+	}
+
+	fun createObfuscatePhotoRoute(photoName: String): String {
+		return "obfuscatephoto/$photoName"
 	}
 
 	fun createPinVerificationRoute(returnRoute: String): String {

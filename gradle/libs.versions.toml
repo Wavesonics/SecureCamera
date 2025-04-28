@@ -1,4 +1,5 @@
 [versions]
+faceDetection = "16.1.7"
 kotlinxCoroutinesTest = "1.10.2"
 versionCode = "9"
 versionName = "1.4.2"
@@ -47,6 +48,7 @@ androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-ru
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtimeLivedata" }
+face-detection = { module = "com.google.mlkit:face-detection", version.ref = "faceDetection" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 cryptography-bom = { group = "dev.whyoleg.cryptography", name = "cryptography-bom", version.ref = "cryptographyBom" }

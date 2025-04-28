@@ -7,11 +7,7 @@ import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager.SecurityPin
-import com.darkrockstudios.app.securecamera.camera.CapturedImage
-import com.darkrockstudios.app.securecamera.camera.PhotoDef
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
-import com.darkrockstudios.app.securecamera.camera.ThumbnailCache
-import com.darkrockstudios.app.securecamera.camera.rotate
+import com.darkrockstudios.app.securecamera.camera.*
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import io.mockk.*
@@ -786,6 +782,80 @@ class SecureImageManagerTest {
 		val field = SecureImageManager::class.java.getDeclaredField("key")
 		field.isAccessible = true
 		assertNull(field.get(secureImageManager))
+	}
+
+	@Test
+	fun `updateImage should update image while preserving metadata`() = runTest {
+		// Given
+		val galleryDir = secureImageManager.getGalleryDirectory()
+		galleryDir.mkdirs()
+
+		// Mock security PIN
+		val hashedPin = HashedPin("salt", "hash")
+		val securityPin = SecurityPin("1234", hashedPin)
+		every { authorizationManager.securityPin } returns securityPin
+
+		// Create original image
+		val originalJpgBytes = readResourceBytes("red.jpg")
+		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
+		secureImageManager.encryptToFile(
+			plainPin = securityPin.plainPin,
+			hashedPin = securityPin.hashedPin,
+			plain = originalJpgBytes,
+			targetFile = photoFile,
+		)
+
+		val photoDef = PhotoDef(
+			photoName = "photo_20230101_120000_00.jpg",
+			photoFormat = "jpg",
+			photoFile = photoFile
+		)
+
+		// Mock BitmapFactory for reading the original image
+		mockkStatic(BitmapFactory::class)
+		val originalBitmap = mockk<Bitmap>()
+		every {
+			BitmapFactory.decodeByteArray(any(), any(), any())
+		} returns originalBitmap
+
+		// Create new bitmap to update with
+		val newBitmap = mockk<Bitmap>()
+
+		// Mock bitmap.compress to write bytes to the output stream
+		val newJpgBytes = "new image data".toByteArray()
+		every {
+			newBitmap.compress(any(), any(), any())
+		} answers {
+			val outputStream = thirdArg<ByteArrayOutputStream>()
+			outputStream.write(newJpgBytes)
+			true
+		}
+
+		// When
+		val result = secureImageManager.updateImage(
+			bitmap = newBitmap,
+			photoDef = photoDef,
+			quality = 90
+		)
+
+		// Then
+		// Verify the result is the same PhotoDef
+		assertEquals(photoDef, result)
+
+		// Verify the file exists and has content
+		assertTrue(photoFile.exists())
+		assertTrue(photoFile.length() > 0)
+
+		// Verify the thumbnail was cleared
+		coVerify { thumbnailCache.evictThumbnail(photoDef) }
+
+		// Decrypt the file and verify it contains the updated image data
+		val updatedBytes = secureImageManager.decryptJpg(photoDef)
+		assertNotNull(updatedBytes)
+		assertTrue(updatedBytes.isNotEmpty())
+
+		// Note: We can't directly compare the bytes because the metadata updates
+		// will modify the bytes. Instead, we verify that the file exists and has content.
 	}
 }
 

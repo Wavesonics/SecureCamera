@@ -100,6 +100,7 @@ dependencies {
 	implementation(libs.androidx.lifecycle.runtime.compose)
 	implementation(libs.zoomable)
 	implementation(libs.androidx.runtime.livedata)
+	implementation(libs.face.detection)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)
