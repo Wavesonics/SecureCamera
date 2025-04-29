@@ -49,6 +49,8 @@ fun AppNavHost(
 	val preferencesManager = koinInject<AppPreferencesManager>()
 	val locationRepository = koinInject<LocationRepository>()
 
+	val scope = rememberCoroutineScope()
+
 	/**
 	 * Continually enforce auth as the user navigates around the app
 	 */
@@ -182,6 +184,8 @@ fun AppNavHost(
 				ObfuscatePhotoContent(
 					photoName = photoName,
 					navController = navController,
+					snackbarHostState = snackbarHostState,
+					outerScope = scope,
 				)
 			} else {
 				Box(modifier = Modifier.fillMaxSize()) {

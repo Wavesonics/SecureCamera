@@ -279,6 +279,71 @@ class SecureImageManager(
 		return photoDef
 	}
 
+	suspend fun saveImageCopy(
+		bitmap: Bitmap,
+		photoDef: PhotoDef,
+		quality: Int = 90
+	): PhotoDef {
+		val jpgBytes = decryptJpg(photoDef)
+
+		val metadata = Kim.readMetadata(jpgBytes)
+
+		val newJpgBytes = ByteArrayOutputStream().use { outputStream ->
+			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
+			outputStream.toByteArray()
+		}
+
+		val dir = getGalleryDirectory()
+
+		// Create a new unique filename based on the current time
+		val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss_SS", Locale.US)
+		val newImageName = "photo_" + dateFormat.format(Date()) + ".jpg"
+		val newPhotoFile = File(dir, newImageName)
+		val tempFile = File(dir, "$newImageName.tmp")
+
+		var updatedBytes = newJpgBytes
+
+		if (metadata != null) {
+			// Apply all existing metadata to the new image
+			metadata.convertToPhotoMetadata().let { photoMetadata ->
+				if (photoMetadata.takenDate != null) {
+					updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.TakenDate(photoMetadata.takenDate!!))
+				}
+
+				if (photoMetadata.orientation != null) {
+					updatedBytes =
+						Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(photoMetadata.orientation!!))
+				}
+
+				if (photoMetadata.gpsCoordinates != null) {
+					updatedBytes =
+						Kim.update(bytes = updatedBytes, MetadataUpdate.GpsCoordinates(photoMetadata.gpsCoordinates!!))
+				}
+			}
+		}
+
+		tempFile.writeBytes(updatedBytes)
+
+		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		encryptToFile(
+			plainPin = pin.plainPin,
+			hashedPin = pin.hashedPin,
+			plain = tempFile.readBytes(),
+			targetFile = tempFile,
+		)
+
+		tempFile.renameTo(newPhotoFile)
+
+		// Create a new PhotoDef for the new file
+		val newPhotoDef = PhotoDef(
+			photoName = newImageName,
+			photoFormat = "jpg",
+			photoFile = newPhotoFile
+		)
+
+		return newPhotoDef
+	}
+
 	suspend fun readImage(photo: PhotoDef): Bitmap {
 		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
 

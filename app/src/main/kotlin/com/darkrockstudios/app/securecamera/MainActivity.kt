@@ -18,10 +18,12 @@ class MainActivity : ComponentActivity() {
 
 		clearShareDirectory(this)
 
-		window.setFlags(
-			WindowManager.LayoutParams.FLAG_SECURE,
-			WindowManager.LayoutParams.FLAG_SECURE
-		)
+		if (BuildConfig.DEBUG.not()) {
+			window.setFlags(
+				WindowManager.LayoutParams.FLAG_SECURE,
+				WindowManager.LayoutParams.FLAG_SECURE
+			)
+		}
 
 		enableEdgeToEdge()
 		setContent {

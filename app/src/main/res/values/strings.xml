@@ -9,8 +9,6 @@
     <string name="delete_button">Delete</string>
     <string name="cancel_button">Cancel</string>
     <string name="info_button">Info</string>
-    <string name="obfuscate_photo_button">Obfuscate Photo</string>
-    <string name="obscure_action_button">Obscure</string>
     <string name="info_dialog_title">Photo Info</string>
     <string name="photo_name_label">Photo Name:</string>
     <string name="photo_date_label">Date Taken:</string>
@@ -19,6 +17,23 @@
     <string name="photo_resolution_label">Resolution:</string>
     <string name="photo_no_data">[no data]</string>
     <string name="ok_button">OK</string>
+
+    <!-- Obscure Photo Screen -->
+    <string name="obfuscate_photo_button">Obfuscate Photo</string>
+    <string name="obscure_action_button">Obscure</string>
+    <string name="obscure_action_button_clear">Clear</string>
+    <string name="obscure_action_button_save">Save</string>
+    <string name="save_photo_dialog_title">Save Photo</string>
+    <string name="save_photo_dialog_message">Do you want to overwrite the original photo or save a new copy?</string>
+    <string name="overwrite_button">Overwrite</string>
+    <string name="save_copy_button">Save Copy</string>
+    <string name="obscure_toast_face_error">Automatic face finder failed</string>
+    <string name="obscure_toast_save_error">Failed to save photo</string>
+    <string name="obscure_toast_overwrite_success">Photo overwritten</string>
+    <string name="obscure_toast_copy_success">Photo copy saved</string>
+    <string name="obscure_toast_faces_found">%1$d faces found</string>
+    <string name="obscure_toast_faces_obscured">%1$d faces obscured</string>
+    <string name="obscure_toast_faces_cleared">Reverted obfuscations</string>
 
     <!-- View Photo Screen -->
     <string name="photo_title">Photo</string>
