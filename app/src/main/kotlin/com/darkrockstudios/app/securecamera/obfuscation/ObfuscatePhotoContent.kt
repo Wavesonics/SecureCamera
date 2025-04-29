@@ -15,15 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import org.koin.androidx.compose.koinViewModel
@@ -35,7 +34,6 @@ fun ObfuscatePhotoContent(
 	snackbarHostState: SnackbarHostState,
 	outerScope: CoroutineScope
 ) {
-	val context = LocalContext.current
 	val viewModel: ObfuscatePhotoViewModel = koinViewModel()
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -53,24 +51,11 @@ fun ObfuscatePhotoContent(
 		ObfuscatePhotoTopBar(
 			navController = navController,
 			onObscureClick = {
-				viewModel.obscureFaces(context) {
-					outerScope.launch {
-						snackbarHostState.showSnackbar(
-							context.getString(
-								R.string.obscure_toast_faces_obscured,
-								uiState.faces.size
-							)
-						)
-					}
-				}
+				viewModel.obscureFaces()
 			},
 			readyToObscure = (uiState.faces.isNotEmpty()),
 			onClearClick = {
-				viewModel.clear {
-					outerScope.launch {
-						snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_faces_cleared))
-					}
-				}
+				viewModel.clearFaces()
 			},
 			canClear = (uiState.obscuredBitmap != null),
 			onSaveClick = { viewModel.showSaveDialog() },
@@ -175,16 +160,6 @@ fun ObfuscatePhotoContent(
 			onDismiss = { viewModel.dismissSaveDialog() },
 			saveAsCopy = {
 				viewModel.saveAsCopy(
-					onComplete = {
-						outerScope.launch {
-							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_copy_success))
-						}
-					},
-					onError = {
-						outerScope.launch {
-							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_save_error))
-						}
-					},
 					onNavigate = { route ->
 						navController.navigate(route)
 					}
@@ -192,21 +167,15 @@ fun ObfuscatePhotoContent(
 			},
 			overwriteOriginal = {
 				viewModel.overwriteOriginal(
-					onError = {
-						outerScope.launch {
-							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_save_error))
-						}
-					},
 					onSuccess = {
-						outerScope.launch {
-							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_overwrite_success))
-						}
 						navController.popBackStack()
 					}
 				)
 			},
 		)
 	}
+
+	HandleUiEvents(viewModel.events, snackbarHostState, navController)
 }
 
 @Composable

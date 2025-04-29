@@ -4,8 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.darkrockstudios.app.securecamera.BaseViewModel
+import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
@@ -14,25 +15,22 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ObfuscatePhotoViewModel(
+	private val appContext: Context,
 	private val imageManager: SecureImageManager
-) : ViewModel() {
+) : BaseViewModel<ObfuscatePhotoUiState>() {
 
-	private val _uiState = MutableStateFlow(ObfuscatePhotoUiState())
-	val uiState: StateFlow<ObfuscatePhotoUiState> = _uiState.asStateFlow()
+	override fun createState() = ObfuscatePhotoUiState()
 
 	private val detector = FaceDetection.getClient(
 		FaceDetectorOptions.Builder()
 			.setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
 			.setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-			.setMinFaceSize(0.01f)
+			.setMinFaceSize(0.02f)
 			.build()
 	)
 
@@ -83,17 +81,15 @@ class ObfuscatePhotoViewModel(
 		}
 	}
 
-	fun obscureFaces(context: Context, onComplete: () -> Unit) {
-		Timber.e("obscureFaces!")
+	fun obscureFaces() {
 		uiState.value.originalBitmap?.let { bitmap ->
 			if (uiState.value.faces.isNotEmpty()) {
 				val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+				val faceCount = uiState.value.faces.size
 
 				uiState.value.faces.forEach { face ->
-					maskFace(mutableBitmap, face, context, MaskMode.PIXELATE)
+					maskFace(mutableBitmap, face, appContext, MaskMode.PIXELATE)
 				}
-
-				onComplete()
 
 				_uiState.update {
 					it.copy(
@@ -102,13 +98,20 @@ class ObfuscatePhotoViewModel(
 						faces = emptyList()
 					)
 				}
+
+				showFacesObscuredMessage(faceCount)
 			}
 		} ?: run {
 			Timber.e("obscureFaces: originalBitmap was null")
 		}
 	}
 
-	fun clear(onComplete: () -> Unit) {
+	private fun showFacesObscuredMessage(faceCount: Int) {
+		val message = appContext.getString(R.string.obscure_toast_faces_obscured, faceCount)
+		showMessage(message)
+	}
+
+	fun clearFaces() {
 		_uiState.update {
 			it.copy(
 				obscuredBitmap = null,
@@ -116,7 +119,12 @@ class ObfuscatePhotoViewModel(
 			)
 		}
 		findFaces()
-		onComplete()
+		showFacesClearedMessage()
+	}
+
+	private fun showFacesClearedMessage() {
+		val message = appContext.getString(R.string.obscure_toast_faces_cleared)
+		showMessage(message)
 	}
 
 	fun showSaveDialog() {
@@ -127,7 +135,7 @@ class ObfuscatePhotoViewModel(
 		_uiState.update { it.copy(showSaveDialog = false) }
 	}
 
-	fun overwriteOriginal(onError: () -> Unit, onSuccess: () -> Unit) {
+	fun overwriteOriginal(onSuccess: () -> Unit) {
 		val bitmap = uiState.value.obscuredBitmap ?: return
 		uiState.value.photoDef?.let { photo ->
 			viewModelScope.launch {
@@ -138,10 +146,11 @@ class ObfuscatePhotoViewModel(
 					)
 
 					Timber.i("Overwritten original image: ${photo.photoName}")
+					showOverwriteSuccessMessage()
 					onSuccess()
 				} catch (e: Exception) {
 					Timber.e(e, "Failed to overwrite original image")
-					onError()
+					showSaveErrorMessage()
 				}
 			}
 		} ?: run {
@@ -149,7 +158,7 @@ class ObfuscatePhotoViewModel(
 		}
 	}
 
-	fun saveAsCopy(onComplete: () -> Unit, onError: () -> Unit, onNavigate: (String) -> Unit) {
+	fun saveAsCopy(onNavigate: (String) -> Unit) {
 		val bitmap = uiState.value.obscuredBitmap ?: return
 		uiState.value.photoDef?.let { photo ->
 			viewModelScope.launch {
@@ -160,16 +169,31 @@ class ObfuscatePhotoViewModel(
 					)
 
 					Timber.i("Saved copy of image: ${newPhotoDef.photoName}")
-					onComplete()
+					showCopySuccessMessage()
 					onNavigate(AppDestinations.createViewPhotoRoute(newPhotoDef.photoName))
 				} catch (e: Exception) {
 					Timber.e(e, "Failed to save copy of image")
-					onError()
+					showSaveErrorMessage()
 				}
 			}
 		} ?: run {
 			Timber.e("saveAsCopy: photoDef was null")
 		}
+	}
+
+	private fun showCopySuccessMessage() {
+		val message = appContext.getString(R.string.obscure_toast_copy_success)
+		showMessage(message)
+	}
+
+	private fun showSaveErrorMessage() {
+		val message = appContext.getString(R.string.obscure_toast_save_error)
+		showMessage(message)
+	}
+
+	private fun showOverwriteSuccessMessage() {
+		val message = appContext.getString(R.string.obscure_toast_overwrite_success)
+		showMessage(message)
 	}
 }
 

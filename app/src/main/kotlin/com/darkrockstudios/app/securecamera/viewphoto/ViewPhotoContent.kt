@@ -14,34 +14,31 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
-import com.darkrockstudios.app.securecamera.sharePhotoData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
 import net.engawapg.lib.zoomable.ExperimentalZoomableApi
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomableWithScroll
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalZoomableApi::class)
@@ -53,40 +50,19 @@ fun ViewPhotoContent(
 	snackbarHostState: SnackbarHostState,
 	paddingValues: PaddingValues
 ) {
-	val imageManager = koinInject<SecureImageManager>()
-	var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
-	var showInfoDialog by rememberSaveable { mutableStateOf(false) }
-	val preferencesManager = koinInject<AppPreferencesManager>()
+	val viewModel: ViewPhotoViewModel = koinViewModel { parametersOf() }
 	val context = LocalContext.current
-	val scope = rememberCoroutineScope()
 
-	val photos = remember { imageManager.getPhotos().asReversed() }
-	val listState = rememberLazyListState(initialFirstVisibleItemIndex = photos.indexOfFirst { it == initialPhoto })
-
-	val sanitizeFileName by
-	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeFileNameDefault)
-	val sanitizeMetadata by
-	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeMetadataDefault)
-
-	var hasPoisonPill by remember { mutableStateOf(false) }
-	var isDecoy by remember { mutableStateOf(false) }
-	var isDecoyLoading by remember { mutableStateOf(false) }
-
-	val decoyAddedMessage = stringResource(id = R.string.decoy_added)
-	val decoyRemovedMessage = stringResource(id = R.string.decoy_removed)
-
-	val decoyLimitReachedMessage = stringResource(
-		id = R.string.decoy_limit_reached,
-		SecureImageManager.MAX_DECOY_PHOTOS
-	)
-
-	fun curPhoto(): PhotoDef {
-		return photos[listState.firstVisibleItemIndex]
+	LaunchedEffect(initialPhoto) {
+		viewModel.initialize(initialPhoto)
 	}
 
-	LaunchedEffect(Unit) {
-		hasPoisonPill = preferencesManager.hasPoisonPillPin()
-		isDecoy = imageManager.isDecoyPhoto(initialPhoto)
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+	LaunchedEffect(uiState.photoDeleted) {
+		if (uiState.photoDeleted) {
+			navController.navigateUp()
+		}
 	}
 
 	Column(
@@ -97,91 +73,85 @@ fun ViewPhotoContent(
 		ViewPhotoTopBar(
 			navController = navController,
 			onDeleteClick = {
-				showDeleteConfirmation = true
+				viewModel.showDeleteConfirmation()
 			},
 			onInfoClick = {
-				showInfoDialog = true
+				viewModel.showInfoDialog()
 			},
 			onObfuscateClick = {
-				val photoName = curPhoto().photoName
-				navController.navigate(AppDestinations.createObfuscatePhotoRoute(photoName))
+				val currentPhoto = viewModel.getCurrentPhoto()
+				currentPhoto?.let {
+					navController.navigate(AppDestinations.createObfuscatePhotoRoute(it.photoName))
+				}
 			},
 			onShareClick = {
-				scope.launch {
-					sharePhotoData(
-						photo = initialPhoto,
-						sanitizeName = sanitizeFileName,
-						sanitizeMetadata = sanitizeMetadata,
-						imageManager = imageManager,
-						context = context
-					)
-				}
+				viewModel.sharePhoto(context)
 			},
-			showDecoyButton = hasPoisonPill,
-			isDecoy = isDecoy,
-			isDecoyLoading = isDecoyLoading,
+			showDecoyButton = uiState.hasPoisonPill,
+			isDecoy = uiState.isDecoy,
+			isDecoyLoading = uiState.isDecoyLoading,
 			onDecoyClick = {
-				isDecoyLoading = true
-				scope.launch(Dispatchers.Default) {
-					if (isDecoy) {
-						imageManager.removeDecoyPhoto(initialPhoto)
-						withContext(Dispatchers.Main) {
-							isDecoy = false
-							isDecoyLoading = false
-							snackbarHostState.showSnackbar(decoyRemovedMessage)
-						}
-					} else {
-						val success = imageManager.addDecoyPhoto(initialPhoto)
-						withContext(Dispatchers.Main) {
-							isDecoyLoading = false
-							isDecoy = success
-							if (!success) {
-								snackbarHostState.showSnackbar(decoyLimitReachedMessage)
-							} else {
-								snackbarHostState.showSnackbar(decoyAddedMessage)
-							}
-						}
-					}
-				}
+				viewModel.toggleDecoyStatus()
 			}
 		)
 
-		if (showDeleteConfirmation) {
+		if (uiState.showDeleteConfirmation) {
 			ConfirmDeletePhotoDialog(
-				selectedCount = 1, onConfirm = {
-					showDeleteConfirmation = false
-					imageManager.deleteImage(initialPhoto)
-					navController.navigateUp()
+				selectedCount = 1,
+				onConfirm = {
+					viewModel.deleteCurrentPhoto()
+					viewModel.hideDeleteConfirmation()
 				},
 				onDismiss = {
-					showDeleteConfirmation = false
+					viewModel.hideDeleteConfirmation()
 				}
 			)
 		}
 
-		LazyRow(
-			state = listState,
-			modifier = Modifier.fillMaxSize(),
-			flingBehavior = rememberSnapFlingBehavior(lazyListState = listState, snapPosition = SnapPosition.Start),
-			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.spacedBy(32.dp),
-		) {
-			items(count = photos.size, key = { photos[it].photoName }) {
-				ViewPhoto(
-					Modifier.fillParentMaxSize(),
-					photos[it],
-					imageManager,
-					scope
-				)
+		if (uiState.photos.isNotEmpty()) {
+			val listState = rememberLazyListState(initialFirstVisibleItemIndex = uiState.initialIndex)
+
+			LaunchedEffect(listState) {
+				snapshotFlow {
+					listState.firstVisibleItemIndex to
+							listState.firstVisibleItemScrollOffset
+				}.collect { (idx, off) ->
+					if (listState.firstVisibleItemIndex != viewModel.currentIndex) {
+						viewModel.setCurrentPhotoIndex(listState.firstVisibleItemIndex)
+					}
+				}
+			}
+
+			LazyRow(
+				state = listState,
+				modifier = Modifier.fillMaxSize(),
+				flingBehavior = rememberSnapFlingBehavior(lazyListState = listState, snapPosition = SnapPosition.Start),
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.spacedBy(32.dp),
+			) {
+				items(count = uiState.photos.size, key = { uiState.photos[it].photoName }) { index ->
+					val photo = uiState.photos[index]
+					ViewPhoto(
+						modifier = Modifier.fillParentMaxSize(),
+						photo = photo,
+						imageBitmap = uiState.photoImages[photo.photoName],
+						onLoadImage = { viewModel.loadPhotoImage(photo) }
+					)
+				}
 			}
 		}
 
-		if (showInfoDialog) {
-			PhotoInfoDialog(curPhoto()) {
-				showInfoDialog = false
+		if (uiState.showInfoDialog) {
+			val currentPhoto = viewModel.getCurrentPhoto()
+			currentPhoto?.let {
+				PhotoInfoDialog(it) {
+					viewModel.hideInfoDialog()
+				}
 			}
 		}
 	}
+
+	HandleUiEvents(viewModel.events, snackbarHostState, navController)
 }
 
 @Composable
@@ -189,19 +159,17 @@ fun ViewPhotoContent(
 private fun ViewPhoto(
 	modifier: Modifier,
 	photo: PhotoDef,
-	imageManager: SecureImageManager,
-	scope: CoroutineScope
+	imageBitmap: ImageBitmap?,
+	onLoadImage: () -> Unit
 ) {
-	var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 	val imageAlpha by animateFloatAsState(
 		targetValue = if (imageBitmap != null) 1f else 0f,
 		animationSpec = tween(durationMillis = 500),
 		label = "imageAlpha"
 	)
+
 	LaunchedEffect(photo) {
-		scope.launch(Dispatchers.IO) {
-			imageBitmap = imageManager.readImage(photo).asImageBitmap()
-		}
+		onLoadImage()
 	}
 
 	Box(
