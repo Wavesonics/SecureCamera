@@ -1,0 +1,133 @@
+package com.darkrockstudios.app.securecamera.gallery
+
+import android.content.Context
+import androidx.lifecycle.viewModelScope
+import com.darkrockstudios.app.securecamera.BaseViewModel
+import com.darkrockstudios.app.securecamera.camera.PhotoDef
+import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.sharePhotosData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class GalleryViewModel(
+	private val imageManager: SecureImageManager,
+	private val preferencesManager: AppPreferencesManager
+) : BaseViewModel<GalleryUiState>() {
+
+	override fun createState() = GalleryUiState()
+
+	init {
+		loadPhotos()
+		observePreferences()
+	}
+
+	private fun loadPhotos() {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val photos = imageManager.getPhotos().sortedByDescending { it.dateTaken() }
+			_uiState.update { it.copy(photos = photos, isLoading = false) }
+		}
+	}
+
+	private fun observePreferences() {
+		viewModelScope.launch {
+			preferencesManager.sanitizeFileName.collect { sanitizeFileName ->
+				_uiState.update { it.copy(sanitizeFileName = sanitizeFileName) }
+			}
+		}
+
+		viewModelScope.launch {
+			preferencesManager.sanitizeMetadata.collect { sanitizeMetadata ->
+				_uiState.update { it.copy(sanitizeMetadata = sanitizeMetadata) }
+			}
+		}
+	}
+
+	fun togglePhotoSelection(photoName: String) {
+		val currentSelectedPhotos = uiState.value.selectedPhotos
+		val newSelectedPhotos = if (currentSelectedPhotos.contains(photoName)) {
+			currentSelectedPhotos - photoName
+		} else {
+			currentSelectedPhotos + photoName
+		}
+
+		_uiState.update {
+			it.copy(
+				selectedPhotos = newSelectedPhotos,
+				isSelectionMode = newSelectedPhotos.isNotEmpty()
+			)
+		}
+	}
+
+	fun startSelectionMode(photoName: String) {
+		_uiState.update {
+			it.copy(
+				isSelectionMode = true,
+				selectedPhotos = setOf(photoName)
+			)
+		}
+	}
+
+	fun clearSelection() {
+		_uiState.update {
+			it.copy(
+				isSelectionMode = false,
+				selectedPhotos = emptySet()
+			)
+		}
+	}
+
+	fun showDeleteConfirmation() {
+		_uiState.update { it.copy(showDeleteConfirmation = true) }
+	}
+
+	fun dismissDeleteConfirmation() {
+		_uiState.update { it.copy(showDeleteConfirmation = false) }
+	}
+
+	fun deleteSelectedPhotos() {
+		val photoDefs = uiState.value.selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
+		imageManager.deleteImages(photoDefs)
+
+		val updatedPhotos = uiState.value.photos.filter { it !in photoDefs }
+		_uiState.update {
+			it.copy(
+				photos = updatedPhotos,
+				selectedPhotos = emptySet(),
+				isSelectionMode = false,
+				showDeleteConfirmation = false
+			)
+		}
+	}
+
+	fun shareSelectedPhotos(context: Context) {
+		val photoDefs = uiState.value.selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
+		if (photoDefs.isNotEmpty()) {
+			viewModelScope.launch(Dispatchers.IO) {
+				sharePhotosData(
+					photos = photoDefs,
+					sanitizeName = uiState.value.sanitizeFileName,
+					sanitizeMetadata = uiState.value.sanitizeMetadata,
+					imageManager = imageManager,
+					context = context
+				)
+				withContext(Dispatchers.Main) {
+					clearSelection()
+				}
+			}
+		}
+	}
+}
+
+data class GalleryUiState(
+	val photos: List<PhotoDef> = emptyList(),
+	val isLoading: Boolean = true,
+	val isSelectionMode: Boolean = false,
+	val selectedPhotos: Set<String> = emptySet(),
+	val showDeleteConfirmation: Boolean = false,
+	val sanitizeFileName: Boolean = true,
+	val sanitizeMetadata: Boolean = true
+)

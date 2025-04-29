@@ -97,7 +97,8 @@ fun AppNavHost(
 				GalleryContent(
 					navController = navController,
 					modifier = Modifier.fillMaxSize(),
-					paddingValues = paddingValues
+					paddingValues = paddingValues,
+					snackbarHostState = snackbarHostState
 				)
 			} else {
 				Box(modifier = Modifier.fillMaxSize()) {

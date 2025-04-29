@@ -13,28 +13,29 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
-import com.darkrockstudios.app.securecamera.sharePhotosData
-import kotlinx.coroutines.*
+import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,83 +43,16 @@ import org.koin.compose.koinInject
 fun GalleryContent(
 	modifier: Modifier = Modifier,
 	navController: NavController,
-	paddingValues: PaddingValues
+	paddingValues: PaddingValues,
+	snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
-	val imageManager = koinInject<SecureImageManager>()
-	val preferencesManager = koinInject<AppPreferencesManager>()
-	var photos by remember { mutableStateOf<List<PhotoDef>>(emptyList()) }
-	var isLoading by rememberSaveable { mutableStateOf(true) }
 	val context = LocalContext.current
-	val scope = rememberCoroutineScope()
+	val viewModel: GalleryViewModel = koinViewModel()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-	// Selection state
-	var isSelectionMode by rememberSaveable { mutableStateOf(false) }
-	var selectedPhotos by rememberSaveable { mutableStateOf<Set<String>>(emptySet()) }
-	var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
-
-	val sanitizeFileName by
-	preferencesManager.sanitizeFileName.collectAsState(preferencesManager.sanitizeFileNameDefault)
-	val sanitizeMetadata by
-	preferencesManager.sanitizeMetadata.collectAsState(preferencesManager.sanitizeMetadataDefault)
-
-	// Function to toggle selection of a photo
-	val togglePhotoSelection = { photoName: String ->
-		selectedPhotos = if (selectedPhotos.contains(photoName)) {
-			selectedPhotos - photoName
-		} else {
-			selectedPhotos + photoName
-		}
-
-		// If no photos are selected, exit selection mode
-		if (selectedPhotos.isEmpty()) {
-			isSelectionMode = false
-		}
-	}
-
-	val startSelectionMode = { photoName: String ->
-		isSelectionMode = true
-		selectedPhotos = setOf(photoName)
+	val startSelectionWithVibration = { photoName: String ->
+		viewModel.startSelectionMode(photoName)
 		vibrateDevice(context)
-	}
-
-	val clearSelection = {
-		isSelectionMode = false
-		selectedPhotos = emptySet()
-	}
-
-	val handleDelete = {
-		showDeleteConfirmation = true
-	}
-
-	val performDelete = {
-		val photoDefs = selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
-		imageManager.deleteImages(photoDefs)
-		clearSelection()
-		photos = photos.filter { it !in photoDefs }
-		showDeleteConfirmation = false
-	}
-
-	val handleShare = {
-		val photoDefs = selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
-		if (photoDefs.isNotEmpty()) {
-			scope.launch(Dispatchers.IO) {
-				sharePhotosData(
-					photos = photoDefs,
-					sanitizeName = sanitizeFileName,
-					sanitizeMetadata = sanitizeMetadata,
-					imageManager = imageManager,
-					context = context
-				)
-				withContext(Dispatchers.Main) {
-					clearSelection()
-				}
-			}
-		}
-	}
-
-	LaunchedEffect(Unit) {
-		photos = imageManager.getPhotos().sortedByDescending { it.dateTaken() }
-		isLoading = false
 	}
 
 	Column(
@@ -128,18 +62,18 @@ fun GalleryContent(
 	) {
 		GalleryTopNav(
 			navController = navController,
-			onDeleteClick = handleDelete,
-			onShareClick = handleShare,
-			isSelectionMode = isSelectionMode,
-			selectedCount = selectedPhotos.size,
-			onCancelSelection = clearSelection
+			onDeleteClick = { viewModel.showDeleteConfirmation() },
+			onShareClick = { viewModel.shareSelectedPhotos(context) },
+			isSelectionMode = uiState.isSelectionMode,
+			selectedCount = uiState.selectedPhotos.size,
+			onCancelSelection = { viewModel.clearSelection() }
 		)
 
-		if (showDeleteConfirmation) {
+		if (uiState.showDeleteConfirmation) {
 			ConfirmDeletePhotoDialog(
-				selectedCount = selectedPhotos.size,
-				onConfirm = performDelete,
-				onDismiss = { showDeleteConfirmation = false }
+				selectedCount = uiState.selectedPhotos.size,
+				onConfirm = { viewModel.deleteSelectedPhotos() },
+				onDismiss = { viewModel.dismissDeleteConfirmation() }
 			)
 		}
 
@@ -154,19 +88,18 @@ fun GalleryContent(
 				.fillMaxSize(),
 			contentAlignment = Alignment.Center
 		) {
-			if (isLoading) {
-				// Show a loading indicator or placeholder
+			if (uiState.isLoading) {
 				Text(text = stringResource(id = R.string.gallery_loading))
-			} else if (photos.isEmpty()) {
+			} else if (uiState.photos.isEmpty()) {
 				Text(text = stringResource(id = R.string.gallery_empty))
 			} else {
 				PhotoGrid(
-					photos = photos,
-					selectedPhotoNames = selectedPhotos,
-					onPhotoLongClick = startSelectionMode,
+					photos = uiState.photos,
+					selectedPhotoNames = uiState.selectedPhotos,
+					onPhotoLongClick = startSelectionWithVibration,
 					onPhotoClick = { photoName ->
-						if (isSelectionMode) {
-							togglePhotoSelection(photoName)
+						if (uiState.isSelectionMode) {
+							viewModel.togglePhotoSelection(photoName)
 						} else {
 							navController.navigate(AppDestinations.createViewPhotoRoute(photoName))
 						}
@@ -175,6 +108,8 @@ fun GalleryContent(
 			}
 		}
 	}
+
+	HandleUiEvents(viewModel.events, snackbarHostState, navController)
 }
 
 @Composable
@@ -267,7 +202,9 @@ private fun PhotoItem(
 							photo.photoName
 						),
 						contentScale = ContentScale.Crop,
-						modifier = Modifier.fillMaxSize().alpha(imageAlpha)
+						modifier = Modifier
+							.fillMaxSize()
+							.alpha(imageAlpha)
 					)
 				} ?: run {
 					Box(modifier = Modifier.fillMaxSize()) {
