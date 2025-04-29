@@ -69,6 +69,8 @@ dependencies {
 
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
+	implementation(libs.androidx.lifecycle.viewmodel.ktx)
+	implementation(libs.androidx.lifecycle.viewmodel.compose)
 	implementation(libs.androidx.activity.compose)
 	implementation(libs.androidx.camera.camera2)
 	implementation(libs.androidx.camera.lifecycle)

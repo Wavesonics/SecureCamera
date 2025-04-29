@@ -1,6 +1,5 @@
 package com.darkrockstudios.app.securecamera.obfuscation
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,8 +12,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -22,25 +19,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.camera.PhotoDef
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetectorOptions
-import com.google.mlkit.vision.face.FaceDetectorOptions.LANDMARK_MODE_ALL
-import com.google.mlkit.vision.face.FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
-import org.koin.compose.koinInject
-import timber.log.Timber
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ObfuscatePhotoContent(
@@ -50,168 +36,12 @@ fun ObfuscatePhotoContent(
 	outerScope: CoroutineScope
 ) {
 	val context = LocalContext.current
-	val imageManager = koinInject<SecureImageManager>()
-	val scope = rememberCoroutineScope()
-	var photoDef by remember { mutableStateOf<PhotoDef?>(null) }
-	var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-	var originalBitmap by remember { mutableStateOf<Bitmap?>(null) }
-	var obscuredBitmap by remember { mutableStateOf<Bitmap?>(null) }
-	var isLoading by remember { mutableStateOf(true) }
-	var isFindingFaces by remember { mutableStateOf(true) }
-	var showSaveDialog by remember { mutableStateOf(false) }
-	var faces by remember { mutableStateOf<List<Face>>(emptyList()) }
-	val detector = remember {
-		FaceDetection.getClient(
-			FaceDetectorOptions.Builder()
-				.setLandmarkMode(LANDMARK_MODE_ALL)
-				.setPerformanceMode(PERFORMANCE_MODE_ACCURATE)
-				.setMinFaceSize(0.01f)
-				.build()
-		)
-	}
-
-	val faceErrorMessage = stringResource(R.string.obscure_toast_face_error)
-	val saveErrorMessage = stringResource(R.string.obscure_toast_save_error)
-	val overwriteCompleteMessage = stringResource(R.string.obscure_toast_overwrite_success)
-	val copyCompleteMessage = stringResource(R.string.obscure_toast_copy_success)
-
-
-	fun findFaces() {
-		isFindingFaces = true
-		scope.launch(Dispatchers.IO) {
-			originalBitmap?.let { bitmap ->
-				val inputImage = InputImage.fromBitmap(bitmap, 0)
-				detector.process(inputImage)
-					.addOnSuccessListener { foundFaces ->
-						faces = foundFaces
-						Timber.i("Found ${faces.size} faces")
-						outerScope.launch {
-							snackbarHostState.showSnackbar(
-								context.getString(
-									R.string.obscure_toast_faces_found,
-									foundFaces.size
-								)
-							)
-						}
-						isFindingFaces = false
-					}
-					.addOnFailureListener { e ->
-						Timber.e(e, "Failed face detection in Image")
-						outerScope.launch {
-							snackbarHostState.showSnackbar(faceErrorMessage)
-						}
-						isFindingFaces = false
-					}
-			} ?: run {
-				Timber.e("findFaces: originalBitmap was null")
-			}
-		}
-	}
-
-	fun obscureFaces() {
-		Timber.e("obscureFaces!")
-		originalBitmap?.let { bitmap ->
-			if (faces.isNotEmpty()) {
-				val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-				faces.forEach { face ->
-					maskFace(mutableBitmap, face, context, MaskMode.PIXELATE)
-				}
-
-				outerScope.launch {
-					snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_faces_obscured, faces.size))
-				}
-
-				imageBitmap = mutableBitmap.asImageBitmap()
-				obscuredBitmap = mutableBitmap
-				faces = emptyList()
-			}
-		} ?: run {
-			Timber.e("obscureFaces: originalBitmap was null")
-		}
-	}
-
-	fun clear() {
-		obscuredBitmap = null
-		imageBitmap = originalBitmap?.asImageBitmap()
-		findFaces()
-
-		outerScope.launch {
-			snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_faces_cleared))
-		}
-	}
-
-	fun save() {
-		showSaveDialog = true
-	}
-
-	fun overwriteOriginal() {
-		val bitmap = obscuredBitmap ?: return
-		photoDef?.let { photo ->
-			scope.launch {
-				try {
-					imageManager.updateImage(
-						bitmap = bitmap,
-						photoDef = photo,
-					)
-
-					Timber.i("Overwritten original image: ${photo.photoName}")
-					outerScope.launch {
-						snackbarHostState.showSnackbar(overwriteCompleteMessage)
-					}
-					navController.popBackStack()
-				} catch (e: Exception) {
-					Timber.e(e, "Failed to overwrite original image")
-					snackbarHostState.showSnackbar(saveErrorMessage)
-				}
-			}
-		} ?: run {
-			Timber.e("overwriteOriginal: photoDef was null")
-		}
-	}
-
-	fun saveAsCopy() {
-		val bitmap = obscuredBitmap ?: return
-		photoDef?.let { photo ->
-			scope.launch {
-				try {
-					val newPhotoDef = imageManager.saveImageCopy(
-						bitmap = bitmap,
-						photoDef = photo,
-					)
-
-					Timber.i("Saved copy of image: ${newPhotoDef.photoName}")
-					outerScope.launch {
-						snackbarHostState.showSnackbar(copyCompleteMessage)
-					}
-					navController.navigate(AppDestinations.createViewPhotoRoute(newPhotoDef.photoName))
-				} catch (e: Exception) {
-					Timber.e(e, "Failed to save copy of image")
-					snackbarHostState.showSnackbar(saveErrorMessage)
-				}
-			}
-		} ?: run {
-			Timber.e("saveAsCopy: photoDef was null")
-		}
-	}
+	val viewModel: ObfuscatePhotoViewModel = koinViewModel()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	LaunchedEffect(photoName) {
-		withContext(Dispatchers.Main) {
-			isLoading = true
-		}
-
-		scope.launch {
-			imageManager.getPhotoByName(photoName)?.let { photo ->
-				photoDef = photo
-
-				val bitmap = imageManager.readImage(photo)
-				originalBitmap = bitmap
-				imageBitmap = bitmap.asImageBitmap()
-			}
-
-			isLoading = false
-
-			findFaces()
+		if (uiState.imageBitmap == null) {
+			viewModel.loadPhoto(photoName)
 		}
 	}
 
@@ -222,13 +52,30 @@ fun ObfuscatePhotoContent(
 	) {
 		ObfuscatePhotoTopBar(
 			navController = navController,
-			onObscureClick = { obscureFaces() },
-			readyToObscure = (faces.isNotEmpty()),
-			onClearClick = { clear() },
-			canClear = (obscuredBitmap != null),
-			onSaveClick = { save() },
-			readyToSave = (obscuredBitmap != null),
-			isFindingFaces = isFindingFaces,
+			onObscureClick = {
+				viewModel.obscureFaces(context) {
+					outerScope.launch {
+						snackbarHostState.showSnackbar(
+							context.getString(
+								R.string.obscure_toast_faces_obscured,
+								uiState.faces.size
+							)
+						)
+					}
+				}
+			},
+			readyToObscure = (uiState.faces.isNotEmpty()),
+			onClearClick = {
+				viewModel.clear {
+					outerScope.launch {
+						snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_faces_cleared))
+					}
+				}
+			},
+			canClear = (uiState.obscuredBitmap != null),
+			onSaveClick = { viewModel.showSaveDialog() },
+			readyToSave = (uiState.obscuredBitmap != null),
+			isFindingFaces = uiState.isFindingFaces,
 		)
 
 		Box(
@@ -237,15 +84,15 @@ fun ObfuscatePhotoContent(
 				.clipToBounds(),
 			contentAlignment = Alignment.Center
 		) {
-			if (isLoading) {
+			if (uiState.isLoading) {
 				CircularProgressIndicator()
-			} else if (photoDef == null) {
+			} else if (uiState.photoDef == null) {
 				Text(
 					text = stringResource(id = R.string.photo_not_found),
 					color = MaterialTheme.colorScheme.onBackground
 				)
 			} else {
-				imageBitmap?.let {
+				uiState.imageBitmap?.let {
 					Box(modifier = Modifier.zoomable(rememberZoomState())) {
 						var imageWidth by remember { mutableStateOf(0f) }
 						var imageHeight by remember { mutableStateOf(0f) }
@@ -294,11 +141,11 @@ fun ObfuscatePhotoContent(
 								.padding(16.dp)
 								.fillMaxSize()
 						) {
-							if (faces.isNotEmpty() && imageWidth > 0 && imageHeight > 0) {
+							if (uiState.faces.isNotEmpty() && imageWidth > 0 && imageHeight > 0) {
 								val scaleX = imageWidth / it.width
 								val scaleY = imageHeight / it.height
 
-								faces.forEach { face ->
+								uiState.faces.forEach { face ->
 									val boundingBox = face.boundingBox
 
 									// Scale the bounding box to match the displayed image size
@@ -323,11 +170,41 @@ fun ObfuscatePhotoContent(
 		}
 	}
 
-	if (showSaveDialog) {
+	if (uiState.showSaveDialog) {
 		ConfirmSaveDialog(
-			onDismiss = { showSaveDialog = false },
-			saveAsCopy = { saveAsCopy() },
-			overwriteOriginal = { overwriteOriginal() },
+			onDismiss = { viewModel.dismissSaveDialog() },
+			saveAsCopy = {
+				viewModel.saveAsCopy(
+					onComplete = {
+						outerScope.launch {
+							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_copy_success))
+						}
+					},
+					onError = {
+						outerScope.launch {
+							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_save_error))
+						}
+					},
+					onNavigate = { route ->
+						navController.navigate(route)
+					}
+				)
+			},
+			overwriteOriginal = {
+				viewModel.overwriteOriginal(
+					onError = {
+						outerScope.launch {
+							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_save_error))
+						}
+					},
+					onSuccess = {
+						outerScope.launch {
+							snackbarHostState.showSnackbar(context.getString(R.string.obscure_toast_overwrite_success))
+						}
+						navController.popBackStack()
+					}
+				)
+			},
 		)
 	}
 }
