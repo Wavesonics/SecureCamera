@@ -47,7 +47,8 @@
     <string name="unauthorized">Unauthorized</string>
     <string name="mark_as_decoy">Mark as Decoy</string>
     <string name="unmark_as_decoy">Unmark as Decoy</string>
-    <string name="decoy_photo_content_description">Toggle Decoy Status</string>
+    <string name="decoy_photo_set_menu_item">Set as Decoy</string>
+    <string name="decoy_photo_remove_menu_item">Remove Decoy</string>
     <string name="decoy_limit_reached">Decoy limit reached: %1$d</string>
     <string name="decoy_added">Decoy added</string>
     <string name="decoy_removed">Decoy removed</string>

@@ -49,33 +49,12 @@ fun ViewPhotoTopBar(
 			}
 		},
 		actions = {
-			if (showDecoyButton) {
-				if (isDecoyLoading) {
-					// Show loading spinner
-					IconButton(
-						onClick = { /* Disabled during loading */ },
-						modifier = Modifier.padding(8.dp),
-						enabled = false
-					) {
-						CircularProgressIndicator(
-							modifier = Modifier.size(24.dp),
-							color = MaterialTheme.colorScheme.onPrimaryContainer,
-							strokeWidth = 2.dp
-						)
-					}
-				} else {
-					// Show decoy button
-					IconButton(
-						onClick = onDecoyClick,
-						modifier = Modifier.padding(8.dp)
-					) {
-						Icon(
-							imageVector = if (isDecoy) Icons.Filled.AddCircle else Icons.Filled.AddCircleOutline,
-							contentDescription = stringResource(id = R.string.decoy_photo_content_description),
-							tint = MaterialTheme.colorScheme.onPrimaryContainer,
-						)
-					}
-				}
+			if (showDecoyButton && isDecoyLoading) {
+				CircularProgressIndicator(
+					modifier = Modifier.size(24.dp),
+					color = MaterialTheme.colorScheme.onPrimaryContainer,
+					strokeWidth = 2.dp
+				)
 			}
 			IconButton(
 				onClick = onShareClick,
@@ -118,6 +97,29 @@ fun ViewPhotoTopBar(
 						)
 					}
 				)
+				if (showDecoyButton) {
+					DropdownMenuItem(
+						text = {
+							if (isDecoy) {
+								Text(stringResource(id = R.string.decoy_photo_remove_menu_item))
+							} else {
+								Text(stringResource(id = R.string.decoy_photo_set_menu_item))
+							}
+						},
+						enabled = isDecoyLoading.not(),
+						onClick = {
+							onDecoyClick()
+							showMoreMenu = false
+						},
+						leadingIcon = {
+							Icon(
+								imageVector = if (isDecoy) Icons.Filled.RemoveCircleOutline else Icons.Filled.AddCircle,
+								contentDescription = null
+							)
+						}
+					)
+				}
+
 				DropdownMenuItem(
 					text = { Text(stringResource(id = R.string.obfuscate_photo_button)) },
 					onClick = {
