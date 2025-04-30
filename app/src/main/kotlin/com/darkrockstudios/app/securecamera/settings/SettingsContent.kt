@@ -11,27 +11,22 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
-import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_10_MIN
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_1_MIN
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_5_MIN
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_DEFAULT
-import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
+import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Settings screen content
@@ -42,42 +37,24 @@ fun SettingsContent(
 	navController: NavHostController,
 	modifier: Modifier = Modifier,
 	paddingValues: PaddingValues,
-	preferencesManager: AppPreferencesManager,
-	locationRepository: LocationRepository,
-	snackbarHostState: SnackbarHostState,
+	snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
+	val viewModel: SettingsViewModel = koinViewModel()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val coroutineScope = rememberCoroutineScope()
 	val context = LocalContext.current
-	val securityResetUseCase = koinInject<SecurityResetUseCase>()
-	val authorizationManager = koinInject<AuthorizationManager>()
-	val imageManager = koinInject<SecureImageManager>()
 
-	val sanitizeFileName by preferencesManager.sanitizeFileName.collectAsState(initial = true)
-	val sanitizeMetadata by preferencesManager.sanitizeMetadata.collectAsState(initial = true)
-	val sessionTimeout by preferencesManager.sessionTimeout.collectAsState(initial = SESSION_TIMEOUT_DEFAULT)
-
-	val locationPermissionStatus by locationRepository.locationPermissionStatus.collectAsState()
-
-	var showLocationDialog by rememberSaveable { mutableStateOf(false) }
-	var showSecurityResetDialog by rememberSaveable { mutableStateOf(false) }
-	var showPoisonPillDialog by rememberSaveable { mutableStateOf(false) }
-	var showPoisonPillPinCreationDialog by rememberSaveable { mutableStateOf(false) }
-	var showDecoyPhotoExplanationDialog by rememberSaveable { mutableStateOf(false) }
-	var showRemovePoisonPillDialog by rememberSaveable { mutableStateOf(false) }
-	var hasPoisonPillPin by rememberSaveable { mutableStateOf(false) }
-
-	// Check if a Poison Pill PIN is set
-	LaunchedEffect(Unit) {
-		hasPoisonPillPin = preferencesManager.hasPoisonPillPin()
+	LaunchedEffect(uiState.securityResetComplete) {
+		if (uiState.securityResetComplete) {
+			navController.navigate(AppDestinations.INTRODUCTION_ROUTE) {
+				popUpTo(0) { inclusive = true }
+			}
+		}
 	}
 
-	LaunchedEffect(Unit) {
-		locationRepository.refreshPermissionStatus()
-	}
-
-	if (showLocationDialog) {
-		LocationDialog(locationPermissionStatus, context) {
-			showLocationDialog = false
+	if (uiState.showLocationDialog) {
+		LocationDialog(uiState.locationPermissionStatus, context) {
+			viewModel.dismissLocationDialog()
 		}
 	}
 
@@ -163,11 +140,9 @@ fun SettingsContent(
 					)
 				}
 				Switch(
-					checked = sanitizeFileName,
+					checked = uiState.sanitizeFileName,
 					onCheckedChange = { checked ->
-						coroutineScope.launch {
-							preferencesManager.setSanitizeFileName(checked)
-						}
+						viewModel.setSanitizeFileName(checked)
 					}
 				)
 			}
@@ -191,11 +166,9 @@ fun SettingsContent(
 					)
 				}
 				Switch(
-					checked = sanitizeMetadata,
+					checked = uiState.sanitizeMetadata,
 					onCheckedChange = { checked ->
-						coroutineScope.launch {
-							preferencesManager.setSanitizeMetadata(checked)
-						}
+						viewModel.setSanitizeMetadata(checked)
 					}
 				)
 			}
@@ -214,7 +187,7 @@ fun SettingsContent(
 			Row(
 				modifier = Modifier
 					.fillMaxWidth()
-					.clickable { showLocationDialog = true },
+					.clickable { viewModel.showLocationDialog() },
 				verticalAlignment = Alignment.CenterVertically
 			) {
 				Column(modifier = Modifier.weight(1f)) {
@@ -229,7 +202,7 @@ fun SettingsContent(
 					)
 				}
 				Text(
-					text = when (locationPermissionStatus) {
+					text = when (uiState.locationPermissionStatus) {
 						LocationPermissionStatus.DENIED -> stringResource(id = R.string.settings_location_status_denied)
 						LocationPermissionStatus.COARSE -> stringResource(id = R.string.settings_location_status_coarse)
 						LocationPermissionStatus.FINE -> stringResource(id = R.string.settings_location_status_fine)
@@ -270,7 +243,7 @@ fun SettingsContent(
 				var expanded by remember { mutableStateOf(false) }
 				Box {
 					Text(
-						text = when (sessionTimeout) {
+						text = when (uiState.sessionTimeout) {
 							SESSION_TIMEOUT_1_MIN -> stringResource(id = R.string.settings_session_timeout_1_min)
 							SESSION_TIMEOUT_5_MIN -> stringResource(id = R.string.settings_session_timeout_5_min)
 							SESSION_TIMEOUT_10_MIN -> stringResource(id = R.string.settings_session_timeout_10_min)
@@ -288,27 +261,21 @@ fun SettingsContent(
 						DropdownMenuItem(
 							text = { Text(stringResource(id = R.string.settings_session_timeout_1_min)) },
 							onClick = {
-								coroutineScope.launch {
-									preferencesManager.setSessionTimeout(SESSION_TIMEOUT_1_MIN)
-								}
+								viewModel.setSessionTimeout(SESSION_TIMEOUT_1_MIN)
 								expanded = false
 							}
 						)
 						DropdownMenuItem(
 							text = { Text(stringResource(id = R.string.settings_session_timeout_5_min)) },
 							onClick = {
-								coroutineScope.launch {
-									preferencesManager.setSessionTimeout(SESSION_TIMEOUT_5_MIN)
-								}
+								viewModel.setSessionTimeout(SESSION_TIMEOUT_5_MIN)
 								expanded = false
 							}
 						)
 						DropdownMenuItem(
 							text = { Text(stringResource(id = R.string.settings_session_timeout_10_min)) },
 							onClick = {
-								coroutineScope.launch {
-									preferencesManager.setSessionTimeout(SESSION_TIMEOUT_10_MIN)
-								}
+								viewModel.setSessionTimeout(SESSION_TIMEOUT_10_MIN)
 								expanded = false
 							}
 						)
@@ -323,10 +290,10 @@ fun SettingsContent(
 				modifier = Modifier
 					.fillMaxWidth()
 					.clickable {
-						if (hasPoisonPillPin) {
-							showRemovePoisonPillDialog = true
+						if (uiState.hasPoisonPillPin) {
+							viewModel.showRemovePoisonPillDialog()
 						} else {
-							showPoisonPillDialog = true
+							viewModel.showPoisonPillDialog()
 						}
 					},
 				verticalAlignment = Alignment.CenterVertically,
@@ -335,7 +302,7 @@ fun SettingsContent(
 				Column(modifier = Modifier.weight(1f)) {
 					Text(
 						text = stringResource(
-							id = if (hasPoisonPillPin) {
+							id = if (uiState.hasPoisonPillPin) {
 								R.string.settings_remove_poison_pill
 							} else {
 								R.string.settings_poison_pill
@@ -345,7 +312,7 @@ fun SettingsContent(
 					)
 					Text(
 						text = stringResource(
-							id = if (hasPoisonPillPin) {
+							id = if (uiState.hasPoisonPillPin) {
 								R.string.settings_remove_poison_pill_description
 							} else {
 								R.string.settings_poison_pill_description
@@ -363,7 +330,7 @@ fun SettingsContent(
 			Row(
 				modifier = Modifier
 					.fillMaxWidth()
-					.clickable { showSecurityResetDialog = true },
+					.clickable { viewModel.showSecurityResetDialog() },
 				verticalAlignment = Alignment.CenterVertically,
 				horizontalArrangement = Arrangement.SpaceBetween
 			) {
@@ -390,57 +357,44 @@ fun SettingsContent(
 		}
 	}
 
-	// Show Security Reset Dialog if needed
-	if (showSecurityResetDialog) {
+	if (uiState.showSecurityResetDialog) {
 		val msg = stringResource(R.string.security_reset_complete_toast)
 		SecurityResetDialog(
-			onDismiss = { showSecurityResetDialog = false },
+			onDismiss = { viewModel.dismissSecurityResetDialog() },
 			onConfirm = {
 				coroutineScope.launch {
-					securityResetUseCase.reset()
+					viewModel.performSecurityReset()
 					snackbarHostState.showSnackbar(msg, duration = SnackbarDuration.Long)
-					navController.navigate(AppDestinations.INTRODUCTION_ROUTE) {
-						popUpTo(0) { inclusive = true }
-					}
 				}
 			}
 		)
 	}
 
-	// Show Poison Pill Dialog if needed
-	if (showPoisonPillDialog) {
+	if (uiState.showPoisonPillDialog) {
 		PoisonPillDialog(
-			onDismiss = { showPoisonPillDialog = false },
+			onDismiss = { viewModel.dismissPoisonPillDialog() },
 			onContinue = {
-				showPoisonPillDialog = false
-				showPoisonPillPinCreationDialog = true
+				viewModel.showPoisonPillPinCreationDialog()
 			}
 		)
 	}
 
-	// Show Poison Pill PIN Creation Dialog if needed
-	if (showPoisonPillPinCreationDialog) {
-		val currentPin = authorizationManager.securityPin?.plainPin ?: ""
+	if (uiState.showPoisonPillPinCreationDialog) {
+		val currentPin = viewModel.getCurrentPin()
 		PoisonPillPinCreationDialog(
 			currentPin = currentPin,
-			onDismiss = { showPoisonPillPinCreationDialog = false },
+			onDismiss = { viewModel.dismissPoisonPillPinCreationDialog() },
 			onPinCreated = { pin ->
-				coroutineScope.launch {
-					preferencesManager.setPoisonPillPin(pin)
-					showPoisonPillPinCreationDialog = false
-					hasPoisonPillPin = true
-					showDecoyPhotoExplanationDialog = true
-				}
+				viewModel.setPoisonPillPin(pin)
 			}
 		)
 	}
 
-	// Show Decoy Photo Explanation Dialog if needed
-	if (showDecoyPhotoExplanationDialog) {
+	if (uiState.showDecoyPhotoExplanationDialog) {
 		val setupCompleteMsg = stringResource(R.string.poison_pill_setup_complete)
 		DecoyPhotoExplanationDialog(
 			onDismiss = {
-				showDecoyPhotoExplanationDialog = false
+				viewModel.dismissDecoyPhotoExplanationDialog()
 				coroutineScope.launch {
 					snackbarHostState.showSnackbar(
 						setupCompleteMsg,
@@ -451,17 +405,13 @@ fun SettingsContent(
 		)
 	}
 
-	// Show Remove Poison Pill Dialog if needed
-	if (showRemovePoisonPillDialog) {
+	if (uiState.showRemovePoisonPillDialog) {
 		val removeCompleteMsg = stringResource(R.string.remove_poison_pill_complete)
 		RemovePoisonPillDialog(
-			onDismiss = { showRemovePoisonPillDialog = false },
+			onDismiss = { viewModel.dismissRemovePoisonPillDialog() },
 			onConfirm = {
+				viewModel.removePoisonPillPin()
 				coroutineScope.launch {
-					preferencesManager.removePoisonPillPin()
-					imageManager.removeAllDecoyPhotos()
-					showRemovePoisonPillDialog = false
-					hasPoisonPillPin = false
 					snackbarHostState.showSnackbar(
 						removeCompleteMsg,
 						duration = SnackbarDuration.Long
@@ -470,4 +420,6 @@ fun SettingsContent(
 			}
 		)
 	}
+
+	HandleUiEvents(viewModel.events, snackbarHostState, navController)
 }

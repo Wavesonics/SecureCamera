@@ -6,6 +6,7 @@ import com.darkrockstudios.app.securecamera.camera.ThumbnailCache
 import com.darkrockstudios.app.securecamera.gallery.GalleryViewModel
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoViewModel
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.settings.SettingsViewModel
 import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
@@ -29,4 +30,5 @@ val appModule = module {
 	viewModelOf(::ObfuscatePhotoViewModel)
 	viewModelOf(::ViewPhotoViewModel)
 	viewModelOf(::GalleryViewModel)
+	viewModelOf(::SettingsViewModel)
 }
