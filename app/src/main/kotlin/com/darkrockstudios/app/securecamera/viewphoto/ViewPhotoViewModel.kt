@@ -9,7 +9,7 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
-import com.darkrockstudios.app.securecamera.sharePhotoData
+import com.darkrockstudios.app.securecamera.share.sharePhotoWithProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -148,11 +148,8 @@ class ViewPhotoViewModel(
 		val currentPhoto = getCurrentPhoto() ?: return
 
 		viewModelScope.launch {
-			sharePhotoData(
+			sharePhotoWithProvider(
 				photo = currentPhoto,
-				sanitizeName = uiState.value.sanitizeFileName,
-				sanitizeMetadata = uiState.value.sanitizeMetadata,
-				imageManager = imageManager,
 				context = context
 			)
 		}

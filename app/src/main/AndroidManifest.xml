@@ -41,6 +41,12 @@
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/file_paths"/>
         </provider>
+
+        <provider
+                android:name=".share.DecryptingImageProvider"
+                android:authorities="${applicationId}.decryptingprovider"
+                android:exported="false"
+                android:grantUriPermissions="true"/>
     </application>
 
 </manifest>

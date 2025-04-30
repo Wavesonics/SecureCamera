@@ -6,7 +6,7 @@ import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
-import com.darkrockstudios.app.securecamera.sharePhotosData
+import com.darkrockstudios.app.securecamera.share.sharePhotosWithProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -107,11 +107,8 @@ class GalleryViewModel(
 		val photoDefs = uiState.value.selectedPhotos.mapNotNull { imageManager.getPhotoByName(it) }
 		if (photoDefs.isNotEmpty()) {
 			viewModelScope.launch(Dispatchers.IO) {
-				sharePhotosData(
+				sharePhotosWithProvider(
 					photos = photoDefs,
-					sanitizeName = uiState.value.sanitizeFileName,
-					sanitizeMetadata = uiState.value.sanitizeMetadata,
-					imageManager = imageManager,
 					context = context
 				)
 				withContext(Dispatchers.Main) {

@@ -16,8 +16,6 @@ class MainActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		clearShareDirectory(this)
-
 		if (BuildConfig.DEBUG.not()) {
 			window.setFlags(
 				WindowManager.LayoutParams.FLAG_SECURE,
@@ -49,7 +47,6 @@ class MainActivity : ComponentActivity() {
 
 	override fun onResume() {
 		super.onResume()
-		// Refresh permission status when the app comes back to the foreground
 		locationRepository.refreshPermissionStatus()
 	}
 }
