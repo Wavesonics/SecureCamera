@@ -61,7 +61,7 @@ private fun blackout(bitmap: Bitmap, rect: Rect) {
 }
 
 private fun pixelate(bitmap: Bitmap, rect: Rect, region: Region, targetBlockSize: Int = 8, addNoise: Boolean = true) {
-	val faceBitmap = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), region.rect.height())
+	val faceBitmap = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
 
 	val small = faceBitmap.scale(targetBlockSize, targetBlockSize, false)
 
