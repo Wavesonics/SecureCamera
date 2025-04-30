@@ -21,10 +21,9 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 
 @ExperimentalCoroutinesApi
-class SecureImageManagerTest {
+class SecureImageRepositoryTest {
 
 	@get:Rule
 	val tempFolder = TemporaryFolder()
@@ -311,7 +310,7 @@ class SecureImageManagerTest {
 		every {
 			mockBitmap.compress(any(), any(), any())
 		} answers {
-			val outputStream = thirdArg<FileOutputStream>()
+			val outputStream = thirdArg<ByteArrayOutputStream>()
 			outputStream.write(jpgBytes)
 			true
 		}

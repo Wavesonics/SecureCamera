@@ -27,7 +27,6 @@
 	<string name="unauthorized">Несанкціоновано</string>
 	<string name="mark_as_decoy">Позначити як приманку</string>
 	<string name="unmark_as_decoy">Зняти з приманки</string>
-	<string name="decoy_photo_content_description">Перемкнути статус приманки</string>
 	<string name="decoy_limit_reached">Досягнуто обмеження на дециметри: %1$d</string>
 	<string name="decoy_added">Приманка додана</string>
 	<string name="decoy_removed">Декой вилучено</string>
@@ -164,4 +163,28 @@
 	<string name="pin_verification_verify_with_countdown">Підтвердьте (%1$d)</string>
 	<string name="pin_verification_remaining_attempts">Залишилось спроб: %1$d/%2$d</string>
 	<string name="pin_verification_wipe_warning">%1$d невдалих спроб призведе до повного видалення даних.\nВСІ ФОТО БУДУТЬ ВТРАЧЕНІ!</string>
+    <string name="obscure_action_button_save">Зберегти</string>
+    <string name="obscure_action_button_clear">Очистити</string>
+    <string name="obscure_action_button">Невідомий</string>
+    <string name="obfuscate_photo_button">Обфускувати Фото</string>
+    <string name="obscure_action_button_cancel_region">Скасувати</string>
+    <string name="obscure_action_button_add_region">Додати регіон</string>
+    <string name="obscure_action_button_finish_region">Завершити регіон</string>
+    <string name="save_photo_dialog_title">Зберегти фотографію</string>
+    <string name="overwrite_button">Перезаписати</string>
+    <string name="save_copy_button">Зберегти Копію</string>
+    <string name="obscure_toast_face_error">Автоматичний пошук облич не вдався</string>
+    <string name="save_photo_dialog_message">Чи хочете ви замінити оригінальне фото або зберегти нову копію?</string>
+    <string name="obscure_toast_save_error">Не вдалося зберегти фото</string>
+    <string name="obscure_toast_overwrite_success">Фото перезаписано</string>
+    <string name="obscure_toast_copy_success">Копіювання фотографії збережено</string>
+    <string name="obscure_toast_faces_found">Знайдено %1$d обличчя</string>
+    <string name="obscure_toast_faces_obscured">%1$d обличчя закриті</string>
+    <string name="obscure_toast_faces_cleared">Відкликано обфускації</string>
+    <string name="discard_button">Видалити</string>
+    <string name="decoy_photo_set_menu_item">Встановити як приманку</string>
+    <string name="discard_changes_dialog_message">У вас є незбережені зміни. Ви впевнені, що хочете їх скасувати?
+    </string>
+    <string name="decoy_photo_remove_menu_item">Прибрати димову завісу</string>
+    <string name="discard_changes_dialog_title">Відкинути зміни</string>
 </resources>

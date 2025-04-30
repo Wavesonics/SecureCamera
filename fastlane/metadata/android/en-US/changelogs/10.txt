@@ -1,0 +1,5 @@
+- Added Face Blurring tool
+- Translated into more languages
+- Sharing no longer writes unencrypted bits to disk
+- Nicer UI animations
+- Lots of refactoring

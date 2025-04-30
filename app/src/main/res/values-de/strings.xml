@@ -26,7 +26,6 @@
 	<string name="photo_content_none_selected">Keine Fotos ausgewählt</string>
 	<string name="mark_as_decoy">Als Köder markieren</string>
 	<string name="unmark_as_decoy">Als Köder markieren entfernen</string>
-	<string name="decoy_photo_content_description">Wechseln Sie den Status des Ablenkungsbildes</string>
 	<string name="unauthorized">Unbefugt</string>
 	<string name="decoy_limit_reached">Täuschungsgrenze erreicht: %1$d</string>
 	<string name="decoy_added">Attrappe hinzugefügt</string>
@@ -162,4 +161,31 @@
 	<string name="pin_verification_verify_with_countdown">Überprüfen (%1$d)</string>
 	<string name="pin_verification_wipe_warning">%1$d fehlgeschlagene Versuche führen zu einem vollständigen Datenverlust.\nALLE FOTOS WERDEN
         VERLOREN GEHEN!</string>
+    <string name="obscure_action_button_save">Speichern</string>
+    <string name="obscure_action_button">Obskur</string>
+    <string name="obfuscate_photo_button">Foto unkenntlich machen</string>
+    <string name="obscure_action_button_clear">Löschen</string>
+    <string name="obscure_action_button_finish_region">Region abschließen</string>
+    <string name="obscure_action_button_add_region">Region hinzufügen</string>
+    <string name="obscure_action_button_cancel_region">Abbrechen</string>
+    <string name="save_photo_dialog_title">Foto speichern</string>
+    <string name="save_copy_button">Kopie speichern</string>
+    <string name="overwrite_button">Überschreiben</string>
+    <string name="obscure_toast_face_error">Automatische Gesichtserkennung fehlgeschlagen</string>
+    <string name="obscure_toast_overwrite_success">Foto überschrieben</string>
+    <string name="obscure_toast_copy_success">Foto kopiert gespeichert</string>
+    <string name="save_photo_dialog_message">Möchten Sie das ursprüngliche Foto überschreiben oder eine neue Kopie
+        speichern?
+    </string>
+    <string name="obscure_toast_save_error">Foto konnte nicht gespeichert werden.</string>
+    <string name="obscure_toast_faces_found">%1$d Gesichter gefunden</string>
+    <string name="obscure_toast_faces_obscured">%1$d Gesichter verdeckt</string>
+    <string name="obscure_toast_faces_cleared">Obfuskationen rückgängig gemacht</string>
+    <string name="discard_changes_dialog_title">Änderungen verwerfen</string>
+    <string name="discard_button">Verwerfen</string>
+    <string name="decoy_photo_remove_menu_item">Decoy entfernen</string>
+    <string name="discard_changes_dialog_message">Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie
+        diese verwerfen möchten?
+    </string>
+    <string name="decoy_photo_set_menu_item">Als Ablenkung festlegen</string>
 </resources>

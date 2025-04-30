@@ -1,8 +1,8 @@
 [versions]
 faceDetection = "16.1.7"
 kotlinxCoroutinesTest = "1.10.2"
-versionCode = "9"
-versionName = "1.4.2"
+versionCode = "10"
+versionName = "1.5.0"
 
 javaVersion = "11"
 agp = "8.9.2"

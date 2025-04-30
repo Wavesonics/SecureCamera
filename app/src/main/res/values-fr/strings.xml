@@ -28,7 +28,6 @@
 	<string name="unmark_as_decoy">Retirer comme leurre</string>
 	<string name="decoy_limit_reached">Limite de leurres atteinte : %1$d</string>
 	<string name="info_button">Infos</string>
-	<string name="decoy_photo_content_description">Basculer le statut de la leurre</string>
 	<string name="decoy_added">Décoy ajouté</string>
 	<string name="decoy_removed">leurre retiré</string>
 	<string name="gallery_selected_count">%1$d Sélectionné</string>
@@ -162,4 +161,31 @@
 	<string name="pin_verification_verify_or_wipe">Vérifier OU Effacer toutes les données</string>
 	<string name="pin_verification_wipe_warning">%1$d tentatives échouées entraîneront une suppression complète des données.\nTOUTES LES PHOTOS SERONT
         PERDUES!</string>
+    <string name="obscure_action_button_save">Enregistrer</string>
+    <string name="obscure_action_button_clear">Effacer</string>
+    <string name="obscure_action_button">Obscur</string>
+    <string name="obfuscate_photo_button">Obscurcir la photo</string>
+    <string name="obscure_action_button_add_region">Ajouter une région</string>
+    <string name="obscure_action_button_finish_region">Terminer la région</string>
+    <string name="obscure_action_button_cancel_region">Annuler</string>
+    <string name="save_photo_dialog_title">Enregistrer la photo</string>
+    <string name="overwrite_button">Écraser</string>
+    <string name="save_copy_button">Enregistrer une copie</string>
+    <string name="save_photo_dialog_message">Voulez-vous écraser la photo originale ou enregistrer une nouvelle copie
+        ?
+    </string>
+    <string name="obscure_toast_face_error">La recherche automatique de visages a échoué.</string>
+    <string name="obscure_toast_overwrite_success">Photo écrasée</string>
+    <string name="obscure_toast_copy_success">Copie de la photo enregistrée</string>
+    <string name="obscure_toast_faces_found">%1$d visages trouvés</string>
+    <string name="obscure_toast_save_error">Échec de l\'enregistrement de la photo</string>
+    <string name="obscure_toast_faces_obscured">%1$d visages obscurcis</string>
+    <string name="obscure_toast_faces_cleared">Obfuscations annulées</string>
+    <string name="discard_changes_dialog_title">Annuler les modifications</string>
+    <string name="discard_button">Rejeter</string>
+    <string name="discard_changes_dialog_message">Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir
+        les abandonner ?
+    </string>
+    <string name="decoy_photo_set_menu_item">Définir comme leurre</string>
+    <string name="decoy_photo_remove_menu_item">Retirer le leurre</string>
 </resources>
