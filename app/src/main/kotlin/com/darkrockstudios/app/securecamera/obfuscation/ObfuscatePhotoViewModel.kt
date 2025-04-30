@@ -107,7 +107,6 @@ class ObfuscatePhotoViewModel(
 		uiState.value.originalBitmap?.let { bitmap ->
 			if (uiState.value.regions.isNotEmpty()) {
 				val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-				val faceCount = uiState.value.regions.size
 				val regionsToObfuscate = uiState.value.regions.filter { it.obfuscate }
 
 				regionsToObfuscate.forEach { region ->
@@ -122,7 +121,7 @@ class ObfuscatePhotoViewModel(
 					)
 				}
 
-				showFacesObscuredMessage(faceCount)
+				showFacesObscuredMessage(regionsToObfuscate.size)
 			}
 		} ?: run {
 			Timber.e("obscureFaces: originalBitmap was null")
