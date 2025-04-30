@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
 import com.darkrockstudios.app.securecamera.ui.PlayfulScaleVisibility
 import kotlinx.coroutines.CoroutineScope
@@ -190,6 +191,8 @@ fun ObfuscatePhotoContent(
 							contentScale = ContentScale.Fit
 						)
 
+						// Offset create box touch so it's not right under your finger
+						val createTouchOffset = remember { Offset(10f, 10f) }
 						// Draw rectangles around detected faces
 						Canvas(
 							modifier = Modifier
@@ -200,11 +203,11 @@ fun ObfuscatePhotoContent(
 										// Handle drag for region creation
 										detectDragGestures(
 											onDragStart = { offset ->
-												dragStart = offset
-												dragEnd = offset
+												dragStart = offset - createTouchOffset
+												dragEnd = offset - createTouchOffset
 											},
 											onDrag = { change, _ ->
-												dragEnd = change.position
+												dragEnd = change.position - createTouchOffset
 
 												// Convert screen coordinates to image coordinates
 												if (imageWidth > 0 && imageHeight > 0) {
@@ -369,7 +372,9 @@ fun ObfuscatePhotoContent(
 			saveAsCopy = {
 				viewModel.saveAsCopy(
 					onNavigate = { route ->
-						navController.navigate(route)
+						navController.navigate(route) {
+							popUpTo(AppDestinations.GALLERY_ROUTE)
+						}
 					}
 				)
 			},
