@@ -1,7 +1,7 @@
 package com.darkrockstudios.app.securecamera
 
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.camera.ThumbnailCache
 import com.darkrockstudios.app.securecamera.gallery.GalleryViewModel
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoViewModel
@@ -17,7 +17,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appModule = module {
-	singleOf(::SecureImageManager)
+	singleOf(::SecureImageRepository)
 	single<AppPreferencesManager> { AppPreferencesManager(context = get()) }
 	singleOf(::AuthorizationManager)
 	singleOf(::LocationRepository)

@@ -18,7 +18,7 @@ import com.darkrockstudios.app.securecamera.about.AboutContent
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
 import com.darkrockstudios.app.securecamera.auth.PinVerificationContent
 import com.darkrockstudios.app.securecamera.camera.CameraContent
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.gallery.GalleryContent
 import com.darkrockstudios.app.securecamera.introduction.IntroductionContent
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoContent
@@ -41,7 +41,7 @@ fun AppNavHost(
 	startDestination: String = AppDestinations.CAMERA_ROUTE,
 	paddingValues: PaddingValues,
 ) {
-	val imageManager = koinInject<SecureImageManager>()
+	val imageManager = koinInject<SecureImageRepository>()
 	val authManager = koinInject<AuthorizationManager>()
 
 	val scope = rememberCoroutineScope()

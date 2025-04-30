@@ -32,7 +32,7 @@ class SecureImageManagerTest {
 	private lateinit var context: Context
 	private lateinit var preferencesManager: AppPreferencesManager
 	private lateinit var authorizationManager: AuthorizationManager
-	private lateinit var secureImageManager: SecureImageManager
+	private lateinit var secureImageRepository: SecureImageRepository
 	private lateinit var thumbnailCache: ThumbnailCache
 
 	@Before
@@ -50,7 +50,7 @@ class SecureImageManagerTest {
 		every { context.cacheDir } returns cacheDir
 
 		// Create the SecureImageManager with real dependencies
-		secureImageManager = SecureImageManager(
+		secureImageRepository = SecureImageRepository(
 			appContext = context,
 			preferencesManager = preferencesManager,
 			authorizationManager = authorizationManager,
@@ -68,19 +68,19 @@ class SecureImageManagerTest {
 	@Test
 	fun `getGalleryDirectory should return correct directory`() {
 		// When
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 
 		// Then
-		assertEquals(File(context.filesDir, SecureImageManager.Companion.PHOTOS_DIR), galleryDir)
+		assertEquals(File(context.filesDir, SecureImageRepository.Companion.PHOTOS_DIR), galleryDir)
 	}
 
 	@Test
 	fun `getDecoyDirectory should return correct directory and create it if needed`() {
 		// When
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 
 		// Then
-		assertEquals(File(context.filesDir, SecureImageManager.Companion.DECOYS_DIR), decoyDir)
+		assertEquals(File(context.filesDir, SecureImageRepository.Companion.DECOYS_DIR), decoyDir)
 		assertTrue(decoyDir.exists())
 	}
 
@@ -90,7 +90,7 @@ class SecureImageManagerTest {
 		// No setup needed as we're testing a simple method
 
 		// When
-		secureImageManager.evictKey()
+		secureImageRepository.evictKey()
 
 		// Then
 		// We can't directly test the private keyFlow field, but we can verify it works
@@ -100,11 +100,11 @@ class SecureImageManagerTest {
 	@Test
 	fun `getPhotos should return empty list when directory does not exist`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.delete() // Ensure directory doesn't exist
 
 		// When
-		val photos = secureImageManager.getPhotos()
+		val photos = secureImageRepository.getPhotos()
 
 		// Then
 		assertTrue(photos.isEmpty())
@@ -113,7 +113,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `getPhotos should return list of photos when directory exists with files`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		// Create some test photo files
@@ -123,7 +123,7 @@ class SecureImageManagerTest {
 		photo2.createNewFile()
 
 		// When
-		val photos = secureImageManager.getPhotos()
+		val photos = secureImageRepository.getPhotos()
 
 		// Then
 		assertEquals(2, photos.size)
@@ -134,7 +134,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `deleteImage should remove the photo file and thumbnail`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -147,7 +147,7 @@ class SecureImageManagerTest {
 		)
 
 		// When
-		val result = secureImageManager.deleteImage(photoDef)
+		val result = secureImageRepository.deleteImage(photoDef)
 
 		// Then
 		assertTrue(result)
@@ -157,7 +157,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `deleteImage should return false when photo does not exist`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -170,7 +170,7 @@ class SecureImageManagerTest {
 		)
 
 		// When
-		val result = secureImageManager.deleteImage(photoDef)
+		val result = secureImageRepository.deleteImage(photoDef)
 
 		// Then
 		assertFalse(result)
@@ -179,11 +179,11 @@ class SecureImageManagerTest {
 	@Test
 	fun `getPhotoByName should return null when directory does not exist`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.delete() // Ensure directory doesn't exist
 
 		// When
-		val photo = secureImageManager.getPhotoByName("photo_20230101_120000_00.jpg")
+		val photo = secureImageRepository.getPhotoByName("photo_20230101_120000_00.jpg")
 
 		// Then
 		assertNull(photo)
@@ -192,11 +192,11 @@ class SecureImageManagerTest {
 	@Test
 	fun `getPhotoByName should return null when photo does not exist`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		// When
-		val photo = secureImageManager.getPhotoByName("photo_20230101_120000_00.jpg")
+		val photo = secureImageRepository.getPhotoByName("photo_20230101_120000_00.jpg")
 
 		// Then
 		assertNull(photo)
@@ -205,14 +205,14 @@ class SecureImageManagerTest {
 	@Test
 	fun `getPhotoByName should return PhotoDef when photo exists`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		photoFile.createNewFile()
 
 		// When
-		val photo = secureImageManager.getPhotoByName("photo_20230101_120000_00.jpg")
+		val photo = secureImageRepository.getPhotoByName("photo_20230101_120000_00.jpg")
 
 		// Then
 		assertNotNull(photo)
@@ -224,10 +224,10 @@ class SecureImageManagerTest {
 	@Test
 	fun `isDecoyPhoto should return true when decoy exists`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		photoFile.createNewFile()
@@ -242,7 +242,7 @@ class SecureImageManagerTest {
 		)
 
 		// When
-		val result = secureImageManager.isDecoyPhoto(photoDef)
+		val result = secureImageRepository.isDecoyPhoto(photoDef)
 
 		// Then
 		assertTrue(result)
@@ -251,7 +251,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `isDecoyPhoto should return false when decoy does not exist`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -264,7 +264,7 @@ class SecureImageManagerTest {
 		)
 
 		// When
-		val result = secureImageManager.isDecoyPhoto(photoDef)
+		val result = secureImageRepository.isDecoyPhoto(photoDef)
 
 		// Then
 		assertFalse(result)
@@ -273,7 +273,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `numDecoys should return correct count`() {
 		// Given
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 
 		// Create some test decoy files
 		val decoy1 = File(decoyDir, "photo_20230101_120000_00.jpg")
@@ -282,7 +282,7 @@ class SecureImageManagerTest {
 		decoy2.createNewFile()
 
 		// When
-		val count = secureImageManager.numDecoys()
+		val count = secureImageRepository.numDecoys()
 
 		// Then
 		assertEquals(2, count)
@@ -326,7 +326,7 @@ class SecureImageManagerTest {
 		every { mockBitmap.rotate(any()) } returns image.sensorBitmap
 
 		// When
-		val photoFile = secureImageManager.saveImage(
+		val photoFile = secureImageRepository.saveImage(
 			image = image,
 			latLng = coordinates,
 			applyRotation = true,
@@ -340,7 +340,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `readImage should decrypt and return the image`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val hashedPin = HashedPin("salt", "hash")
@@ -349,7 +349,7 @@ class SecureImageManagerTest {
 
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
-		secureImageManager.encryptToFile(
+		secureImageRepository.encryptToFile(
 			plainPin = securityPin.plainPin,
 			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
@@ -370,7 +370,7 @@ class SecureImageManagerTest {
 		} returns mockBitmap
 
 		// When
-		val result = secureImageManager.readImage(photoDef)
+		val result = secureImageRepository.readImage(photoDef)
 
 		// Then
 		assertNotNull(result)
@@ -380,7 +380,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `decryptJpg should decrypt and return the image bytes`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		// Mock security PIN
@@ -390,7 +390,7 @@ class SecureImageManagerTest {
 
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
-		secureImageManager.encryptToFile(
+		secureImageRepository.encryptToFile(
 			plainPin = securityPin.plainPin,
 			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
@@ -404,7 +404,7 @@ class SecureImageManagerTest {
 		)
 
 		// When
-		val result = secureImageManager.decryptJpg(photoDef)
+		val result = secureImageRepository.decryptJpg(photoDef)
 
 		// Then
 		assertNotNull(result)
@@ -418,7 +418,7 @@ class SecureImageManagerTest {
 	@Test
 	fun `deleteAllImages should delete all photos`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		// Create some test photo files
@@ -428,20 +428,20 @@ class SecureImageManagerTest {
 		photo2.createNewFile()
 
 		// When
-		secureImageManager.deleteAllImages()
+		secureImageRepository.deleteAllImages()
 
 		// Then
-		val photos = secureImageManager.getPhotos()
+		val photos = secureImageRepository.getPhotos()
 		assertTrue(photos.isEmpty())
 	}
 
 	@Test
 	fun `deleteNonDecoyImages should delete all photos except decoys`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 
 		// Create some test photo files
 		val photo1 = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -454,7 +454,7 @@ class SecureImageManagerTest {
 		decoy.writeBytes("decoy content".toByteArray())
 
 		// When
-		secureImageManager.deleteNonDecoyImages()
+		secureImageRepository.deleteNonDecoyImages()
 
 		// Then
 		// Verify that the decoy file was moved to the gallery directory
@@ -467,7 +467,7 @@ class SecureImageManagerTest {
 		)
 
 		// Verify that getPhotos returns the moved decoy file
-		val photos = secureImageManager.getPhotos()
+		val photos = secureImageRepository.getPhotos()
 		assertEquals("Should have 1 photo after moving decoy", 1, photos.size)
 		assertEquals("Photo name should match decoy name", "photo_20230101_120000_00.jpg", photos[0].photoName)
 	}
@@ -475,10 +475,10 @@ class SecureImageManagerTest {
 	@Test
 	fun `addDecoyPhoto should add a photo to decoys when under limit`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 		decoyDir.mkdirs()
 
 		// Mock security PIN
@@ -488,7 +488,7 @@ class SecureImageManagerTest {
 
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
-		secureImageManager.encryptToFile(
+		secureImageRepository.encryptToFile(
 			plainPin = securityPin.plainPin,
 			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
@@ -506,22 +506,22 @@ class SecureImageManagerTest {
 		coEvery { preferencesManager.getPlainPoisonPillPin() } returns "5678"
 
 		// When
-		val result = secureImageManager.addDecoyPhoto(photoDef)
+		val result = secureImageRepository.addDecoyPhoto(photoDef)
 
 		// Then
 		assertTrue(result)
 
-		val decoyFile = secureImageManager.getDecoyFile(photoDef)
+		val decoyFile = secureImageRepository.getDecoyFile(photoDef)
 		assertTrue(decoyFile.exists())
 	}
 
 	@Test
 	fun `addDecoyPhoto should return false when at limit`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 		decoyDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -533,13 +533,13 @@ class SecureImageManagerTest {
 			photoFile = photoFile
 		)
 
-		repeat(SecureImageManager.Companion.MAX_DECOY_PHOTOS) { i ->
+		repeat(SecureImageRepository.Companion.MAX_DECOY_PHOTOS) { i ->
 			val decoyFile = File(decoyDir, "photo_20230101_120000_0$i.jpg")
 			decoyFile.writeBytes("encrypted image data".toByteArray())
 		}
 
 		// When
-		val result = secureImageManager.addDecoyPhoto(photoDef)
+		val result = secureImageRepository.addDecoyPhoto(photoDef)
 
 		// Then
 		assertFalse(result)
@@ -548,10 +548,10 @@ class SecureImageManagerTest {
 	@Test
 	fun `removeDecoyPhoto should remove a photo from decoys`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		photoFile.createNewFile()
@@ -566,17 +566,17 @@ class SecureImageManagerTest {
 		)
 
 		// When
-		val result = secureImageManager.removeDecoyPhoto(photoDef)
+		val result = secureImageRepository.removeDecoyPhoto(photoDef)
 
 		// Then
 		assertTrue(result)
-		assertFalse(secureImageManager.isDecoyPhoto(photoDef))
+		assertFalse(secureImageRepository.isDecoyPhoto(photoDef))
 	}
 
 	@Test
 	fun `readThumbnail should return cached thumbnail if available`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -599,7 +599,7 @@ class SecureImageManagerTest {
 		coEvery { thumbnailCache.putThumbnail(any(), any()) } returns Unit
 
 		// When
-		val result = secureImageManager.readThumbnail(photoDef)
+		val result = secureImageRepository.readThumbnail(photoDef)
 
 		// Then
 		assertNotNull(result)
@@ -618,12 +618,12 @@ class SecureImageManagerTest {
 		every { authorizationManager.securityPin } returns securityPin
 
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
-		secureImageManager.encryptToFile(
+		secureImageRepository.encryptToFile(
 			plainPin = securityPin.plainPin,
 			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
@@ -663,20 +663,20 @@ class SecureImageManagerTest {
 		}
 
 		// When
-		val result = secureImageManager.readThumbnail(photoDef)
+		val result = secureImageRepository.readThumbnail(photoDef)
 
 		// Then
 		assertNotNull(result)
 
 		// Verify the thumbnail was stored in cache
 		coVerify { thumbnailCache.putThumbnail(any(), any()) }
-		assertTrue(secureImageManager.getThumbnail(photoDef).exists())
+		assertTrue(secureImageRepository.getThumbnail(photoDef).exists())
 	}
 
 	@Test
 	fun `securityFailureReset should delete all images and evict key`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		// Create some test photo files
@@ -686,21 +686,21 @@ class SecureImageManagerTest {
 		photo2.createNewFile()
 
 		// When
-		secureImageManager.securityFailureReset()
+		secureImageRepository.securityFailureReset()
 
 		// Then
-		val photos = secureImageManager.getPhotos()
+		val photos = secureImageRepository.getPhotos()
 		assertTrue(photos.isEmpty())
 
-		val field = SecureImageManager::class.java.getDeclaredField("key")
+		val field = SecureImageRepository::class.java.getDeclaredField("key")
 		field.isAccessible = true
-		assertNull(field.get(secureImageManager))
+		assertNull(field.get(secureImageRepository))
 	}
 
 	@Test
 	fun `getPhotoMetaData should return metadata for a photo`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		val photoName = "photo_20230101_120000_00.jpg"
@@ -713,7 +713,7 @@ class SecureImageManagerTest {
 
 		// Create an encrypted file
 		val jpgBytes = readResourceBytes("red.jpg")
-		secureImageManager.encryptToFile(
+		secureImageRepository.encryptToFile(
 			plainPin = securityPin.plainPin,
 			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
@@ -727,7 +727,7 @@ class SecureImageManagerTest {
 		)
 
 		// When
-		val result = secureImageManager.getPhotoMetaData(photoDef)
+		val result = secureImageRepository.getPhotoMetaData(photoDef)
 
 		// Then
 		assertEquals(photoName, result.name)
@@ -746,10 +746,10 @@ class SecureImageManagerTest {
 	@Test
 	fun `activatePoisonPill should delete non-decoy images and evict key`() {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		val decoyDir = secureImageManager.getDecoyDirectory()
+		val decoyDir = secureImageRepository.getDecoyDirectory()
 
 		// Create some test photo files
 		val photo1 = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -762,7 +762,7 @@ class SecureImageManagerTest {
 		decoy.writeBytes("decoy content".toByteArray())
 
 		// When
-		secureImageManager.activatePoisonPill()
+		secureImageRepository.activatePoisonPill()
 
 		// Then
 		// Verify that the decoy file was moved to the gallery directory
@@ -775,19 +775,19 @@ class SecureImageManagerTest {
 		)
 
 		// Verify that getPhotos returns the moved decoy file
-		val photos = secureImageManager.getPhotos()
+		val photos = secureImageRepository.getPhotos()
 		assertEquals("Should have 1 photo after moving decoy", 1, photos.size)
 		assertEquals("Photo name should match decoy name", "photo_20230101_120000_00.jpg", photos[0].photoName)
 
-		val field = SecureImageManager::class.java.getDeclaredField("key")
+		val field = SecureImageRepository::class.java.getDeclaredField("key")
 		field.isAccessible = true
-		assertNull(field.get(secureImageManager))
+		assertNull(field.get(secureImageRepository))
 	}
 
 	@Test
 	fun `updateImage should update image while preserving metadata`() = runTest {
 		// Given
-		val galleryDir = secureImageManager.getGalleryDirectory()
+		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
 		// Mock security PIN
@@ -798,7 +798,7 @@ class SecureImageManagerTest {
 		// Create original image
 		val originalJpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
-		secureImageManager.encryptToFile(
+		secureImageRepository.encryptToFile(
 			plainPin = securityPin.plainPin,
 			hashedPin = securityPin.hashedPin,
 			plain = originalJpgBytes,
@@ -832,7 +832,7 @@ class SecureImageManagerTest {
 		}
 
 		// When
-		val result = secureImageManager.updateImage(
+		val result = secureImageRepository.updateImage(
 			bitmap = newBitmap,
 			photoDef = photoDef,
 			quality = 90
@@ -850,7 +850,7 @@ class SecureImageManagerTest {
 		coVerify { thumbnailCache.evictThumbnail(photoDef) }
 
 		// Decrypt the file and verify it contains the updated image data
-		val updatedBytes = secureImageManager.decryptJpg(photoDef)
+		val updatedBytes = secureImageRepository.decryptJpg(photoDef)
 		assertNotNull(updatedBytes)
 		assertTrue(updatedBytes.isNotEmpty())
 

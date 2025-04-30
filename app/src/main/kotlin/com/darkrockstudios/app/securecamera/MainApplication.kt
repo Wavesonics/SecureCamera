@@ -1,7 +1,7 @@
 package com.darkrockstudios.app.securecamera
 
 import android.app.Application
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.component.KoinComponent
@@ -10,7 +10,7 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 
 class MainApplication : Application(), KoinComponent {
-	private val imageManager by inject<SecureImageManager>()
+	private val imageManager by inject<SecureImageRepository>()
 
 	override fun onCreate() {
 		super.onCreate()

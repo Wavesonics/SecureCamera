@@ -14,7 +14,7 @@ import android.os.ProxyFileDescriptorCallback
 import android.os.storage.StorageManager
 import android.provider.OpenableColumns
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -32,7 +32,7 @@ import kotlin.uuid.Uuid
  */
 class DecryptingImageProvider : ContentProvider(), KoinComponent {
 
-	private val imageManager: SecureImageManager by inject()
+	private val imageManager: SecureImageRepository by inject()
 	private val preferencesManager: AppPreferencesManager by inject()
 
 	@OptIn(ExperimentalUuidApi::class)
@@ -138,7 +138,7 @@ class DecryptingImageProvider : ContentProvider(), KoinComponent {
 private class ReadOnlyPhotoCallback(
 	private val photoDef: PhotoDef,
 	private val sanitizeMetadata: Boolean,
-	private val imageManager: SecureImageManager,
+	private val imageManager: SecureImageRepository,
 ) : ProxyFileDescriptorCallback() {
 
 	private val decryptedBytes: ByteArray by lazy {

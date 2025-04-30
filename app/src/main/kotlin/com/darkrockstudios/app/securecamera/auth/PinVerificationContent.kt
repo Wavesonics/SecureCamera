@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
@@ -44,7 +44,7 @@ fun PinVerificationContent(
 	modifier: Modifier = Modifier
 ) {
 	val authManager = koinInject<AuthorizationManager>()
-	val imageManager = koinInject<SecureImageManager>()
+	val imageManager = koinInject<SecureImageRepository>()
 	val securityResetUseCase = koinInject<SecurityResetUseCase>()
 	val verifyPinUseCase = koinInject<VerifyPinUseCase>()
 

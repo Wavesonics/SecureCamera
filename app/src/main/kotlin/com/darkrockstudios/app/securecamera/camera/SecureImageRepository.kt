@@ -24,7 +24,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.time.ExperimentalTime
@@ -34,7 +33,7 @@ private data class KeyParams(
 	val outputSize: BinarySize = 32.bytes,
 )
 
-class SecureImageManager(
+class SecureImageRepository(
 	private val appContext: Context,
 	private val preferencesManager: AppPreferencesManager,
 	private val authorizationManager: AuthorizationManager,
@@ -148,6 +147,95 @@ class SecureImageManager(
 		return secretDerivation.deriveSecret(keyInput.toByteArray()).toByteArray()
 	}
 
+	/**
+	 * Compresses a bitmap to JPEG format with the specified quality
+	 */
+	private fun compressBitmapToJpeg(bitmap: Bitmap, quality: Int): ByteArray {
+		return ByteArrayOutputStream().use { outputStream ->
+			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
+			outputStream.toByteArray()
+		}
+	}
+
+	/**
+	 * Encrypts and saves image data to a file, then renames it to the target file
+	 */
+	private suspend fun encryptAndSaveImage(imageBytes: ByteArray, tempFile: File, targetFile: File) {
+		tempFile.writeBytes(imageBytes)
+
+		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		encryptToFile(
+			plainPin = pin.plainPin,
+			hashedPin = pin.hashedPin,
+			plain = tempFile.readBytes(),
+			targetFile = tempFile,
+		)
+
+		tempFile.renameTo(targetFile)
+	}
+
+	/**
+	 * Processes an image with metadata and prepares it for saving
+	 */
+	private fun processImageWithMetadata(
+		bitmap: Bitmap,
+		sourceJpgBytes: ByteArray,
+		quality: Int
+	): ByteArray {
+		val newJpgBytes = compressBitmapToJpeg(bitmap, quality)
+		var updatedBytes = newJpgBytes
+
+		val metadata = Kim.readMetadata(sourceJpgBytes)
+		if (metadata != null) {
+			// Apply all existing metadata to the new image
+			metadata.convertToPhotoMetadata().let { photoMetadata ->
+				if (photoMetadata.takenDate != null) {
+					updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.TakenDate(photoMetadata.takenDate!!))
+				}
+
+				if (photoMetadata.orientation != null) {
+					updatedBytes =
+						Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(photoMetadata.orientation!!))
+				}
+
+				if (photoMetadata.gpsCoordinates != null) {
+					updatedBytes =
+						Kim.update(bytes = updatedBytes, MetadataUpdate.GpsCoordinates(photoMetadata.gpsCoordinates!!))
+				}
+			}
+		}
+
+		return updatedBytes
+	}
+
+	/**
+	 * Applies specific metadata to an image for the saveImage function
+	 */
+	private fun applySaveImageMetadata(
+		imageBytes: ByteArray,
+		latLng: GpsCoordinates?,
+		applyRotation: Boolean,
+		rotationDegrees: Int
+	): ByteArray {
+		val dateUpdate: MetadataUpdate = MetadataUpdate.TakenDate(System.currentTimeMillis())
+		var updatedBytes = Kim.update(bytes = imageBytes, dateUpdate)
+
+		if (applyRotation) {
+			updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(TiffOrientation.STANDARD))
+		} else {
+			val tiffOrientation = calculateTiffOrientation(rotationDegrees)
+			val orientationUpdate: MetadataUpdate = MetadataUpdate.Orientation(tiffOrientation)
+			updatedBytes = Kim.update(bytes = updatedBytes, orientationUpdate)
+		}
+
+		if (latLng != null) {
+			val gpsUpdate: MetadataUpdate = MetadataUpdate.GpsCoordinates(latLng)
+			updatedBytes = Kim.update(bytes = updatedBytes, gpsUpdate)
+		}
+
+		return updatedBytes
+	}
+
 	@OptIn(ExperimentalTime::class)
 	suspend fun saveImage(
 		image: CapturedImage,
@@ -172,53 +260,9 @@ class SecureImageManager(
 			rawSensorBitmap = rawSensorBitmap.rotate(image.rotationDegrees)
 		}
 
-		FileOutputStream(tempFile).use { outputStream ->
-			rawSensorBitmap.compress(CompressFormat.JPEG, quality, outputStream)
-		}
-
-		val dateUpdate: MetadataUpdate = MetadataUpdate.TakenDate(System.currentTimeMillis())
-		var updatedBytes = Kim.update(bytes = tempFile.readBytes(), dateUpdate)
-
-		if(applyRotation) {
-			updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(TiffOrientation.STANDARD))
-		} else {
-			val tiffOrientation = calculateTiffOrientation(image.rotationDegrees)
-			val orientationUpdate: MetadataUpdate = MetadataUpdate.Orientation(tiffOrientation)
-			updatedBytes = Kim.update(bytes = updatedBytes, orientationUpdate)
-		}
-
-		if (latLng != null) {
-			val gpsUpdate: MetadataUpdate = MetadataUpdate.GpsCoordinates(latLng)
-			updatedBytes = Kim.update(bytes = updatedBytes, gpsUpdate)
-		}
-
-		tempFile.writeBytes(updatedBytes)
-
-//		val thumbnailBitmap = ThumbnailUtils.createImageThumbnail(photoFile, Size(640, 480), null)
-//		val thumbnailBytes = thumbnailBitmap.let { bitmap ->
-//			ByteArrayOutputStream().use { outputStream ->
-//				bitmap.compress(CompressFormat.JPEG, quality, outputStream)
-//				outputStream.toByteArray()
-//			}
-//		}
-//
-//		photoFile.writeBytes(
-//			Kim.updateThumbnail(
-//				bytes = photoFile.readBytes(),
-//				thumbnailBytes = thumbnailBytes
-//			)
-//		)
-
-		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
-
-		encryptToFile(
-			plainPin = pin.plainPin,
-			hashedPin = pin.hashedPin,
-			plain = tempFile.readBytes(),
-			targetFile = tempFile,
-		)
-
-		tempFile.renameTo(photoFile)
+		val jpgBytes = compressBitmapToJpeg(rawSensorBitmap, quality)
+		val updatedBytes = applySaveImageMetadata(jpgBytes, latLng, applyRotation, image.rotationDegrees)
+		encryptAndSaveImage(updatedBytes, tempFile, photoFile)
 
 		return photoFile
 	}
@@ -229,49 +273,12 @@ class SecureImageManager(
 		quality: Int = 90
 	): PhotoDef {
 		val jpgBytes = decryptJpg(photoDef)
-
-		val metadata = Kim.readMetadata(jpgBytes)
-
-		val newJpgBytes = ByteArrayOutputStream().use { outputStream ->
-			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
-			outputStream.toByteArray()
-		}
+		val updatedBytes = processImageWithMetadata(bitmap, jpgBytes, quality)
 
 		val dir = getGalleryDirectory()
 		val tempFile = File(dir, "${photoDef.photoName}.tmp")
 
-		var updatedBytes = newJpgBytes
-
-		if (metadata != null) {
-			// Apply all existing metadata to the new image
-			metadata.convertToPhotoMetadata().let { photoMetadata ->
-				if (photoMetadata.takenDate != null) {
-					updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.TakenDate(photoMetadata.takenDate!!))
-				}
-
-				if (photoMetadata.orientation != null) {
-					updatedBytes =
-						Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(photoMetadata.orientation!!))
-				}
-
-				if (photoMetadata.gpsCoordinates != null) {
-					updatedBytes =
-						Kim.update(bytes = updatedBytes, MetadataUpdate.GpsCoordinates(photoMetadata.gpsCoordinates!!))
-				}
-			}
-		}
-
-		tempFile.writeBytes(updatedBytes)
-
-		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
-		encryptToFile(
-			plainPin = pin.plainPin,
-			hashedPin = pin.hashedPin,
-			plain = tempFile.readBytes(),
-			targetFile = tempFile,
-		)
-
-		tempFile.renameTo(photoDef.photoFile)
+		encryptAndSaveImage(updatedBytes, tempFile, photoDef.photoFile)
 
 		thumbnailCache.evictThumbnail(photoDef)
 		getThumbnail(photoDef).delete()
@@ -285,54 +292,14 @@ class SecureImageManager(
 		quality: Int = 90
 	): PhotoDef {
 		val jpgBytes = decryptJpg(photoDef)
-
-		val metadata = Kim.readMetadata(jpgBytes)
-
-		val newJpgBytes = ByteArrayOutputStream().use { outputStream ->
-			bitmap.compress(CompressFormat.JPEG, quality, outputStream)
-			outputStream.toByteArray()
-		}
+		val updatedBytes = processImageWithMetadata(bitmap, jpgBytes, quality)
 
 		val dir = getGalleryDirectory()
-
-		// Create a new unique filename based on the current time
-		val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss_SS", Locale.US)
-		val newImageName = "photo_" + dateFormat.format(Date()) + ".jpg"
+		val newImageName = photoDef.photoName.substringBefore(".jpg") + "_cp.jpg"
 		val newPhotoFile = File(dir, newImageName)
 		val tempFile = File(dir, "$newImageName.tmp")
 
-		var updatedBytes = newJpgBytes
-
-		if (metadata != null) {
-			// Apply all existing metadata to the new image
-			metadata.convertToPhotoMetadata().let { photoMetadata ->
-				if (photoMetadata.takenDate != null) {
-					updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.TakenDate(photoMetadata.takenDate!!))
-				}
-
-				if (photoMetadata.orientation != null) {
-					updatedBytes =
-						Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(photoMetadata.orientation!!))
-				}
-
-				if (photoMetadata.gpsCoordinates != null) {
-					updatedBytes =
-						Kim.update(bytes = updatedBytes, MetadataUpdate.GpsCoordinates(photoMetadata.gpsCoordinates!!))
-				}
-			}
-		}
-
-		tempFile.writeBytes(updatedBytes)
-
-		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
-		encryptToFile(
-			plainPin = pin.plainPin,
-			hashedPin = pin.hashedPin,
-			plain = tempFile.readBytes(),
-			targetFile = tempFile,
-		)
-
-		tempFile.renameTo(newPhotoFile)
+		encryptAndSaveImage(updatedBytes, tempFile, newPhotoFile)
 
 		// Create a new PhotoDef for the new file
 		val newPhotoDef = PhotoDef(

@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
@@ -21,7 +21,7 @@ import timber.log.Timber
 
 class ObfuscatePhotoViewModel(
 	private val appContext: Context,
-	private val imageManager: SecureImageManager
+	private val imageManager: SecureImageRepository
 ) : BaseViewModel<ObfuscatePhotoUiState>() {
 
 	override fun createState() = ObfuscatePhotoUiState()

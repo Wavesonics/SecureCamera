@@ -47,7 +47,7 @@ fun CameraControls(
 	var activeJobs by remember { mutableStateOf(mutableListOf<kotlinx.coroutines.Job>()) }
 	val isLoading by remember { derivedStateOf { activeJobs.isNotEmpty() } }
 	var isFlashing by rememberSaveable { mutableStateOf(false) }
-	val imageSaver = koinInject<SecureImageManager>()
+	val imageSaver = koinInject<SecureImageRepository>()
 	val authManager = koinInject<AuthorizationManager>()
 	val locationRepository = koinInject<LocationRepository>()
 	val context = LocalContext.current
@@ -169,7 +169,7 @@ fun CameraControls(
 @OptIn(ExperimentalUuidApi::class)
 private suspend fun handleImageCapture(
 	cameraController: CameraState,
-	imageSaver: SecureImageManager,
+	imageSaver: SecureImageRepository,
 	context: Context,
 	location: Location?,
 	isFlashOn: Boolean,

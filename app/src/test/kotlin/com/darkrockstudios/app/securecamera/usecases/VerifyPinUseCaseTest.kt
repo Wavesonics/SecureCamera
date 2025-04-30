@@ -1,7 +1,7 @@
 package com.darkrockstudios.app.securecamera.usecases
 
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -17,7 +17,7 @@ import org.junit.Test
 class VerifyPinUseCaseTest {
 
 	private lateinit var authManager: AuthorizationManager
-	private lateinit var imageManager: SecureImageManager
+	private lateinit var imageManager: SecureImageRepository
 	private lateinit var preferencesManager: AppPreferencesManager
 	private lateinit var verifyPinUseCase: VerifyPinUseCase
 

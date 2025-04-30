@@ -5,7 +5,7 @@ import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_DEFAULT
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
@@ -17,7 +17,7 @@ class SettingsViewModel(
 	private val locationRepository: LocationRepository,
 	private val securityResetUseCase: SecurityResetUseCase,
 	private val authorizationManager: AuthorizationManager,
-	private val imageManager: SecureImageManager
+	private val imageManager: SecureImageRepository
 ) : BaseViewModel<SettingsUiState>() {
 
 	override fun createState() = SettingsUiState()

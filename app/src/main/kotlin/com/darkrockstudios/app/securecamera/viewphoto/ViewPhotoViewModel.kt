@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.share.sharePhotoWithProvider
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 
 class ViewPhotoViewModel(
 	private val appContext: Context,
-	private val imageManager: SecureImageManager,
+	private val imageManager: SecureImageRepository,
 	private val preferencesManager: AppPreferencesManager,
 ) : BaseViewModel<ViewPhotoUiState>() {
 
@@ -113,7 +113,7 @@ class ViewPhotoViewModel(
 						showMessage(
 							appContext.getString(
 								R.string.decoy_limit_reached,
-								SecureImageManager.MAX_DECOY_PHOTOS
+								SecureImageRepository.MAX_DECOY_PHOTOS
 							)
 						)
 					}

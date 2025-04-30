@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
-import com.darkrockstudios.app.securecamera.camera.SecureImageManager
+import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
 import kotlinx.coroutines.CoroutineDispatcher
@@ -124,7 +124,7 @@ private fun PhotoGrid(
 		Dispatchers.IO.limitedParallelism(4) // Limit to 4 concurrent thumbnail loads
 	}
 
-	val imageManager = koinInject<SecureImageManager>()
+	val imageManager = koinInject<SecureImageRepository>()
 	val scope = rememberCoroutineScope()
 	LazyVerticalGrid(
 		columns = GridCells.Adaptive(minSize = 128.dp),
@@ -151,7 +151,7 @@ private fun PhotoGrid(
 @Composable
 private fun PhotoItem(
 	photo: PhotoDef,
-	imageManager: SecureImageManager,
+	imageManager: SecureImageRepository,
 	scope: CoroutineScope,
 	limitedDispatcher: CoroutineDispatcher,
 	isSelected: Boolean = false,
