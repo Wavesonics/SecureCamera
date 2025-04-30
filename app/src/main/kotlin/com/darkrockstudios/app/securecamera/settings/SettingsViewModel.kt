@@ -4,19 +4,19 @@ import androidx.lifecycle.viewModelScope
 import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager.Companion.SESSION_TIMEOUT_DEFAULT
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_DEFAULT
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-	private val preferencesManager: AppPreferencesManager,
+	private val preferencesManager: AppPreferencesDataSource,
 	private val locationRepository: LocationRepository,
 	private val securityResetUseCase: SecurityResetUseCase,
-	private val authorizationManager: AuthorizationManager,
+	private val authorizationRepository: AuthorizationRepository,
 	private val imageManager: SecureImageRepository
 ) : BaseViewModel<SettingsUiState>() {
 
@@ -169,7 +169,7 @@ class SettingsViewModel(
 	}
 
 	fun getCurrentPin(): String {
-		return authorizationManager.securityPin?.plainPin ?: ""
+		return authorizationRepository.securityPin?.plainPin ?: ""
 	}
 }
 

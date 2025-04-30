@@ -18,7 +18,7 @@ import java.io.File
 class AppPreferencesManagerTest {
 
 	private lateinit var context: Context
-	private lateinit var preferencesManager: AppPreferencesManager
+	private lateinit var preferencesManager: AppPreferencesDataSource
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -32,7 +32,7 @@ class AppPreferencesManagerTest {
 			scope = testScope,
 			produceFile = { File.createTempFile("prefs_test", ".preferences_pb") }
 		)
-		preferencesManager = AppPreferencesManager(context, dataStore)
+		preferencesManager = AppPreferencesDataSource(context, dataStore)
 	}
 
 	@Test
@@ -250,7 +250,7 @@ class AppPreferencesManagerTest {
 		// Then
 		Assert.assertEquals(
 			"Should return default when no timeout is stored",
-			AppPreferencesManager.SESSION_TIMEOUT_DEFAULT,
+			AppPreferencesDataSource.SESSION_TIMEOUT_DEFAULT,
 			result
 		)
 	}
@@ -311,14 +311,14 @@ class AppPreferencesManagerTest {
 		// Set some preferences
 		preferencesManager.setAppPin("1234")
 		preferencesManager.setPoisonPillPin("5678")
-		preferencesManager.setSessionTimeout(AppPreferencesManager.SESSION_TIMEOUT_10_MIN)
+		preferencesManager.setSessionTimeout(AppPreferencesDataSource.SESSION_TIMEOUT_10_MIN)
 		preferencesManager.setFailedPinAttempts(5)
 		preferencesManager.setLastFailedAttemptTimestamp(1000L)
 
 		// Verify preferences are set
 		Assert.assertTrue(preferencesManager.verifySecurityPin("1234"))
 		Assert.assertTrue(preferencesManager.hasPoisonPillPin())
-		Assert.assertEquals(AppPreferencesManager.SESSION_TIMEOUT_10_MIN, preferencesManager.getSessionTimeout())
+		Assert.assertEquals(AppPreferencesDataSource.SESSION_TIMEOUT_10_MIN, preferencesManager.getSessionTimeout())
 		Assert.assertEquals(5, preferencesManager.getFailedPinAttempts())
 		Assert.assertEquals(1000L, preferencesManager.getLastFailedAttemptTimestamp())
 
@@ -329,7 +329,7 @@ class AppPreferencesManagerTest {
 		// Verify all preferences are cleared
 		Assert.assertFalse(preferencesManager.verifySecurityPin("1234"))
 		Assert.assertFalse(preferencesManager.hasPoisonPillPin())
-		Assert.assertEquals(AppPreferencesManager.SESSION_TIMEOUT_DEFAULT, preferencesManager.getSessionTimeout())
+		Assert.assertEquals(AppPreferencesDataSource.SESSION_TIMEOUT_DEFAULT, preferencesManager.getSessionTimeout())
 		Assert.assertEquals(0, preferencesManager.getFailedPinAttempts())
 		Assert.assertEquals(0L, preferencesManager.getLastFailedAttemptTimestamp())
 	}

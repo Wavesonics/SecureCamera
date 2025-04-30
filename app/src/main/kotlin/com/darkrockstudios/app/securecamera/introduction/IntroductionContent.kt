@@ -26,10 +26,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.auth.pinSize
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -43,8 +43,8 @@ fun IntroductionContent(
 	navController: NavHostController,
 	modifier: Modifier = Modifier
 ) {
-	val preferencesManager = koinInject<AppPreferencesManager>()
-	val authorizationManager = koinInject<AuthorizationManager>()
+	val preferencesManager = koinInject<AppPreferencesDataSource>()
+	val authorizationRepository = koinInject<AuthorizationRepository>()
 	val coroutineScope = rememberCoroutineScope()
 
 	val slides = listOf(
@@ -104,7 +104,7 @@ fun IntroductionContent(
 					onPinCreated = { pin ->
 						coroutineScope.launch {
 							preferencesManager.setAppPin(pin)
-							authorizationManager.verifyPin(pin)
+							authorizationRepository.verifyPin(pin)
 							preferencesManager.setIntroCompleted(true)
 							// Navigate to camera and clear the back stack
 							navController.navigate(AppDestinations.CAMERA_ROUTE) {

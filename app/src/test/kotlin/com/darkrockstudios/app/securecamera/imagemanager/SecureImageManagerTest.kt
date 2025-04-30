@@ -5,10 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.TiffOrientation
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager.SecurityPin
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.SecurityPin
 import com.darkrockstudios.app.securecamera.camera.*
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,8 +30,8 @@ class SecureImageManagerTest {
 	val tempFolder = TemporaryFolder()
 
 	private lateinit var context: Context
-	private lateinit var preferencesManager: AppPreferencesManager
-	private lateinit var authorizationManager: AuthorizationManager
+	private lateinit var preferencesManager: AppPreferencesDataSource
+	private lateinit var authorizationRepository: AuthorizationRepository
 	private lateinit var secureImageRepository: SecureImageRepository
 	private lateinit var thumbnailCache: ThumbnailCache
 
@@ -39,7 +39,7 @@ class SecureImageManagerTest {
 	fun setup() {
 		context = mockk(relaxed = true)
 		preferencesManager = mockk(relaxed = true)
-		authorizationManager = mockk()
+		authorizationRepository = mockk()
 		thumbnailCache = mockk(relaxed = true)
 
 		// Mock the filesDir and cacheDir
@@ -53,7 +53,7 @@ class SecureImageManagerTest {
 		secureImageRepository = SecureImageRepository(
 			appContext = context,
 			preferencesManager = preferencesManager,
-			authorizationManager = authorizationManager,
+			authorizationRepository = authorizationRepository,
 			thumbnailCache = thumbnailCache,
 		)
 	}
@@ -298,7 +298,7 @@ class SecureImageManagerTest {
 		// Mock security PIN
 		val hashedPin = HashedPin("salt", "hash")
 		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		mockkStatic(BitmapFactory::class)
 		val mockBitmap = mockk<Bitmap>()
@@ -345,7 +345,7 @@ class SecureImageManagerTest {
 
 		val hashedPin = HashedPin("salt", "hash")
 		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -386,7 +386,7 @@ class SecureImageManagerTest {
 		// Mock security PIN
 		val hashedPin = HashedPin("salt", "hash")
 		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -484,7 +484,7 @@ class SecureImageManagerTest {
 		// Mock security PIN
 		val hashedPin = HashedPin("salt", "hash")
 		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -591,7 +591,7 @@ class SecureImageManagerTest {
 		// Mock security PIN
 		val hashedPin = HashedPin("salt", "hash")
 		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		val mockBitmap = mockk<Bitmap>()
 
@@ -615,7 +615,7 @@ class SecureImageManagerTest {
 		// Mock security PIN
 		val hashedPin = HashedPin(hash = "salt", salt = "hash1234567890")
 		val securityPin = SecurityPin(plainPin = "1234", hashedPin = hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		// Given
 		val galleryDir = secureImageRepository.getGalleryDirectory()
@@ -709,7 +709,7 @@ class SecureImageManagerTest {
 		// Mock security PIN
 		val hashedPin = HashedPin(hash = "hash", salt = "salt")
 		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		// Create an encrypted file
 		val jpgBytes = readResourceBytes("red.jpg")
@@ -793,7 +793,7 @@ class SecureImageManagerTest {
 		// Mock security PIN
 		val hashedPin = HashedPin("salt", "hash")
 		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationManager.securityPin } returns securityPin
+		every { authorizationRepository.securityPin } returns securityPin
 
 		// Create original image
 		val originalJpgBytes = readResourceBytes("red.jpg")

@@ -14,11 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.navigation.AppNavHost
 import com.darkrockstudios.app.securecamera.navigation.enforceAuth
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.ui.theme.SecureCameraTheme
 import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
@@ -29,13 +29,13 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 		SecureCameraTheme {
 			val snackbarHostState = remember { SnackbarHostState() }
 			val navController = rememberNavController()
-			val preferencesManager = koinInject<AppPreferencesManager>()
-			val authorizationManager = koinInject<AuthorizationManager>()
+			val preferencesManager = koinInject<AppPreferencesDataSource>()
+			val authorizationRepository = koinInject<AuthorizationRepository>()
 
 			val hasCompletedIntro by preferencesManager.hasCompletedIntro.collectAsState(initial = null)
 			val startDestination = rememberSaveable(hasCompletedIntro) {
 				if (hasCompletedIntro == true) {
-					if (authorizationManager.checkSessionValidity()) {
+					if (authorizationRepository.checkSessionValidity()) {
 						AppDestinations.CAMERA_ROUTE
 					} else {
 						AppDestinations.PIN_VERIFICATION_ROUTE
@@ -45,7 +45,7 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 				}
 			}
 
-			VerifySessionOnResume(navController, hasCompletedIntro, authorizationManager)
+			VerifySessionOnResume(navController, hasCompletedIntro, authorizationRepository)
 
 			if (hasCompletedIntro != null) {
 				Scaffold(
@@ -70,12 +70,12 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 fun VerifySessionOnResume(
 	navController: NavHostController,
 	hasCompletedIntro: Boolean?,
-	authorizationManager: AuthorizationManager
+	authorizationRepository: AuthorizationRepository
 ) {
 	var requireAuthCheck = remember { false }
 	LifecycleResumeEffect(hasCompletedIntro) {
 		if (hasCompletedIntro == true && requireAuthCheck) {
-			enforceAuth(authorizationManager, navController.currentDestination, navController)
+			enforceAuth(authorizationRepository, navController.currentDestination, navController)
 		}
 		onPauseOrDispose {
 			requireAuthCheck = true

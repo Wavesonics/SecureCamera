@@ -24,7 +24,7 @@ import com.ashampoo.kim.model.GpsCoordinates
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.RequestLocationPermission
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +48,7 @@ fun CameraControls(
 	val isLoading by remember { derivedStateOf { activeJobs.isNotEmpty() } }
 	var isFlashing by rememberSaveable { mutableStateOf(false) }
 	val imageSaver = koinInject<SecureImageRepository>()
-	val authManager = koinInject<AuthorizationManager>()
+	val authManager = koinInject<AuthorizationRepository>()
 	val locationRepository = koinInject<LocationRepository>()
 	val context = LocalContext.current
 

@@ -26,7 +26,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 /**
  * Manages app preferences using DataStore
  */
-class AppPreferencesManager(
+class AppPreferencesDataSource(
 	private val context: Context,
 	private val dataStore: DataStore<Preferences> = context.dataStore,
 ) {

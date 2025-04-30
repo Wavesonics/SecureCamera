@@ -1,6 +1,6 @@
 package com.darkrockstudios.app.securecamera.auth
 
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,8 +10,8 @@ import kotlinx.coroutines.runBlocking
 /**
  * Manages user authorization state, including PIN verification and session expiration.
  */
-class AuthorizationManager(
-	private val preferencesManager: AppPreferencesManager
+class AuthorizationRepository(
+	private val preferencesManager: AppPreferencesDataSource
 ) {
 	companion object {
 		const val MAX_FAILED_ATTEMPTS = 10

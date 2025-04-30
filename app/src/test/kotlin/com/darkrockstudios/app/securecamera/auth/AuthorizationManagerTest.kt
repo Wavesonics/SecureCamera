@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit
 class AuthorizationManagerTest {
 
 	private lateinit var context: Context
-	private lateinit var preferencesManager: AppPreferencesManager
-	private lateinit var authManager: AuthorizationManager
+	private lateinit var preferencesManager: AppPreferencesDataSource
+	private lateinit var authManager: AuthorizationRepository
 	private lateinit var dataStore: DataStore<Preferences>
 
 	@OptIn(ExperimentalCoroutinesApi::class)
@@ -38,8 +38,8 @@ class AuthorizationManagerTest {
 			scope = testScope,
 			produceFile = { File.createTempFile("prefs_test", ".preferences_pb") }
 		)
-		preferencesManager = spyk(AppPreferencesManager(context, dataStore))
-		authManager = AuthorizationManager(preferencesManager)
+		preferencesManager = spyk(AppPreferencesDataSource(context, dataStore))
+		authManager = AuthorizationRepository(preferencesManager)
 	}
 
 	@Test

@@ -15,7 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navArgument
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.about.AboutContent
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.auth.PinVerificationContent
 import com.darkrockstudios.app.securecamera.camera.CameraContent
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
@@ -42,7 +42,7 @@ fun AppNavHost(
 	paddingValues: PaddingValues,
 ) {
 	val imageManager = koinInject<SecureImageRepository>()
-	val authManager = koinInject<AuthorizationManager>()
+	val authManager = koinInject<AuthorizationRepository>()
 
 	val scope = rememberCoroutineScope()
 
@@ -211,7 +211,7 @@ fun AppNavHost(
  * PinVerification.
  */
 fun enforceAuth(
-	authManager: AuthorizationManager,
+	authManager: AuthorizationRepository,
 	destination: NavDestination?,
 	navController: NavHostController
 ) {

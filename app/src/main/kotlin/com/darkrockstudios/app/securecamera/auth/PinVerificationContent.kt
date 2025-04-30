@@ -43,7 +43,7 @@ fun PinVerificationContent(
 	returnRoute: String,
 	modifier: Modifier = Modifier
 ) {
-	val authManager = koinInject<AuthorizationManager>()
+	val authManager = koinInject<AuthorizationRepository>()
 	val imageManager = koinInject<SecureImageRepository>()
 	val securityResetUseCase = koinInject<SecurityResetUseCase>()
 	val verifyPinUseCase = koinInject<VerifyPinUseCase>()
@@ -71,14 +71,14 @@ fun PinVerificationContent(
 	val allDataDeletedText = stringResource(R.string.pin_verification_all_data_deleted)
 	val remainingAttemptsText = stringResource(
 		R.string.pin_verification_remaining_attempts,
-		AuthorizationManager.MAX_FAILED_ATTEMPTS - failedAttempts,
-		AuthorizationManager.MAX_FAILED_ATTEMPTS
+		AuthorizationRepository.MAX_FAILED_ATTEMPTS - failedAttempts,
+		AuthorizationRepository.MAX_FAILED_ATTEMPTS
 	)
 	val verifyWithCountdownText =
 		stringResource(R.string.pin_verification_verify_with_countdown, remainingBackoffSeconds)
 	val verifyOrWipeText = stringResource(R.string.pin_verification_verify_or_wipe)
 	val wipeWarningText =
-		stringResource(R.string.pin_verification_wipe_warning, AuthorizationManager.MAX_FAILED_ATTEMPTS)
+		stringResource(R.string.pin_verification_wipe_warning, AuthorizationRepository.MAX_FAILED_ATTEMPTS)
 
 	val focusRequester = remember { FocusRequester() }
 
@@ -149,7 +149,7 @@ fun PinVerificationContent(
 				remainingBackoffSeconds = authManager.calculateRemainingBackoffSeconds()
 				isBackoffActive = remainingBackoffSeconds > 0
 
-				if (failedAttempts < AuthorizationManager.MAX_FAILED_ATTEMPTS) {
+				if (failedAttempts < AuthorizationRepository.MAX_FAILED_ATTEMPTS) {
 					withContext(Dispatchers.Main) {
 						vibrateDevice(context)
 
@@ -242,7 +242,7 @@ fun PinVerificationContent(
 
 			Spacer(modifier = Modifier.height(24.dp))
 
-			val isLastAttempt = (failedAttempts >= (AuthorizationManager.MAX_FAILED_ATTEMPTS - 1))
+			val isLastAttempt = (failedAttempts >= (AuthorizationRepository.MAX_FAILED_ATTEMPTS - 1))
 			val butColors = if (isLastAttempt) {
 				ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer)
 			} else {

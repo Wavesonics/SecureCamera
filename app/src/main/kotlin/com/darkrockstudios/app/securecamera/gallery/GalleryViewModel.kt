@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.share.sharePhotosWithProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 
 class GalleryViewModel(
 	private val imageManager: SecureImageRepository,
-	private val preferencesManager: AppPreferencesManager
+	private val preferencesManager: AppPreferencesDataSource
 ) : BaseViewModel<GalleryUiState>() {
 
 	override fun createState() = GalleryUiState()

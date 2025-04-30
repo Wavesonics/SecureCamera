@@ -10,9 +10,9 @@ import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.TiffOrientation
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
-import com.darkrockstudios.app.securecamera.auth.AuthorizationManager.SecurityPin
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.SecurityPin
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import dev.whyoleg.cryptography.BinarySize
 import dev.whyoleg.cryptography.BinarySize.Companion.bytes
@@ -35,8 +35,8 @@ private data class KeyParams(
 
 class SecureImageRepository(
 	private val appContext: Context,
-	private val preferencesManager: AppPreferencesManager,
-	private val authorizationManager: AuthorizationManager,
+	private val preferencesManager: AppPreferencesDataSource,
+	private val authorizationRepository: AuthorizationRepository,
 	internal val thumbnailCache: ThumbnailCache,
 ) {
 
@@ -163,7 +163,7 @@ class SecureImageRepository(
 	private suspend fun encryptAndSaveImage(imageBytes: ByteArray, tempFile: File, targetFile: File) {
 		tempFile.writeBytes(imageBytes)
 
-		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
 		encryptToFile(
 			plainPin = pin.plainPin,
 			hashedPin = pin.hashedPin,
@@ -312,7 +312,7 @@ class SecureImageRepository(
 	}
 
 	suspend fun readImage(photo: PhotoDef): Bitmap {
-		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
 
 		val plainBytes = decryptFile(
 			plainPin = pin.plainPin,
@@ -324,7 +324,7 @@ class SecureImageRepository(
 
 	suspend fun decryptJpg(
 		photo: PhotoDef,
-		pin: SecurityPin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		pin: SecurityPin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
 	): ByteArray {
 		val plainBytes = decryptFile(
 			plainPin = pin.plainPin,
@@ -348,7 +348,7 @@ class SecureImageRepository(
 	suspend fun readThumbnail(photo: PhotoDef): Bitmap {
 		thumbnailCache.getThumbnail(photo)?.let { return it }
 
-		val pin = authorizationManager.securityPin ?: throw IllegalStateException("No Security PIN")
+		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
 		val thumbFile = getThumbnail(photo)
 
 		val thumbnailBitmap = if (thumbFile.exists()) {
