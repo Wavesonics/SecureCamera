@@ -3,10 +3,7 @@ package com.darkrockstudios.app.securecamera.obfuscation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.BlurOn
-import androidx.compose.material.icons.filled.BorderClear
-import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,10 +20,12 @@ fun ObfuscatePhotoTopBar(
 	onObscureClick: () -> Unit,
 	onClearClick: () -> Unit,
 	onSaveClick: () -> Unit,
+	onAddRegionClick: () -> Unit,
 	readyToObscure: Boolean,
 	canClear: Boolean,
 	readyToSave: Boolean,
 	isFindingFaces: Boolean,
+	isCreatingRegion: Boolean = false,
 ) {
 	TopAppBar(
 		title = {
@@ -52,48 +51,66 @@ fun ObfuscatePhotoTopBar(
 			}
 		},
 		actions = {
-			Timber.tag("abrown").d("canClear: $canClear isFindingFaces: $isFindingFaces")
-			if (canClear) {
-				IconButton(
-					onClick = onClearClick,
-					modifier = Modifier.padding(8.dp),
-				) {
-					Icon(
-						imageVector = Icons.Filled.BorderClear,
-						contentDescription = stringResource(id = R.string.obscure_action_button_clear),
-					)
-				}
-			} else if (isFindingFaces) {
-				CircularProgressIndicator(
-					modifier = Modifier.size(24.dp),
-					color = MaterialTheme.colorScheme.onPrimaryContainer,
-					strokeWidth = 2.dp
-				)
-			} else {
-				IconButton(
-					onClick = {
-						Timber.e("blur click")
-						onObscureClick()
-					},
-					modifier = Modifier.padding(8.dp),
-					enabled = readyToObscure,
-				) {
-					Icon(
-						imageVector = Icons.Filled.BlurOn,
-						contentDescription = stringResource(id = R.string.obscure_action_button),
-					)
-				}
-			}
+			Timber.tag("abrown")
+				.d("canClear: $canClear isFindingFaces: $isFindingFaces isCreatingRegion: $isCreatingRegion")
 
-			IconButton(
-				onClick = onSaveClick,
-				modifier = Modifier.padding(8.dp),
-				enabled = readyToSave,
-			) {
-				Icon(
-					imageVector = Icons.Filled.Save,
-					contentDescription = stringResource(id = R.string.obscure_action_button_save),
-				)
+			if (!isCreatingRegion) {
+				// Only show these buttons when not in region creation mode
+				if (canClear) {
+					IconButton(
+						onClick = onClearClick,
+						modifier = Modifier.padding(8.dp),
+					) {
+						Icon(
+							imageVector = Icons.Filled.BorderClear,
+							contentDescription = stringResource(id = R.string.obscure_action_button_clear),
+						)
+					}
+				} else if (isFindingFaces) {
+					CircularProgressIndicator(
+						modifier = Modifier.size(24.dp),
+						color = MaterialTheme.colorScheme.onPrimaryContainer,
+						strokeWidth = 2.dp
+					)
+				} else {
+					// Add Region button
+					IconButton(
+						onClick = onAddRegionClick,
+						modifier = Modifier.padding(8.dp),
+					) {
+						Icon(
+							imageVector = Icons.Filled.AddBox,
+							contentDescription = stringResource(id = R.string.obscure_action_button_add_region),
+						)
+					}
+
+					// Obscure button
+					IconButton(
+						onClick = {
+							Timber.e("blur click")
+							onObscureClick()
+						},
+						modifier = Modifier.padding(8.dp),
+						enabled = readyToObscure,
+					) {
+						Icon(
+							imageVector = Icons.Filled.BlurOn,
+							contentDescription = stringResource(id = R.string.obscure_action_button),
+						)
+					}
+				}
+
+				// Save button
+				IconButton(
+					onClick = onSaveClick,
+					modifier = Modifier.padding(8.dp),
+					enabled = readyToSave,
+				) {
+					Icon(
+						imageVector = Icons.Filled.Save,
+						contentDescription = stringResource(id = R.string.obscure_action_button_save),
+					)
+				}
 			}
 		}
 	)

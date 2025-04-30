@@ -7,7 +7,6 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import androidx.core.graphics.scale
-import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceLandmark
 import java.security.SecureRandom
 
@@ -41,13 +40,13 @@ fun coerceRectToBitmap(rect: Rect, bitmap: Bitmap): Rect {
 	return Rect(left, top, right, bottom)
 }
 
-fun maskFace(bitmap: Bitmap, face: Face, context: Context, vararg modes: MaskMode) {
-	val rect = face.boundingBox
+fun maskFace(bitmap: Bitmap, region: Region, context: Context, vararg modes: MaskMode) {
+	val rect = region.rect
 	val safeRect = coerceRectToBitmap(rect, bitmap)
 	modes.forEach { mode ->
 		when (mode) {
 			MaskMode.BLACKOUT -> blackout(bitmap, safeRect)
-			MaskMode.PIXELATE -> pixelate(bitmap, safeRect, face)
+			MaskMode.PIXELATE -> pixelate(bitmap, safeRect, region)
 			MaskMode.NOISE -> noise(bitmap, safeRect)
 			MaskMode.BLUR -> blur(bitmap, safeRect, context)
 		}
@@ -61,8 +60,8 @@ private fun blackout(bitmap: Bitmap, rect: Rect) {
 	canvas.drawRect(safeRect, paint)
 }
 
-private fun pixelate(bitmap: Bitmap, rect: Rect, face: Face, targetBlockSize: Int = 8, addNoise: Boolean = true) {
-	val faceBitmap = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
+private fun pixelate(bitmap: Bitmap, rect: Rect, region: Region, targetBlockSize: Int = 8, addNoise: Boolean = true) {
+	val faceBitmap = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), region.rect.height())
 
 	val small = faceBitmap.scale(targetBlockSize, targetBlockSize, false)
 
@@ -87,53 +86,56 @@ private fun pixelate(bitmap: Bitmap, rect: Rect, face: Face, targetBlockSize: In
 		}
 	}
 
-	val leftEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.LEFT_EYE }
-	val rightEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.RIGHT_EYE }
-	if (leftEye != null && rightEye != null) {
-		val leftEyePosition = leftEye.position
-		val rightEyePosition = rightEye.position
+	if (region is FaceRegion) {
+		val face = region.face
+		val leftEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.LEFT_EYE }
+		val rightEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.RIGHT_EYE }
+		if (leftEye != null && rightEye != null) {
+			val leftEyePosition = leftEye.position
+			val rightEyePosition = rightEye.position
 
-		val leftEyeInFace = PointF(
-			leftEyePosition.x - rect.left,
-			leftEyePosition.y - rect.top
-		)
-		val rightEyeInFace = PointF(
-			rightEyePosition.x - rect.left,
-			rightEyePosition.y - rect.top
-		)
-
-		val leftEyeInSmall = PointF(
-			leftEyeInFace.x * small.width / faceBitmap.width,
-			leftEyeInFace.y * small.height / faceBitmap.height
-		)
-		val rightEyeInSmall = PointF(
-			rightEyeInFace.x * small.width / faceBitmap.width,
-			rightEyeInFace.y * small.height / faceBitmap.height
-		)
-
-		// Blackout the eyes
-		val paint = Paint().apply { color = Color.BLACK }
-		val noiseCanvas = Canvas(small)
-
-		if (leftEyeInSmall.x >= 0 && leftEyeInSmall.x < small.width &&
-			leftEyeInSmall.y >= 0 && leftEyeInSmall.y < small.height &&
-			rightEyeInSmall.x >= 0 && rightEyeInSmall.x < small.width &&
-			rightEyeInSmall.y >= 0 && rightEyeInSmall.y < small.height
-		) {
-			noiseCanvas.drawLine(
-				0f, leftEyeInSmall.y, 7f, rightEyeInSmall.y, paint,
+			val leftEyeInFace = PointF(
+				leftEyePosition.x - rect.left,
+				leftEyePosition.y - rect.top
 			)
-		} else {
-			if (leftEyeInSmall.x >= 0 && leftEyeInSmall.x < small.width &&
-				leftEyeInSmall.y >= 0 && leftEyeInSmall.y < small.height
-			) {
-				noiseCanvas.drawPoint(leftEyeInSmall.x, leftEyeInSmall.y, paint)
-			}
+			val rightEyeInFace = PointF(
+				rightEyePosition.x - rect.left,
+				rightEyePosition.y - rect.top
+			)
 
-			if (rightEyeInSmall.x >= 0 && rightEyeInSmall.x < small.width &&
+			val leftEyeInSmall = PointF(
+				leftEyeInFace.x * small.width / faceBitmap.width,
+				leftEyeInFace.y * small.height / faceBitmap.height
+			)
+			val rightEyeInSmall = PointF(
+				rightEyeInFace.x * small.width / faceBitmap.width,
+				rightEyeInFace.y * small.height / faceBitmap.height
+			)
+
+			// Blackout the eyes
+			val paint = Paint().apply { color = Color.BLACK }
+			val noiseCanvas = Canvas(small)
+
+			if (leftEyeInSmall.x >= 0 && leftEyeInSmall.x < small.width &&
+				leftEyeInSmall.y >= 0 && leftEyeInSmall.y < small.height &&
+				rightEyeInSmall.x >= 0 && rightEyeInSmall.x < small.width &&
 				rightEyeInSmall.y >= 0 && rightEyeInSmall.y < small.height
 			) {
-				noiseCanvas.drawPoint(rightEyeInSmall.x, rightEyeInSmall.y, paint)
+				noiseCanvas.drawLine(
+					0f, leftEyeInSmall.y, 7f, rightEyeInSmall.y, paint,
+				)
+			} else {
+				if (leftEyeInSmall.x >= 0 && leftEyeInSmall.x < small.width &&
+					leftEyeInSmall.y >= 0 && leftEyeInSmall.y < small.height
+				) {
+					noiseCanvas.drawPoint(leftEyeInSmall.x, leftEyeInSmall.y, paint)
+				}
+
+				if (rightEyeInSmall.x >= 0 && rightEyeInSmall.x < small.width &&
+					rightEyeInSmall.y >= 0 && rightEyeInSmall.y < small.height
+				) {
+					noiseCanvas.drawPoint(rightEyeInSmall.x, rightEyeInSmall.y, paint)
+				}
 			}
 		}
 	}

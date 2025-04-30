@@ -2,6 +2,7 @@ package com.darkrockstudios.app.securecamera.obfuscation
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Rect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,6 @@ import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +25,25 @@ class ObfuscatePhotoViewModel(
 ) : BaseViewModel<ObfuscatePhotoUiState>() {
 
 	override fun createState() = ObfuscatePhotoUiState()
+
+	fun toggleRegionObfuscation(index: Int) {
+		_uiState.update { state ->
+			val regions = state.regions.toMutableList()
+			if (index in regions.indices) {
+				val region = regions[index]
+				when (region) {
+					is FaceRegion -> {
+						regions[index] = FaceRegion(region.face, !region.obfuscate)
+					}
+
+					else -> {
+						regions.removeAt(index)
+					}
+				}
+			}
+			state.copy(regions = regions)
+		}
+	}
 
 	private val detector = FaceDetection.getClient(
 		FaceDetectorOptions.Builder()
@@ -62,9 +81,12 @@ class ObfuscatePhotoViewModel(
 				val inputImage = InputImage.fromBitmap(bitmap, 0)
 				detector.process(inputImage)
 					.addOnSuccessListener { foundFaces ->
-						_uiState.update {
-							it.copy(
-								faces = foundFaces,
+						_uiState.update { state ->
+							val newRegions = foundFaces.map { FaceRegion(it) }
+							val manualRegions = state.regions.filter { it !is FaceRegion }
+
+							state.copy(
+								regions = newRegions + manualRegions,
 								isFindingFaces = false
 							)
 						}
@@ -81,21 +103,22 @@ class ObfuscatePhotoViewModel(
 		}
 	}
 
-	fun obscureFaces() {
+	fun obscureRegions() {
 		uiState.value.originalBitmap?.let { bitmap ->
-			if (uiState.value.faces.isNotEmpty()) {
+			if (uiState.value.regions.isNotEmpty()) {
 				val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-				val faceCount = uiState.value.faces.size
+				val faceCount = uiState.value.regions.size
+				val regionsToObfuscate = uiState.value.regions.filter { it.obfuscate }
 
-				uiState.value.faces.forEach { face ->
-					maskFace(mutableBitmap, face, appContext, MaskMode.PIXELATE)
+				regionsToObfuscate.forEach { region ->
+					maskFace(mutableBitmap, region, appContext, MaskMode.PIXELATE)
 				}
 
 				_uiState.update {
 					it.copy(
 						imageBitmap = mutableBitmap.asImageBitmap(),
 						obscuredBitmap = mutableBitmap,
-						faces = emptyList()
+						regions = emptyList()
 					)
 				}
 
@@ -195,6 +218,47 @@ class ObfuscatePhotoViewModel(
 		val message = appContext.getString(R.string.obscure_toast_overwrite_success)
 		showMessage(message)
 	}
+
+	fun startRegionCreation() {
+		_uiState.update { it.copy(isCreatingRegion = true, currentRegion = null) }
+	}
+
+	fun updateRegion(startX: Int, startY: Int, endX: Int, endY: Int) {
+		// Ensure coordinates are in the correct order (top-left to bottom-right)
+		val left = minOf(startX, endX)
+		val top = minOf(startY, endY)
+		val right = maxOf(startX, endX)
+		val bottom = maxOf(startY, endY)
+
+		_uiState.update { it.copy(currentRegion = Rect(left, top, right, bottom)) }
+	}
+
+	fun finishRegionCreation() {
+		uiState.value.currentRegion?.let { rect ->
+			// Only add if the region has some size
+			if (rect.width() > 5 && rect.height() > 5) {
+				val newRegion = ManualRegion(rect)
+				val updatedRegions = uiState.value.regions + newRegion
+				_uiState.update {
+					it.copy(
+						regions = updatedRegions,
+						isCreatingRegion = false,
+						currentRegion = null
+					)
+				}
+				Timber.i("Added manual region: $rect")
+			} else {
+				// Region too small, just cancel
+				cancelRegionCreation()
+			}
+		} ?: run {
+			cancelRegionCreation()
+		}
+	}
+
+	fun cancelRegionCreation() {
+		_uiState.update { it.copy(isCreatingRegion = false, currentRegion = null) }
+	}
 }
 
 data class ObfuscatePhotoUiState(
@@ -205,5 +269,7 @@ data class ObfuscatePhotoUiState(
 	val isLoading: Boolean = true,
 	val isFindingFaces: Boolean = false,
 	val showSaveDialog: Boolean = false,
-	val faces: List<Face> = emptyList(),
+	val regions: List<Region> = emptyList(),
+	val isCreatingRegion: Boolean = false,
+	val currentRegion: Rect? = null,
 )

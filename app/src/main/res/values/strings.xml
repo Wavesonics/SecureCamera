@@ -23,6 +23,9 @@
     <string name="obscure_action_button">Obscure</string>
     <string name="obscure_action_button_clear">Clear</string>
     <string name="obscure_action_button_save">Save</string>
+    <string name="obscure_action_button_add_region">Add Region</string>
+    <string name="obscure_action_button_finish_region">Finish Region</string>
+    <string name="obscure_action_button_cancel_region">Cancel</string>
     <string name="save_photo_dialog_title">Save Photo</string>
     <string name="save_photo_dialog_message">Do you want to overwrite the original photo or save a new copy?</string>
     <string name="overwrite_button">Overwrite</string>
