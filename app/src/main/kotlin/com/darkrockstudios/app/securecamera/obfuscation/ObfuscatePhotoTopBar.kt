@@ -3,7 +3,10 @@ package com.darkrockstudios.app.securecamera.obfuscation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AddBox
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.BlurOn
+import androidx.compose.material.icons.filled.BorderClear
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,11 +22,9 @@ fun ObfuscatePhotoTopBar(
 	navController: NavController,
 	onObscureClick: () -> Unit,
 	onClearClick: () -> Unit,
-	onSaveClick: () -> Unit,
 	onAddRegionClick: () -> Unit,
 	readyToObscure: Boolean,
 	canClear: Boolean,
-	readyToSave: Boolean,
 	isFindingFaces: Boolean,
 	isCreatingRegion: Boolean = false,
 	hasUnsavedChanges: Boolean = false,
@@ -109,18 +110,6 @@ fun ObfuscatePhotoTopBar(
 							contentDescription = stringResource(id = R.string.obscure_action_button),
 						)
 					}
-				}
-
-				// Save button
-				IconButton(
-					onClick = onSaveClick,
-					modifier = Modifier.padding(8.dp),
-					enabled = readyToSave,
-				) {
-					Icon(
-						imageVector = Icons.Filled.Save,
-						contentDescription = stringResource(id = R.string.obscure_action_button_save),
-					)
 				}
 			}
 		}

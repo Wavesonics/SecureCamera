@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
+import com.darkrockstudios.app.securecamera.ui.PlayfulScaleVisibility
 import kotlinx.coroutines.CoroutineScope
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -107,11 +109,9 @@ fun ObfuscatePhotoContent(
 				viewModel.clearFaces()
 			},
 			canClear = (uiState.obscuredBitmap != null),
-			onSaveClick = { viewModel.showSaveDialog() },
 			onAddRegionClick = {
 				viewModel.startRegionCreation()
 			},
-			readyToSave = (uiState.obscuredBitmap != null),
 			isFindingFaces = uiState.isFindingFaces,
 			isCreatingRegion = uiState.isCreatingRegion,
 			hasUnsavedChanges = hasUnsavedChanges,
@@ -299,15 +299,18 @@ fun ObfuscatePhotoContent(
 					}
 				}
 
-				// Add FABs for region creation
-				if (uiState.isCreatingRegion) {
+				PlayfulScaleVisibility(
+					modifier = Modifier
+						.align(Alignment.BottomEnd)
+						.padding(16.dp),
+					isVisible = (uiState.isCreatingRegion)
+				) {
 					Column(
 						modifier = Modifier
 							.align(Alignment.BottomEnd)
 							.padding(16.dp),
 						verticalArrangement = Arrangement.spacedBy(8.dp)
 					) {
-						// Finish region FAB
 						FloatingActionButton(
 							onClick = { viewModel.finishRegionCreation() },
 							containerColor = MaterialTheme.colorScheme.primary,
@@ -319,7 +322,6 @@ fun ObfuscatePhotoContent(
 							)
 						}
 
-						// Cancel region FAB
 						FloatingActionButton(
 							onClick = { viewModel.cancelRegionCreation() },
 							containerColor = MaterialTheme.colorScheme.error,
@@ -330,6 +332,24 @@ fun ObfuscatePhotoContent(
 								contentDescription = stringResource(id = R.string.obscure_action_button_cancel_region)
 							)
 						}
+					}
+				}
+
+				PlayfulScaleVisibility(
+					modifier = Modifier
+						.align(Alignment.BottomEnd)
+						.padding(16.dp),
+					isVisible = (uiState.obscuredBitmap != null && uiState.isCreatingRegion.not())
+				) {
+					FloatingActionButton(
+						onClick = { viewModel.showSaveDialog() },
+						containerColor = MaterialTheme.colorScheme.error,
+						contentColor = MaterialTheme.colorScheme.onError
+					) {
+						Icon(
+							imageVector = Icons.Filled.Save,
+							contentDescription = stringResource(id = R.string.obscure_action_button_save)
+						)
 					}
 				}
 			}
