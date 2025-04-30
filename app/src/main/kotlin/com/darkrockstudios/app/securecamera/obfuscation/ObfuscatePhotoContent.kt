@@ -139,7 +139,14 @@ fun ObfuscatePhotoContent(
 				)
 			} else {
 				uiState.imageBitmap?.let {
-					Box(modifier = Modifier.zoomable(rememberZoomState())) {
+					val zoomState = rememberZoomState()
+					Box(
+						modifier = Modifier
+							.zoomable(
+								zoomState = zoomState,
+								zoomEnabled = uiState.isCreatingRegion.not()
+							)
+					) {
 						var imageWidth by remember { mutableStateOf(0f) }
 						var imageHeight by remember { mutableStateOf(0f) }
 						var boxWidth by remember { mutableStateOf(0f) }
