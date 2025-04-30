@@ -12,9 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.about.AboutContent
 import com.darkrockstudios.app.securecamera.auth.AuthorizationManager
@@ -24,7 +22,6 @@ import com.darkrockstudios.app.securecamera.camera.SecureImageManager
 import com.darkrockstudios.app.securecamera.gallery.GalleryContent
 import com.darkrockstudios.app.securecamera.introduction.IntroductionContent
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoContent
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesManager
 import com.darkrockstudios.app.securecamera.settings.SettingsContent
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoContent
 import kotlinx.coroutines.flow.combine
@@ -46,8 +43,6 @@ fun AppNavHost(
 ) {
 	val imageManager = koinInject<SecureImageManager>()
 	val authManager = koinInject<AuthorizationManager>()
-	val preferencesManager = koinInject<AppPreferencesManager>()
-	val locationRepository = koinInject<LocationRepository>()
 
 	val scope = rememberCoroutineScope()
 
@@ -74,14 +69,18 @@ fun AppNavHost(
 		startDestination = startDestination,
 		modifier = modifier
 	) {
-		composable(AppDestinations.INTRODUCTION_ROUTE) {
+		defaultAnimatedComposable(
+			route = AppDestinations.INTRODUCTION_ROUTE,
+		) {
 			IntroductionContent(
 				navController = navController,
 				modifier = Modifier.fillMaxSize()
 			)
 		}
 
-		composable(AppDestinations.CAMERA_ROUTE) {
+		defaultAnimatedComposable(
+			AppDestinations.CAMERA_ROUTE,
+		) {
 			CameraContent(
 				capturePhoto = capturePhoto,
 				navController = navController,
@@ -90,7 +89,9 @@ fun AppNavHost(
 			)
 		}
 
-		composable(AppDestinations.GALLERY_ROUTE) {
+		defaultAnimatedComposable(
+			AppDestinations.GALLERY_ROUTE,
+		) {
 			val isAuthorized by authManager.isAuthorized.collectAsState()
 
 			if (isAuthorized) {
@@ -110,9 +111,9 @@ fun AppNavHost(
 			}
 		}
 
-		composable(
+		defaultAnimatedComposable(
 			route = AppDestinations.VIEW_PHOTO_ROUTE,
-			arguments = listOf(navArgument("photoName") { defaultValue = "" })
+			arguments = listOf(navArgument("photoName") { defaultValue = "" }),
 		) { backStackEntry ->
 			val photoName = backStackEntry.arguments?.getString("photoName") ?: ""
 
@@ -139,11 +140,11 @@ fun AppNavHost(
 			}
 		}
 
-		composable(
+		defaultAnimatedComposable(
 			route = AppDestinations.PIN_VERIFICATION_ROUTE,
 			arguments = listOf(navArgument("returnRoute") {
 				defaultValue = AppDestinations.encodeReturnRoute(AppDestinations.CAMERA_ROUTE)
-			})
+			}),
 		) { backStackEntry ->
 			val returnRoute = backStackEntry.arguments?.getString("returnRoute")?.let { encodedRoute ->
 				AppDestinations.decodeReturnRoute(encodedRoute)
@@ -157,27 +158,29 @@ fun AppNavHost(
 			)
 		}
 
-		composable(AppDestinations.SETTINGS_ROUTE) {
+		defaultAnimatedComposable(
+			AppDestinations.SETTINGS_ROUTE,
+		) {
 			SettingsContent(
 				navController = navController,
 				modifier = Modifier.fillMaxSize(),
 				paddingValues = paddingValues,
-				preferencesManager = preferencesManager,
-				locationRepository = locationRepository,
 				snackbarHostState = snackbarHostState,
 			)
 		}
 
-		composable(AppDestinations.ABOUT_ROUTE) {
+		defaultAnimatedComposable(
+			AppDestinations.ABOUT_ROUTE,
+		) {
 			AboutContent(
 				navController = navController,
 				modifier = Modifier.fillMaxSize(),
 			)
 		}
 
-		composable(
+		defaultAnimatedComposable(
 			route = AppDestinations.OBFUSCATE_PHOTO_ROUTE,
-			arguments = listOf(navArgument("photoName") { defaultValue = "" })
+			arguments = listOf(navArgument("photoName") { defaultValue = "" }),
 		) { backStackEntry ->
 			val photoName = backStackEntry.arguments?.getString("photoName") ?: ""
 
