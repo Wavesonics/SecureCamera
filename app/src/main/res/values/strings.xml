@@ -37,6 +37,10 @@
     <string name="obscure_toast_faces_found">%1$d faces found</string>
     <string name="obscure_toast_faces_obscured">%1$d faces obscured</string>
     <string name="obscure_toast_faces_cleared">Reverted obfuscations</string>
+    <string name="discard_changes_dialog_title">Discard Changes</string>
+    <string name="discard_changes_dialog_message">You have unsaved changes. Are you sure you want to discard them?
+    </string>
+    <string name="discard_button">Discard</string>
 
     <!-- View Photo Screen -->
     <string name="photo_title">Photo</string>

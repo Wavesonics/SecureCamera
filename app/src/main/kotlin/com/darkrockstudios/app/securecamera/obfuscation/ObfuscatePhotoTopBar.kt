@@ -26,6 +26,17 @@ fun ObfuscatePhotoTopBar(
 	readyToSave: Boolean,
 	isFindingFaces: Boolean,
 	isCreatingRegion: Boolean = false,
+	hasUnsavedChanges: Boolean = false,
+	onBackPressed: () -> Unit = {
+		if (hasUnsavedChanges) {
+			// This is a fallback and shouldn't be used
+			// The caller should provide their own implementation
+			// that shows a confirmation dialog
+			navController.navigateUp()
+		} else {
+			navController.navigateUp()
+		}
+	},
 ) {
 	TopAppBar(
 		title = {
@@ -40,7 +51,7 @@ fun ObfuscatePhotoTopBar(
 		),
 		navigationIcon = {
 			IconButton(
-				onClick = { navController.navigateUp() },
+				onClick = { onBackPressed() },
 				modifier = Modifier.padding(8.dp)
 			) {
 				Icon(

@@ -1,5 +1,6 @@
 package com.darkrockstudios.app.securecamera.obfuscation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import org.koin.androidx.compose.koinViewModel
 
+
 @Composable
 fun ObfuscatePhotoContent(
 	photoName: String,
@@ -48,6 +50,46 @@ fun ObfuscatePhotoContent(
 		if (uiState.imageBitmap == null) {
 			viewModel.loadPhoto(photoName)
 		}
+	}
+
+	// Determine if there are unsaved changes
+	val hasUnsavedChanges = uiState.regions.isNotEmpty() ||
+			uiState.obscuredBitmap != null ||
+			uiState.isCreatingRegion ||
+			uiState.currentRegion != null
+
+	// State for discard confirmation dialog
+	val showDiscardDialog = remember { mutableStateOf(false) }
+
+	// Handle system back button
+	BackHandler(enabled = hasUnsavedChanges) {
+		showDiscardDialog.value = true
+	}
+
+	// Discard confirmation dialog
+	if (showDiscardDialog.value) {
+		AlertDialog(
+			onDismissRequest = { showDiscardDialog.value = false },
+			title = { Text(stringResource(id = R.string.discard_changes_dialog_title)) },
+			text = { Text(stringResource(id = R.string.discard_changes_dialog_message)) },
+			confirmButton = {
+				TextButton(
+					onClick = {
+						showDiscardDialog.value = false
+						navController.navigateUp()
+					}
+				) {
+					Text(stringResource(id = R.string.discard_button))
+				}
+			},
+			dismissButton = {
+				TextButton(
+					onClick = { showDiscardDialog.value = false }
+				) {
+					Text(stringResource(id = R.string.cancel_button))
+				}
+			}
+		)
 	}
 
 	Column(
@@ -72,6 +114,14 @@ fun ObfuscatePhotoContent(
 			readyToSave = (uiState.obscuredBitmap != null),
 			isFindingFaces = uiState.isFindingFaces,
 			isCreatingRegion = uiState.isCreatingRegion,
+			hasUnsavedChanges = hasUnsavedChanges,
+			onBackPressed = {
+				if (hasUnsavedChanges) {
+					showDiscardDialog.value = true
+				} else {
+					navController.navigateUp()
+				}
+			}
 		)
 
 		Box(
