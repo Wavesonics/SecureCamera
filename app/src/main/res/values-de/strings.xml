@@ -162,8 +162,7 @@
 	<string name="pin_verification_wipe_warning">%1$d fehlgeschlagene Versuche führen zu einem vollständigen Datenverlust.\nALLE FOTOS WERDEN
         VERLOREN GEHEN!</string>
     <string name="obscure_action_button_save">Speichern</string>
-    <string name="obscure_action_button">Obskur</string>
-    <string name="obfuscate_photo_button">Foto unkenntlich machen</string>
+    <string name="obfuscate_photo_button">Foto verschleiern</string>
     <string name="obscure_action_button_clear">Löschen</string>
     <string name="obscure_action_button_finish_region">Region abschließen</string>
     <string name="obscure_action_button_add_region">Region hinzufügen</string>
@@ -188,4 +187,29 @@
         diese verwerfen möchten?
     </string>
     <string name="decoy_photo_set_menu_item">Als Ablenkung festlegen</string>
+    <string name="close_import_photos_content_description">Import schließen</string>
+    <string name="import_photos_title">Fotos importieren</string>
+    <string name="obscure_action_button_obfuscate">Verschleiern</string>
+    <string name="import_photos_done_button">Zur Galerie gehen</string>
+    <string name="import_photos_progress_label">Fotos werden importiert: %1$d / %2$d</string>
+    <string name="import_photos_current_photo_description">Aktuelles Foto wird importiert</string>
+    <string name="settings_security_status">Sicherheitsstatus</string>
+    <string name="settings_security_status_description">Das Niveau der verfügbaren Hardware-Sicherheit auf Ihrem Gerät</string>
+    <string name="pin_show_description">PIN anzeigen</string>
+    <string name="pin_hide_description">PIN ausblenden</string>
+    <string name="security_intro_supported_security_label">Ihre Sicherheit ist:</string>
+    <string name="security_intro_security_level_strong">Stark</string>
+    <string name="import_photos_done_label">Import abgeschlossen!</string>
+    <string name="security_intro_string_biometric_label">Biometrie erforderlich?</string>
+    <string name="security_intro_security_level_strong_explainer">Ihre Verschlüsselungsschlüssel werden in einem Secure Element auf diesem Gerät gespeichert. Dies ist die höchste Schutzebene, die möglich ist. Es ist resistent gegen alle Formen von Angriffen, selbst die entschlossensten und bestausgestatteten.</string>
+    <string name="security_intro_advanced_section">Erweitert</string>
+    <string name="security_intro_string_biometric_checkbox">Biometrie + PIN erforderlich</string>
+    <string name="security_intro_icon">Sicherheit Auswahl</string>
+    <string name="security_intro_expand">Erweiterte Optionen anzeigen</string>
+    <string name="security_intro_collapse">Erweiterte Optionen zusammenklappen</string>
+    <string name="security_intro_security_level_normal">Normal</string>
+    <string name="security_intro_string_biometric_explainer">Da Ihr Gerät über ein Secure Element (SE) verfügt, können wir eine weitere Schutzebene anbieten. \n\n Neben Ihrer PIN kann das SE auch verlangen, dass Sie Ihren Fingerabdruck eingeben, bevor der Zugriff auf den Verschlüsselungsschlüssel gewährt wird. \n\n Dies ist für die meisten Benutzer im Allgemeinen nicht erforderlich, bietet jedoch eine optionale Sicherheitsstufe, wenn Ihr Bedrohungsmodell dies erfordert.</string>
+    <string name="security_intro_security_level_weak">Schwach</string>
+    <string name="security_intro_security_level_normal_explainer">Ihre Verschlüsselungsschlüssel werden in der Trusted Execution Environment Ihres Chips auf diesem Gerät gespeichert. Dies ist das angemessene Sicherheitsniveau für alle außer den höchsten Risikomodellen.</string>
+    <string name="security_intro_security_level_weak_explainer">Ihr Gerät verfügt über keinen hardwaregestützten Schlüsselspeicher. Obwohl wir Ihnen weiterhin ein angemessenes Sicherheitsniveau bieten können, sind Sie anfällig für Offline-Angriffe. Dabei werden Ihre Daten entschlüsselt und Ihr Schlüssel wird mit brutalen Methoden ermittelt. \n\nWenn Sie glauben, ein hohes Risiko zu haben, sollten Sie in Betracht ziehen, ein neueres Gerät zu erwerben.</string>
 </resources>

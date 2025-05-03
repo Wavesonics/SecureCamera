@@ -163,8 +163,7 @@
         PERDUES!</string>
     <string name="obscure_action_button_save">Enregistrer</string>
     <string name="obscure_action_button_clear">Effacer</string>
-    <string name="obscure_action_button">Obscur</string>
-    <string name="obfuscate_photo_button">Obscurcir la photo</string>
+    <string name="obfuscate_photo_button">Obfusquer la photo</string>
     <string name="obscure_action_button_add_region">Ajouter une région</string>
     <string name="obscure_action_button_finish_region">Terminer la région</string>
     <string name="obscure_action_button_cancel_region">Annuler</string>
@@ -188,4 +187,29 @@
     </string>
     <string name="decoy_photo_set_menu_item">Définir comme leurre</string>
     <string name="decoy_photo_remove_menu_item">Retirer le leurre</string>
+    <string name="obscure_action_button_obfuscate">Obscur</string>
+    <string name="import_photos_title">Importer des photos</string>
+    <string name="close_import_photos_content_description">Fermer l\'importation</string>
+    <string name="import_photos_progress_label">Importation de photos : %1$d / %2$d</string>
+    <string name="import_photos_done_label">Importation terminée !</string>
+    <string name="import_photos_done_button">Aller à la Galerie</string>
+    <string name="import_photos_current_photo_description">Photo actuelle en cours d\'importation</string>
+    <string name="settings_security_status">État de sécurité</string>
+    <string name="settings_security_status_description">Le niveau de sécurité matérielle disponible sur votre appareil</string>
+    <string name="pin_show_description">Afficher le PIN</string>
+    <string name="security_intro_icon">Sélection de sécurité</string>
+    <string name="pin_hide_description">Masquer le PIN</string>
+    <string name="security_intro_supported_security_label">Votre sécurité est :</string>
+    <string name="security_intro_security_level_strong">Forte</string>
+    <string name="security_intro_string_biometric_label">Exiger des biométriques ?</string>
+    <string name="security_intro_string_biometric_checkbox">Exiger des biométriques + PIN</string>
+    <string name="security_intro_advanced_section">Avancé</string>
+    <string name="security_intro_expand">Développer les options avancées</string>
+    <string name="security_intro_security_level_strong_explainer">Vos clés de chiffrement sont stockées dans un Élément Sécurisé sur cet appareil. C\'est le niveau de protection le plus élevé possible. Il résiste à toutes les formes d\'attaque, même aux plus déterminées et bien dotées en ressources.</string>
+    <string name="security_intro_security_level_normal">Normal</string>
+    <string name="security_intro_collapse">Réduire les options avancées</string>
+    <string name="security_intro_security_level_weak">Faible</string>
+    <string name="security_intro_string_biometric_explainer">Parce que votre appareil possède un Éléments Sécurisé (SE), nous pouvons offrir un niveau de protection supplémentaire. \n\n En plus de votre code PIN, le SE peut exiger que vous saisissiez votre empreinte digitale avant de permettre l\'accès à la clé de chiffrement. \n\n Cela n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue un niveau de sécurité optionnel si votre modèle de menace l\'exige.</string>
+    <string name="security_intro_security_level_normal_explainer">Vos clés de cryptage sont stockées dans l\'environnement d\'exécution de confiance de vos puces sur cet appareil. C\'est un niveau de sécurité raisonnable pour tous sauf les modèles de menace les plus élevés.</string>
+    <string name="security_intro_security_level_weak_explainer">Votre appareil ne dispose d\'aucun stockage de clé matériel. Bien que nous puissions encore vous fournir un niveau de sécurité raisonnable, vous serez vulnérable aux attaques hors ligne. Cela signifie que vos données peuvent être récupérées et que votre clé peut être forcée par attaque par force brute. \n\n Si vous pensez avoir un modèle de menace à haut risque, vous devriez envisager de mettre à niveau vers un appareil plus récent.</string>
 </resources>

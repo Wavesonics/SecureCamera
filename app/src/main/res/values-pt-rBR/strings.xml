@@ -162,7 +162,6 @@
 	<string name="pin_verification_wipe_warning">%1$d tentativas falhadas resultarão em uma exclusão total dos dados.\nTODAS AS FOTOS SERÃO
         PERDIDAS!</string>
     <string name="obscure_action_button_clear">Limpar</string>
-    <string name="obscure_action_button">Ocultar</string>
     <string name="obscure_action_button_save">Salvar</string>
     <string name="obfuscate_photo_button">Ofuscar Foto</string>
     <string name="obscure_action_button_add_region">Adicionar Região</string>
@@ -186,4 +185,29 @@
     <string name="discard_button">Descartar</string>
     <string name="decoy_photo_set_menu_item">Definir como Isca</string>
     <string name="decoy_photo_remove_menu_item">Remover Decoy</string>
+    <string name="obscure_action_button_obfuscate">Obscure</string>
+    <string name="close_import_photos_content_description">Fechar Importação</string>
+    <string name="import_photos_title">Importar Fotos</string>
+    <string name="import_photos_done_label">Importação concluída!</string>
+    <string name="import_photos_progress_label">Importando fotos: %1$d / %2$d</string>
+    <string name="import_photos_done_button">Ir para a Galeria</string>
+    <string name="import_photos_current_photo_description">Foto atual sendo importada</string>
+    <string name="settings_security_status">Status de Segurança</string>
+    <string name="settings_security_status_description">O nível de segurança de hardware disponível no seu dispositivo</string>
+    <string name="pin_hide_description">Ocultar PIN</string>
+    <string name="pin_show_description">Mostrar PIN</string>
+    <string name="security_intro_supported_security_label">Sua Segurança É:</string>
+    <string name="security_intro_icon">Seleção de Segurança</string>
+    <string name="security_intro_string_biometric_label">Exigir Biometria?</string>
+    <string name="security_intro_security_level_strong">Forte</string>
+    <string name="security_intro_string_biometric_checkbox">Requerer Biometria + PIN</string>
+    <string name="security_intro_security_level_strong_explainer">suas chaves de criptografia estão armazenadas em um Elemento Seguro neste dispositivo. Este é o mais alto nível de proteção possível. É resistente a todas as formas de ataque, mesmo os mais determinados e bem equipados.</string>
+    <string name="security_intro_advanced_section">Avançado</string>
+    <string name="security_intro_collapse">Recolher opções avançadas</string>
+    <string name="security_intro_expand">Expandir opções avançadas</string>
+    <string name="security_intro_security_level_weak">Fraco</string>
+    <string name="security_intro_security_level_normal">Normal</string>
+    <string name="security_intro_string_biometric_explainer">Como seu dispositivo possui um Elemento Seguro (SE), podemos oferecer um nível adicional de proteção. \n\n Além do seu PIN, o SE pode exigir que você insira sua Impressão Digital antes de permitir o acesso à chave de criptografia. \n\n Isso geralmente não é necessário para a maioria dos usuários, mas é um nível opcional de segurança se o seu modelo de ameaça exigir.</string>
+    <string name="security_intro_security_level_normal_explainer">Suas chaves de criptografia são armazenadas no Trusted Execution Environment dos chips neste dispositivo. Este é o nível razoável de segurança para todos, exceto os modelos de ameaça de mais alto risco.</string>
+    <string name="security_intro_security_level_weak_explainer">Seu dispositivo não possui nenhum armazenamento de chave protegido por hardware. Embora ainda possamos fornecer um nível razoável de segurança, você estará vulnerável a ataques offline. Isso seria quando seus dados são despejados e sua chave é forçada por força bruta. \n\n Se você acredita ter um modelo de ameaça de alto risco, deve considerar atualizar para um dispositivo mais novo.</string>
 </resources>

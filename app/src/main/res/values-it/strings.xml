@@ -162,8 +162,7 @@
 	<string name="pin_verification_wipe_warning">%1$d tentativi falliti comporteranno un\'elimazione completa dei dati.\nTUTTE LE FOTO VERRANNO PERDUTE!</string>
     <string name="obscure_action_button_clear">Pulisci</string>
     <string name="obscure_action_button_save">Salva</string>
-    <string name="obfuscate_photo_button">Offusca foto</string>
-    <string name="obscure_action_button">Oscuro</string>
+    <string name="obfuscate_photo_button">Offusca Foto</string>
     <string name="obscure_action_button_add_region">Aggiungi Regione</string>
     <string name="obscure_action_button_finish_region">Termina Regione</string>
     <string name="save_photo_dialog_title">Salva Foto</string>
@@ -184,4 +183,31 @@
     <string name="decoy_photo_set_menu_item">Imposta come esca</string>
     <string name="decoy_photo_remove_menu_item">Rimuovi Decoy</string>
     <string name="discard_changes_dialog_title">Annulla modifiche</string>
+    <string name="obscure_action_button_obfuscate">Oscura</string>
+    <string name="close_import_photos_content_description">Chiudi importazione</string>
+    <string name="import_photos_title">Importa foto</string>
+    <string name="import_photos_progress_label">Importazione foto: %1$d / %2$d</string>
+    <string name="import_photos_done_label">Importazione completata!</string>
+    <string name="import_photos_current_photo_description">Foto corrente in fase di importazione</string>
+    <string name="settings_security_status_description">Il livello di sicurezza hardware disponibile sul tuo dispositivo</string>
+    <string name="settings_security_status">Stato di Sicurezza</string>
+    <string name="pin_show_description">Mostra PIN</string>
+    <string name="pin_hide_description">Nascondi PIN</string>
+    <string name="security_intro_icon">Selezione Sicurezza</string>
+    <string name="import_photos_done_button">Vai alla Galleria</string>
+    <string name="security_intro_security_level_strong">Forte</string>
+    <string name="security_intro_supported_security_label">La tua sicurezza è:</string>
+    <string name="security_intro_string_biometric_label">Richiedere biometria?</string>
+    <string name="security_intro_string_biometric_checkbox">Richiesta biometrica + PIN</string>
+    <string name="security_intro_advanced_section">Avanzato</string>
+    <string name="security_intro_expand">Espandi le opzioni avanzate</string>
+    <string name="security_intro_security_level_strong_explainer">Le tue chiavi di crittografia sono memorizzate in un Secure Element su questo dispositivo. Questo è il livello di protezione più alto possibile. È resistente a tutte le forme di attacco, anche ai più determinati e ben attrezzati.</string>
+    <string name="security_intro_collapse">Riduci le opzioni avanzate</string>
+    <string name="security_intro_security_level_normal">Normale</string>
+    <string name="security_intro_security_level_weak">Debole</string>
+    <string name="security_intro_string_biometric_explainer">Poiché il tuo dispositivo è dotato di un Elemento Sicuro (SE), possiamo offrire un ulteriore livello di protezione.
+In aggiunta al tuo PIN, il SE può richiedere di inserire anche la tua Impronta Digitale prima di consentire l\'accesso alla chiave di crittografia. 
+Questo generalmente non è richiesto per la maggior parte degli utenti, ma è un livello di sicurezza opzionale se il tuo modello di minaccia lo richiede.</string>
+    <string name="security_intro_security_level_normal_explainer">Le tue chiavi di crittografia sono memorizzate nell\'Environment di Esecuzione Fidato del tuo chip su questo dispositivo. Questo è un livello di sicurezza ragionevole per tutti tranne che per i modelli di minaccia ad alto rischio.</string>
+    <string name="security_intro_security_level_weak_explainer">Il tuo dispositivo non dispone di alcuna memorizzazione di chiavi supportata dall\'hardware. Anche se possiamo comunque offrirti un livello ragionevole di sicurezza, sarai vulnerabile ad attacchi offline. Questo è il caso in cui i tuoi dati vengono scaricati e la tua chiave è soggetta a brute force. \n\n Se credi di avere un modello di minaccia ad alto rischio, dovresti considerare l\'aggiornamento a un dispositivo più recente.</string>
 </resources>

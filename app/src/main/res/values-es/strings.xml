@@ -160,9 +160,8 @@
 	<string name="pin_verification_remaining_attempts">Intentos restantes: %1$d/%2$d</string>
 	<string name="pin_verification_verify_or_wipe">Verificar O Borrar Todos los Datos</string>
 	<string name="pin_verification_wipe_warning">%1$d intentos fallidos resultarán en un borrado completo de datos.\n¡SE PERDERÁN TODAS LAS FOTOS!</string>
-	<string name="obscure_action_button">Oscuro</string>
 	<string name="obscure_action_button_save">Guardar</string>
-	<string name="obfuscate_photo_button">Ofuscar Foto</string>
+    <string name="obfuscate_photo_button">Ofuscar foto</string>
 	<string name="obscure_action_button_clear">Limpiar</string>
 	<string name="obscure_action_button_add_region">Agregar región</string>
 	<string name="obscure_action_button_cancel_region">Cancelar</string>
@@ -185,4 +184,29 @@
 	</string>
 	<string name="decoy_photo_remove_menu_item">Eliminar señuelo</string>
 	<string name="decoy_photo_set_menu_item">Establecer como señuelo</string>
+    <string name="obscure_action_button_obfuscate">Oscurecer</string>
+    <string name="close_import_photos_content_description">Cerrar importación</string>
+    <string name="import_photos_title">Importar Fotos</string>
+    <string name="import_photos_done_label">¡Importación completa!</string>
+    <string name="import_photos_progress_label">Importando fotos: %1$d / %2$d</string>
+    <string name="import_photos_done_button">Ir a la Galería</string>
+    <string name="import_photos_current_photo_description">Foto actual que se está importando</string>
+    <string name="settings_security_status">Estado de Seguridad</string>
+    <string name="settings_security_status_description">El nivel de seguridad de hardware disponible en su dispositivo</string>
+    <string name="pin_hide_description">Ocultar PIN</string>
+    <string name="pin_show_description">Mostrar PIN</string>
+    <string name="security_intro_icon">Selección de seguridad</string>
+    <string name="security_intro_supported_security_label">Tu seguridad es:</string>
+    <string name="security_intro_security_level_strong">Fuerte</string>
+    <string name="security_intro_string_biometric_label">¿Requiere biometría?</string>
+    <string name="security_intro_string_biometric_checkbox">Requerir biometría + PIN</string>
+    <string name="security_intro_advanced_section">Avanzado</string>
+    <string name="security_intro_security_level_strong_explainer">Sus claves de cifrado se almacenan en un Elemento Seguro en este dispositivo. Este es el nivel más alto de protección posible. Es resistente a todas las formas de ataque, incluso a los más decididos y bien financiados.</string>
+    <string name="security_intro_expand">Expandir opciones avanzadas</string>
+    <string name="security_intro_collapse">Colapsar opciones avanzadas</string>
+    <string name="security_intro_security_level_normal">Normal</string>
+    <string name="security_intro_security_level_weak">Débil</string>
+    <string name="security_intro_security_level_normal_explainer">Sus claves de cifrado se almacenan en el Entorno de Ejecución Confiable de chips de este dispositivo. Este es el nivel de seguridad razonable para todos menos los modelos de amenazas de mayor riesgo.</string>
+    <string name="security_intro_string_biometric_explainer">Debido a que su dispositivo tiene un Elemento Seguro (SE), podemos ofrecer un nivel adicional de protección. \n\n Además de su PIN, el SE puede requerir que ingrese su huella dactilar antes de permitir el acceso a la clave de cifrado. \n\n Esto generalmente no es necesario para la mayoría de los usuarios, pero es un nivel de seguridad opcional si su modelo de amenaza lo exige.</string>
+    <string name="security_intro_security_level_weak_explainer">Tu dispositivo no cuenta con almacenamiento de claves respaldado por hardware. Aunque aún podemos ofrecerte un nivel razonable de seguridad, estarás vulnerable a ataques offline. Esto sería cuando tus datos son extraídos y tu clave es forzada por brute force. \n\nSi crees tener un modelo de amenaza de alto riesgo, deberías considerar actualizar a un dispositivo más nuevo.</string>
 </resources>
