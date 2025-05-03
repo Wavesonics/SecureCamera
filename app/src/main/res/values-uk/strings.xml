@@ -131,7 +131,7 @@
         заходи для захисту ваших фотографій від сторонніх очей, навіть якщо ваш телефон буде конфіскований та
         перевірений.
     </string>
-	<string name="intro_slide3_title">Все ще можна поділитися</string>
+    <string name="intro_slide3_title">Все ще можна ділитися</string>
 	<string name="intro_slide4_title">Мета Дані</string>
 	<string name="intro_slide2_description">Ваші фотографії зберігаються у приватному зашифрованому сховищі програми. Ключ шифрування ґрунтується на вашому PIN-коді та ніколи не зберігається на диску.\n\nЖодні дані, включаючи фотографії, ніколи не завантажуються або не резервуються десь.</string>
 	<string name="intro_skip">Пропустити</string>
@@ -203,14 +203,33 @@
     <string name="security_intro_string_biometric_label">Потребуєте біометрику?</string>
     <string name="security_intro_string_biometric_checkbox">Вимагати біометричних даних + PIN-код</string>
     <string name="security_intro_advanced_section">Розширений</string>
-    <string name="security_intro_security_level_strong_explainer">Ваші ключі шифрування зберігаються в Безпечному елементі на цьому пристрої. Це найвищий рівень захисту, який можливий. Він стійкий до всіх форм атаки, навіть до найрішучіших та добре ресурсованих.</string>
+    <string name="security_intro_security_level_strong_explainer">Ваші ключі шифрування зберігаються в Безпечному
+        елементі на цьому пристрої. Це найвищий рівень захисту, який можливий. Він стійкий до всіх форм атаки, навіть до
+        найрішучіших та добре ресурсованих.
+    </string>
     <string name="security_intro_expand">Розгорнути розширені параметри</string>
     <string name="security_intro_collapse">Згорнути розширені параметри</string>
     <string name="security_intro_security_level_normal">Нормальний</string>
     <string name="security_intro_security_level_weak">Слабкий</string>
-    <string name="security_intro_string_biometric_explainer">Оскільки ваш пристрій має Безпечний елемент (SE), ми можемо запропонувати додатковий рівень захисту.
+    <string name="security_intro_string_biometric_explainer">Оскільки ваш пристрій має Безпечний елемент (SE), ми можемо
+        запропонувати додатковий рівень захисту.
 Додатково до вашого PIN-коду, SE може вимагати, щоб ви також ввели свій відбиток пальця перед тим, як дозволити доступ до ключа шифрування. 
 Це зазвичай не є обов\'язковим для більшості користувачів, але є додатковим рівнем безпеки, якщо ваша модель загрози це потребує.</string>
-    <string name="security_intro_security_level_normal_explainer">Ваші ключі шифрування зберігаються в середовищі довіреного виконання вашого чіпа на цьому пристрої. Це розумний рівень безпеки для всіх, крім моделей загрози найвищого рівня.</string>
-    <string name="security_intro_security_level_weak_explainer">Ваш пристрій не має жодного сховища ключів, захищеного апаратним способом. Хоча ми все ще можемо забезпечити вам розумний рівень безпеки, ви будете вразливі до офлайн-атак. Це йдеться про те, що ваші дані скидаються, а ваш ключ піддається брутфорсингу. Якщо ви вважаєте, що у вас високий ризик загроз, вам слід розглянути можливість оновлення до новішого пристрою.</string>
+    <string name="security_intro_security_level_normal_explainer">Ваші ключі шифрування зберігаються в середовищі
+        довіреного виконання вашого чіпа на цьому пристрої. Це розумний рівень безпеки для всіх, крім моделей загрози
+        найвищого рівня.
+    </string>
+    <string name="security_intro_security_level_weak_explainer">Ваш пристрій не має жодного сховища ключів, захищеного
+        апаратним способом. Хоча ми все ще можемо забезпечити вам розумний рівень безпеки, ви будете вразливі до
+        офлайн-атак. Це йдеться про те, що ваші дані скидаються, а ваш ключ піддається брутфорсингу. Якщо ви вважаєте,
+        що у вас високий ризик загроз, вам слід розглянути можливість оновлення до новішого пристрою.
+    </string>
+    <string name="import_photos_failed_label">Не вдалося: %1$d</string>
+    <string name="import_worker_notification_title">Імпорт фотографій</string>
+    <string name="import_photos_done_summary">%1$d успішно, %2$d не вдалося</string>
+    <string name="import_worker_notification_content">Імпорт фото %1$d з %2$d</string>
+    <string name="import_worker_channel_description">Показує прогрес імпорту фото</string>
+    <string name="import_worker_channel_name">Імпорт фотографій</string>
+    <string name="gallery_select_all_content_description">Вибрати все</string>
+    <string name="pin_creating_vault">Створення фотосейфу…</string>
 </resources>

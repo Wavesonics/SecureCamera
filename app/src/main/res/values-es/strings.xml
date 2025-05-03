@@ -129,7 +129,7 @@
         para proteger tu privacidad.\n\nJunto con una fuerte encriptación, se toman todas las medidas necesarias para
         salvaguardar tus fotos de miradas curiosas, incluso si tu teléfono es confiscado y registrado.
     </string>
-	<string name="intro_slide3_title">Aún Compartible</string>
+    <string name="intro_slide3_title">Aún compartible</string>
 	<string name="intro_slide1_description">Se requiere su PIN para tomar y ver las fotos, manteniéndolas a salvo de accesos no autorizados incluso si el resto de su dispositivo está desbloqueado.\n\nDespués de unos minutos, se le pedirá que ingrese su PIN nuevamente para verificar que sigue siendo usted.</string>
 	<string name="intro_slide4_title">Meta Datos</string>
 	<string name="intro_slide2_description">Tus fotos se almacenan en un almacenamiento privado y encriptado de la aplicación. La clave de encriptación se deriva de tu PIN y nunca se guarda en el disco.\n\nNingún dato, incluidas las fotos, se sube o se respalda en ningún lugar.</string>
@@ -192,7 +192,8 @@
     <string name="import_photos_done_button">Ir a la Galería</string>
     <string name="import_photos_current_photo_description">Foto actual que se está importando</string>
     <string name="settings_security_status">Estado de Seguridad</string>
-    <string name="settings_security_status_description">El nivel de seguridad de hardware disponible en su dispositivo</string>
+    <string name="settings_security_status_description">El nivel de seguridad de hardware disponible en su dispositivo
+    </string>
     <string name="pin_hide_description">Ocultar PIN</string>
     <string name="pin_show_description">Mostrar PIN</string>
     <string name="security_intro_icon">Selección de seguridad</string>
@@ -201,12 +202,34 @@
     <string name="security_intro_string_biometric_label">¿Requiere biometría?</string>
     <string name="security_intro_string_biometric_checkbox">Requerir biometría + PIN</string>
     <string name="security_intro_advanced_section">Avanzado</string>
-    <string name="security_intro_security_level_strong_explainer">Sus claves de cifrado se almacenan en un Elemento Seguro en este dispositivo. Este es el nivel más alto de protección posible. Es resistente a todas las formas de ataque, incluso a los más decididos y bien financiados.</string>
+    <string name="security_intro_security_level_strong_explainer">Sus claves de cifrado se almacenan en un Elemento
+        Seguro en este dispositivo. Este es el nivel más alto de protección posible. Es resistente a todas las formas de
+        ataque, incluso a los más decididos y bien financiados.
+    </string>
     <string name="security_intro_expand">Expandir opciones avanzadas</string>
     <string name="security_intro_collapse">Colapsar opciones avanzadas</string>
     <string name="security_intro_security_level_normal">Normal</string>
     <string name="security_intro_security_level_weak">Débil</string>
-    <string name="security_intro_security_level_normal_explainer">Sus claves de cifrado se almacenan en el Entorno de Ejecución Confiable de chips de este dispositivo. Este es el nivel de seguridad razonable para todos menos los modelos de amenazas de mayor riesgo.</string>
-    <string name="security_intro_string_biometric_explainer">Debido a que su dispositivo tiene un Elemento Seguro (SE), podemos ofrecer un nivel adicional de protección. \n\n Además de su PIN, el SE puede requerir que ingrese su huella dactilar antes de permitir el acceso a la clave de cifrado. \n\n Esto generalmente no es necesario para la mayoría de los usuarios, pero es un nivel de seguridad opcional si su modelo de amenaza lo exige.</string>
-    <string name="security_intro_security_level_weak_explainer">Tu dispositivo no cuenta con almacenamiento de claves respaldado por hardware. Aunque aún podemos ofrecerte un nivel razonable de seguridad, estarás vulnerable a ataques offline. Esto sería cuando tus datos son extraídos y tu clave es forzada por brute force. \n\nSi crees tener un modelo de amenaza de alto riesgo, deberías considerar actualizar a un dispositivo más nuevo.</string>
+    <string name="security_intro_security_level_normal_explainer">Sus claves de cifrado se almacenan en el Entorno de
+        Ejecución Confiable de chips de este dispositivo. Este es el nivel de seguridad razonable para todos menos los
+        modelos de amenazas de mayor riesgo.
+    </string>
+    <string name="security_intro_string_biometric_explainer">Debido a que su dispositivo tiene un Elemento Seguro (SE),
+        podemos ofrecer un nivel adicional de protección. \n\n Además de su PIN, el SE puede requerir que ingrese su
+        huella dactilar antes de permitir el acceso a la clave de cifrado. \n\n Esto generalmente no es necesario para
+        la mayoría de los usuarios, pero es un nivel de seguridad opcional si su modelo de amenaza lo exige.
+    </string>
+    <string name="security_intro_security_level_weak_explainer">Tu dispositivo no cuenta con almacenamiento de claves
+        respaldado por hardware. Aunque aún podemos ofrecerte un nivel razonable de seguridad, estarás vulnerable a
+        ataques offline. Esto sería cuando tus datos son extraídos y tu clave es forzada por brute force. \n\nSi crees
+        tener un modelo de amenaza de alto riesgo, deberías considerar actualizar a un dispositivo más nuevo.
+    </string>
+    <string name="import_photos_failed_label">Fallido: %1$d</string>
+    <string name="import_worker_notification_title">Importando fotos</string>
+    <string name="import_photos_done_summary">%1$d exitosos, %2$d fallidos</string>
+    <string name="import_worker_notification_content">Importando foto %1$d de %2$d</string>
+    <string name="import_worker_channel_name">Importar fotos</string>
+    <string name="gallery_select_all_content_description">Seleccionar todo</string>
+    <string name="import_worker_channel_description">Muestra el progreso de la importación de fotos.</string>
+    <string name="pin_creating_vault">Creando bóveda de fotos…</string>
 </resources>

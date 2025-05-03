@@ -189,7 +189,9 @@
     <string name="import_photos_progress_label">Importazione foto: %1$d / %2$d</string>
     <string name="import_photos_done_label">Importazione completata!</string>
     <string name="import_photos_current_photo_description">Foto corrente in fase di importazione</string>
-    <string name="settings_security_status_description">Il livello di sicurezza hardware disponibile sul tuo dispositivo</string>
+    <string name="settings_security_status_description">Il livello di sicurezza hardware disponibile sul tuo
+        dispositivo
+    </string>
     <string name="settings_security_status">Stato di Sicurezza</string>
     <string name="pin_show_description">Mostra PIN</string>
     <string name="pin_hide_description">Nascondi PIN</string>
@@ -201,13 +203,33 @@
     <string name="security_intro_string_biometric_checkbox">Richiesta biometrica + PIN</string>
     <string name="security_intro_advanced_section">Avanzato</string>
     <string name="security_intro_expand">Espandi le opzioni avanzate</string>
-    <string name="security_intro_security_level_strong_explainer">Le tue chiavi di crittografia sono memorizzate in un Secure Element su questo dispositivo. Questo è il livello di protezione più alto possibile. È resistente a tutte le forme di attacco, anche ai più determinati e ben attrezzati.</string>
+    <string name="security_intro_security_level_strong_explainer">Le tue chiavi di crittografia sono memorizzate in un
+        Secure Element su questo dispositivo. Questo è il livello di protezione più alto possibile. È resistente a tutte
+        le forme di attacco, anche ai più determinati e ben attrezzati.
+    </string>
     <string name="security_intro_collapse">Riduci le opzioni avanzate</string>
     <string name="security_intro_security_level_normal">Normale</string>
     <string name="security_intro_security_level_weak">Debole</string>
-    <string name="security_intro_string_biometric_explainer">Poiché il tuo dispositivo è dotato di un Elemento Sicuro (SE), possiamo offrire un ulteriore livello di protezione.
+    <string name="security_intro_string_biometric_explainer">Poiché il tuo dispositivo è dotato di un Elemento Sicuro
+        (SE), possiamo offrire un ulteriore livello di protezione.
 In aggiunta al tuo PIN, il SE può richiedere di inserire anche la tua Impronta Digitale prima di consentire l\'accesso alla chiave di crittografia. 
 Questo generalmente non è richiesto per la maggior parte degli utenti, ma è un livello di sicurezza opzionale se il tuo modello di minaccia lo richiede.</string>
-    <string name="security_intro_security_level_normal_explainer">Le tue chiavi di crittografia sono memorizzate nell\'Environment di Esecuzione Fidato del tuo chip su questo dispositivo. Questo è un livello di sicurezza ragionevole per tutti tranne che per i modelli di minaccia ad alto rischio.</string>
-    <string name="security_intro_security_level_weak_explainer">Il tuo dispositivo non dispone di alcuna memorizzazione di chiavi supportata dall\'hardware. Anche se possiamo comunque offrirti un livello ragionevole di sicurezza, sarai vulnerabile ad attacchi offline. Questo è il caso in cui i tuoi dati vengono scaricati e la tua chiave è soggetta a brute force. \n\n Se credi di avere un modello di minaccia ad alto rischio, dovresti considerare l\'aggiornamento a un dispositivo più recente.</string>
+    <string name="security_intro_security_level_normal_explainer">Le tue chiavi di crittografia sono memorizzate
+        nell\'Environment di Esecuzione Fidato del tuo chip su questo dispositivo. Questo è un livello di sicurezza
+        ragionevole per tutti tranne che per i modelli di minaccia ad alto rischio.
+    </string>
+    <string name="security_intro_security_level_weak_explainer">Il tuo dispositivo non dispone di alcuna memorizzazione
+        di chiavi supportata dall\'hardware. Anche se possiamo comunque offrirti un livello ragionevole di sicurezza,
+        sarai vulnerabile ad attacchi offline. Questo è il caso in cui i tuoi dati vengono scaricati e la tua chiave è
+        soggetta a brute force. \n\n Se credi di avere un modello di minaccia ad alto rischio, dovresti considerare
+        l\'aggiornamento a un dispositivo più recente.
+    </string>
+    <string name="import_worker_notification_title">Importazione foto</string>
+    <string name="import_photos_failed_label">Errore: %1$d</string>
+    <string name="import_worker_notification_content">Importazione foto %1$d di %2$d</string>
+    <string name="import_photos_done_summary">%1$d riusciti, %2$d non riusciti</string>
+    <string name="import_worker_channel_name">Importa Foto</string>
+    <string name="import_worker_channel_description">Mostra il progresso dell\'importazione delle foto</string>
+    <string name="gallery_select_all_content_description">Seleziona tutto</string>
+    <string name="pin_creating_vault">Creazione della cassaforte fotografica...</string>
 </resources>

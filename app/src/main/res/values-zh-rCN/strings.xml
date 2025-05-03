@@ -125,7 +125,7 @@
     <string name="intro_slide0_title">SnapSafe</string>
 	<string name="intro_slide1_title">隐私专注</string>
 	<string name="intro_slide2_title">安全存储</string>
-	<string name="intro_slide3_title">仍然可以分享</string>
+    <string name="intro_slide3_title">仍然可分享</string>
 	<string name="intro_slide1_description">您的 PIN 码是拍摄和查看照片所必需的，即使您的设备其余部分已解锁，也能确保它们免受未授权访问。\n\n几分钟后，您需要再次输入 PIN 码以验证仍然是您。</string>
     <string name="intro_slide0_description">欢迎使用
         SnapSafe！这是一个免费且开源的应用程序，旨在保护您的隐私。\n\n除了强大的加密技术，我们采取了一切措施来保护您的照片不被偷窥，即使您的手机被没收并进行搜查。
@@ -196,7 +196,9 @@
     <string name="security_intro_security_level_strong">强安全级别</string>
     <string name="security_intro_string_biometric_label">需要生物识别吗？</string>
     <string name="security_intro_string_biometric_checkbox">要求生物识别 + PIN</string>
-    <string name="security_intro_security_level_strong_explainer">您的加密密钥存储在此设备上的安全元件中。这是可能的最高保护级别。它能够抵抗所有形式的攻击，即使是最坚定和资源最充足的攻击。</string>
+    <string name="security_intro_security_level_strong_explainer">
+        您的加密密钥存储在此设备上的安全元件中。这是可能的最高保护级别。它能够抵抗所有形式的攻击，即使是最坚定和资源最充足的攻击。
+    </string>
     <string name="security_intro_advanced_section">高级</string>
     <string name="security_intro_expand">展开高级选项</string>
     <string name="security_intro_collapse">收起高级选项</string>
@@ -205,6 +207,18 @@
 除了您的 PIN 码，SE 还可能要求您输入指纹，才能允许访问加密密钥。
 这通常对大多数用户而言不是必需的，但如果您的威胁模型需要，这是一个可选的安全级别。</string>
     <string name="security_intro_security_level_weak">弱</string>
-    <string name="security_intro_security_level_normal_explainer">您的加密密钥存储在此设备的可信执行环境中。这是除最高风险威胁模型之外的合理安全级别。</string>
-    <string name="security_intro_security_level_weak_explainer">您的设备缺乏任何硬件支持的密钥存储。虽然我们仍然可以为您提供合理的安全级别，但您会受到离线攻击的威胁。这种攻击是指您的数据被提取，并且您的密钥被暴力破解。\n\n如果您认为自己面临高风险的威胁模型，您应该考虑升级到更新的设备。</string>
+    <string name="security_intro_security_level_normal_explainer">
+        您的加密密钥存储在此设备的可信执行环境中。这是除最高风险威胁模型之外的合理安全级别。
+    </string>
+    <string name="security_intro_security_level_weak_explainer">
+        您的设备缺乏任何硬件支持的密钥存储。虽然我们仍然可以为您提供合理的安全级别，但您会受到离线攻击的威胁。这种攻击是指您的数据被提取，并且您的密钥被暴力破解。\n\n如果您认为自己面临高风险的威胁模型，您应该考虑升级到更新的设备。
+    </string>
+    <string name="import_photos_failed_label">失败：%1$d</string>
+    <string name="import_worker_notification_content">正在导入照片 %1$d / %2$d</string>
+    <string name="import_worker_notification_title">导入照片</string>
+    <string name="import_photos_done_summary">%1$d 成功，%2$d 失败</string>
+    <string name="import_worker_channel_description">显示照片导入的进度</string>
+    <string name="import_worker_channel_name">照片导入</string>
+    <string name="gallery_select_all_content_description">全选</string>
+    <string name="pin_creating_vault">正在创建照片保险库…</string>
 </resources>

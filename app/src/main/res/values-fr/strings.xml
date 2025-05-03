@@ -130,7 +130,7 @@
     </string>
 	<string name="intro_slide2_title">Stockage sécurisé</string>
 	<string name="intro_slide1_description">Votre code PIN est requis pour prendre et visualiser les photos, les protégeant ainsi d\'un accès non autorisé même si le reste de votre appareil est déverrouillé.\n\nAprès quelques minutes, vous devrez entrer à nouveau votre code PIN pour vérifier que c\'est toujours vous.</string>
-	<string name="intro_slide3_title">Toujours partageable</string>
+    <string name="intro_slide3_title">Encore partageable</string>
 	<string name="intro_slide4_title">Données métamétriques</string>
 	<string name="intro_slide2_description">Vos photos sont stockées dans un espace de stockage privé de l\'application, crypté. La clé de cryptage est dérivée de votre code PIN et n\'est jamais stockée sur le disque.\n\nAucune donnée, y compris les photos, n\'est jamais téléchargée ou sauvegardée ailleurs.</string>
 	<string name="intro_slide5_title">Données de localisation</string>
@@ -195,7 +195,8 @@
     <string name="import_photos_done_button">Aller à la Galerie</string>
     <string name="import_photos_current_photo_description">Photo actuelle en cours d\'importation</string>
     <string name="settings_security_status">État de sécurité</string>
-    <string name="settings_security_status_description">Le niveau de sécurité matérielle disponible sur votre appareil</string>
+    <string name="settings_security_status_description">Le niveau de sécurité matérielle disponible sur votre appareil
+    </string>
     <string name="pin_show_description">Afficher le PIN</string>
     <string name="security_intro_icon">Sélection de sécurité</string>
     <string name="pin_hide_description">Masquer le PIN</string>
@@ -205,11 +206,35 @@
     <string name="security_intro_string_biometric_checkbox">Exiger des biométriques + PIN</string>
     <string name="security_intro_advanced_section">Avancé</string>
     <string name="security_intro_expand">Développer les options avancées</string>
-    <string name="security_intro_security_level_strong_explainer">Vos clés de chiffrement sont stockées dans un Élément Sécurisé sur cet appareil. C\'est le niveau de protection le plus élevé possible. Il résiste à toutes les formes d\'attaque, même aux plus déterminées et bien dotées en ressources.</string>
+    <string name="security_intro_security_level_strong_explainer">Vos clés de chiffrement sont stockées dans un Élément
+        Sécurisé sur cet appareil. C\'est le niveau de protection le plus élevé possible. Il résiste à toutes les formes
+        d\'attaque, même aux plus déterminées et bien dotées en ressources.
+    </string>
     <string name="security_intro_security_level_normal">Normal</string>
     <string name="security_intro_collapse">Réduire les options avancées</string>
     <string name="security_intro_security_level_weak">Faible</string>
-    <string name="security_intro_string_biometric_explainer">Parce que votre appareil possède un Éléments Sécurisé (SE), nous pouvons offrir un niveau de protection supplémentaire. \n\n En plus de votre code PIN, le SE peut exiger que vous saisissiez votre empreinte digitale avant de permettre l\'accès à la clé de chiffrement. \n\n Cela n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue un niveau de sécurité optionnel si votre modèle de menace l\'exige.</string>
-    <string name="security_intro_security_level_normal_explainer">Vos clés de cryptage sont stockées dans l\'environnement d\'exécution de confiance de vos puces sur cet appareil. C\'est un niveau de sécurité raisonnable pour tous sauf les modèles de menace les plus élevés.</string>
-    <string name="security_intro_security_level_weak_explainer">Votre appareil ne dispose d\'aucun stockage de clé matériel. Bien que nous puissions encore vous fournir un niveau de sécurité raisonnable, vous serez vulnérable aux attaques hors ligne. Cela signifie que vos données peuvent être récupérées et que votre clé peut être forcée par attaque par force brute. \n\n Si vous pensez avoir un modèle de menace à haut risque, vous devriez envisager de mettre à niveau vers un appareil plus récent.</string>
+    <string name="security_intro_string_biometric_explainer">Parce que votre appareil possède un Éléments Sécurisé (SE),
+        nous pouvons offrir un niveau de protection supplémentaire. \n\n En plus de votre code PIN, le SE peut exiger
+        que vous saisissiez votre empreinte digitale avant de permettre l\'accès à la clé de chiffrement. \n\n Cela
+        n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue un niveau de sécurité
+        optionnel si votre modèle de menace l\'exige.
+    </string>
+    <string name="security_intro_security_level_normal_explainer">Vos clés de cryptage sont stockées dans
+        l\'environnement d\'exécution de confiance de vos puces sur cet appareil. C\'est un niveau de sécurité
+        raisonnable pour tous sauf les modèles de menace les plus élevés.
+    </string>
+    <string name="security_intro_security_level_weak_explainer">Votre appareil ne dispose d\'aucun stockage de clé
+        matériel. Bien que nous puissions encore vous fournir un niveau de sécurité raisonnable, vous serez vulnérable
+        aux attaques hors ligne. Cela signifie que vos données peuvent être récupérées et que votre clé peut être forcée
+        par attaque par force brute. \n\n Si vous pensez avoir un modèle de menace à haut risque, vous devriez envisager
+        de mettre à niveau vers un appareil plus récent.
+    </string>
+    <string name="import_worker_notification_title">Importation de photos</string>
+    <string name="import_photos_done_summary">%1$d réussi, %2$d échoué</string>
+    <string name="import_photos_failed_label">Échec : %1$d</string>
+    <string name="import_worker_notification_content">Importation de la photo %1$d sur %2$d</string>
+    <string name="import_worker_channel_name">Importation de photos</string>
+    <string name="import_worker_channel_description">Affiche la progression de l\'importation des photos</string>
+    <string name="gallery_select_all_content_description">Sélectionner tout</string>
+    <string name="pin_creating_vault">Création du coffre-fort photo…</string>
 </resources>
