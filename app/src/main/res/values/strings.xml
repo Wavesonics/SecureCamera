@@ -64,9 +64,17 @@
     <string name="import_photos_title">Import Photos</string>
     <string name="close_import_photos_content_description">Close Import</string>
     <string name="import_photos_progress_label">Importing photos: %1$d / %2$d</string>
+    <string name="import_photos_failed_label">Failed: %1$d</string>
     <string name="import_photos_done_label">Import Complete!</string>
+    <string name="import_photos_done_summary">%1$d successful, %2$d failed</string>
     <string name="import_photos_done_button">Go to Gallery</string>
     <string name="import_photos_current_photo_description">Current photo being imported</string>
+
+    <!-- Import Worker -->
+    <string name="import_worker_notification_title">Importing Photos</string>
+    <string name="import_worker_notification_content">Importing photo %1$d of %2$d</string>
+    <string name="import_worker_channel_name">Photo Import</string>
+    <string name="import_worker_channel_description">Shows progress of photo import</string>
 
     <!-- Gallery Screen -->
     <string name="gallery_title">Gallery</string>

@@ -104,6 +104,7 @@ dependencies {
 	implementation(libs.androidx.runtime.livedata)
 	implementation(libs.face.detection)
 	implementation(libs.bcrypt)
+	implementation(libs.androidx.work.runtime.ktx)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

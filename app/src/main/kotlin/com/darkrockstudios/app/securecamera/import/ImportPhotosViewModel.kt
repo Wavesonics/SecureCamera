@@ -1,34 +1,28 @@
 package com.darkrockstudios.app.securecamera.import
 
-import android.content.Context
-import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
-import com.ashampoo.kim.Kim
-import com.ashampoo.kim.common.convertToPhotoMetadata
-import com.ashampoo.kim.model.GpsCoordinates
-import com.ashampoo.kim.model.TiffOrientation
+import androidx.work.*
 import com.darkrockstudios.app.securecamera.BaseViewModel
-import com.darkrockstudios.app.securecamera.camera.CapturedImage
-import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
-import com.darkrockstudios.app.securecamera.camera.toDegrees
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.updateAndGet
+import dev.whyoleg.cryptography.CryptographyProvider
+import dev.whyoleg.cryptography.algorithms.SHA512
+import dev.whyoleg.cryptography.operations.Hasher
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 class ImportPhotosViewModel(
-	private val appContext: Context,
-	private val secureImageRepository: SecureImageRepository,
+	private val workManager: WorkManager,
 ) : BaseViewModel<ImportPhotosState>() {
+
+	val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
+
+	companion object {
+		private const val IMPORT_WORK_NAME = "photo_import_work_"
+	}
 
 	override fun createState() = ImportPhotosState()
 
-	@OptIn(ExperimentalTime::class)
 	fun beginImport(
 		photos: List<Uri>,
 		progress: (curPhoto: Uri) -> Unit,
@@ -45,64 +39,84 @@ class ImportPhotosViewModel(
 			remainingPhotos = photos.size
 		)
 
+		val photoUrisString = photos.map { it.toString() }.toTypedArray()
+
+		val importWorkRequest = OneTimeWorkRequestBuilder<ImportWorker>()
+			.setInputData(
+				workDataOf(
+					ImportWorker.KEY_PHOTO_URIS to photoUrisString
+				)
+			)
+			.build()
+
+		val uniqueWorkId = hasher.hashBlocking(photos.joinToString { it.toString() }.toByteArray())
+
+		workManager.enqueueUniqueWork(
+			IMPORT_WORK_NAME + uniqueWorkId,
+			ExistingWorkPolicy.KEEP,
+			importWorkRequest
+		)
+
+		// Observe work progress
 		viewModelScope.launch {
-			withContext(Dispatchers.IO) {
-				photos.forEachIndexed { index, photoUri ->
-					progress(photoUri)
+			workManager.getWorkInfoByIdLiveData(importWorkRequest.id).observeForever { workInfo ->
+				when (workInfo?.state) {
+					WorkInfo.State.RUNNING -> {
+						val progressData = workInfo.progress
+						val totalPhotos = progressData.getInt(ImportWorker.KEY_TOTAL_PHOTOS, 0)
+						val remainingPhotos = progressData.getInt(ImportWorker.KEY_REMAINING_PHOTOS, 0)
+						val successfulPhotos = progressData.getInt(ImportWorker.KEY_SUCCESSFUL_PHOTOS, 0)
+						val failedPhotos = progressData.getInt(ImportWorker.KEY_FAILED_PHOTOS, 0)
+						val currentPhotoUriString = progressData.getString(ImportWorker.KEY_CURRENT_PHOTO_URI)
 
-					val remaining = photos.size - index - 1
+						_uiState.value = _uiState.value.copy(
+							totalPhotos = totalPhotos,
+							remainingPhotos = remainingPhotos,
+							successfulPhotos = successfulPhotos,
+							failedPhotos = failedPhotos
+						)
 
-					_uiState.value = _uiState.value.copy(
-						remainingPhotos = remaining
-					)
-					val jpgBytes = readPhotoBytes(photoUri)
-					if (jpgBytes != null) {
-						var orientation: TiffOrientation = TiffOrientation.STANDARD
-						var coords: GpsCoordinates? = null
-						var timestamp: Instant = Instant.fromEpochSeconds(0)
-
-						Kim.readMetadata(jpgBytes)?.convertToPhotoMetadata()?.let { imageMetadata ->
-							orientation = imageMetadata.orientation ?: TiffOrientation.STANDARD
-							coords = imageMetadata.gpsCoordinates
-							timestamp =
-								Instant.fromEpochSeconds(imageMetadata.takenDate?.milliseconds?.inWholeSeconds ?: 0L)
+						if (currentPhotoUriString != null) {
+							val currentPhotoUri = currentPhotoUriString.toUri()
+							progress(currentPhotoUri)
 						}
+					}
 
-						try {
-							val bitmap = BitmapFactory.decodeByteArray(jpgBytes, 0, jpgBytes.size)
-							val photoToSave = CapturedImage(
-								sensorBitmap = bitmap,
-								timestamp = timestamp,
-								rotationDegrees = orientation.toDegrees(),
-							)
+					WorkInfo.State.SUCCEEDED -> {
+						val outputData = workInfo.outputData
+						val successfulPhotos = outputData.getInt(ImportWorker.KEY_SUCCESSFUL_PHOTOS, 0)
+						val failedPhotos = outputData.getInt(ImportWorker.KEY_FAILED_PHOTOS, 0)
+						val totalPhotos = outputData.getInt(ImportWorker.KEY_TOTAL_PHOTOS, 0)
 
-							secureImageRepository.saveImage(
-								image = photoToSave,
-								latLng = coords,
-								applyRotation = true,
-							)
+						_uiState.value = _uiState.value.copy(
+							successfulPhotos = successfulPhotos,
+							failedPhotos = failedPhotos,
+							totalPhotos = totalPhotos,
+							remainingPhotos = 0,
+							complete = true
+						)
 
-							_uiState.updateAndGet { it.copy(successfulPhotos = _uiState.value.successfulPhotos + 1) }
+						Timber.d("Import completed: $successfulPhotos of $totalPhotos photos imported successfully, $failedPhotos failed")
+					}
 
-						} catch (_: Exception) {
-							Timber.e("Failed to decode image: $photoUri")
-						}
-					} else {
-						Timber.e("Unable to read image for import: $photoUri")
+					WorkInfo.State.FAILED -> {
+						Timber.e("Import work failed")
+						_uiState.value = _uiState.value.copy(
+							complete = true
+						)
+					}
+
+					WorkInfo.State.CANCELLED -> {
+						Timber.d("Import work cancelled")
+						_uiState.value = _uiState.value.copy(
+							complete = true
+						)
+					}
+
+					else -> {
+						// Other states (BLOCKED, ENQUEUED) - no action needed
 					}
 				}
-
-				_uiState.value = _uiState.value.copy(
-					complete = true
-				)
-			}
-		}
-	}
-
-	private suspend fun readPhotoBytes(uri: Uri): ByteArray? {
-		return withContext(Dispatchers.IO) {
-			appContext.contentResolver.openInputStream(uri)?.use { inputStream ->
-				inputStream.readBytes()
 			}
 		}
 	}
@@ -112,5 +126,6 @@ data class ImportPhotosState(
 	val totalPhotos: Int = 0,
 	val remainingPhotos: Int = 0,
 	val successfulPhotos: Int = 0,
+	val failedPhotos: Int = 0,
 	val complete: Boolean = false,
 )
