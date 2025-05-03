@@ -43,6 +43,7 @@ class AppPreferencesDataSource(
 		private val SESSION_TIMEOUT = stringPreferencesKey("session_timeout")
 		private val SYMMETRIC_CIPHER_KEY = stringPreferencesKey("symmetric_cipher_key")
 		private val SCHEME_CONFIG_KEY = stringPreferencesKey("scheme_config")
+		private val IS_PROD_READY = booleanPreferencesKey("is_prod_ready")
 
 		val SESSION_TIMEOUT_1_MIN = 1.minutes.inWholeMilliseconds
 		val SESSION_TIMEOUT_5_MIN = 5.minutes.inWholeMilliseconds
@@ -74,6 +75,19 @@ class AppPreferencesDataSource(
 		.map { preferences ->
 			preferences[HAS_COMPLETED_INTRO] ?: false
 		}
+
+	// DELETE ME after beta migration is over
+	val isProdReady: Flow<Boolean?> = context.dataStore.data
+		.map { preferences ->
+			preferences[IS_PROD_READY] ?: false
+		}
+
+	// DELETE ME after beta migration is over
+	suspend fun markProdReady() {
+		context.dataStore.edit { preferences ->
+			preferences[IS_PROD_READY] = true
+		}
+	}
 
 	/**
 	 * Get the sanitize file name preference
@@ -313,5 +327,6 @@ data class HashedPin(val hash: String, val salt: String)
 
 @OptIn(ExperimentalEncodingApi::class)
 private fun ByteArray.base64Encode(): String = Base64.Default.encode(this)
+
 @OptIn(ExperimentalEncodingApi::class)
 private fun String.base64Decode(): ByteArray = Base64.Default.decode(this)
