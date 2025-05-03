@@ -16,6 +16,7 @@ object AppDestinations {
 	const val SETTINGS_ROUTE = "settings"
 	const val ABOUT_ROUTE = "about"
 	const val PIN_VERIFICATION_ROUTE = "pin_verification/{returnRoute}"
+	const val IMPORT_PHOTOS_ROUTE = "import_photos"
 
 	fun createViewPhotoRoute(photoName: String): String {
 		return "viewphoto/$photoName"

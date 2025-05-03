@@ -5,39 +5,27 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.BlurOn
-import androidx.compose.material.icons.filled.BorderClear
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ObfuscatePhotoTopBar(
-	navController: NavController,
-	onObscureClick: () -> Unit,
-	onClearClick: () -> Unit,
 	onAddRegionClick: () -> Unit,
-	readyToObscure: Boolean,
-	canClear: Boolean,
 	isFindingFaces: Boolean,
 	isCreatingRegion: Boolean = false,
-	hasUnsavedChanges: Boolean = false,
-	onBackPressed: () -> Unit = {
-		if (hasUnsavedChanges) {
-			// This is a fallback and shouldn't be used
-			// The caller should provide their own implementation
-			// that shows a confirmation dialog
-			navController.navigateUp()
-		} else {
-			navController.navigateUp()
-		}
-	},
+	onBackPressed: () -> Unit,
 ) {
 	TopAppBar(
 		title = {
@@ -64,18 +52,7 @@ fun ObfuscatePhotoTopBar(
 		},
 		actions = {
 			if (!isCreatingRegion) {
-				// Only show these buttons when not in region creation mode
-				if (canClear) {
-					IconButton(
-						onClick = onClearClick,
-						modifier = Modifier.padding(8.dp),
-					) {
-						Icon(
-							imageVector = Icons.Filled.BorderClear,
-							contentDescription = stringResource(id = R.string.obscure_action_button_clear),
-						)
-					}
-				} else if (isFindingFaces) {
+				if (isFindingFaces) {
 					CircularProgressIndicator(
 						modifier = Modifier.size(24.dp),
 						color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -90,21 +67,6 @@ fun ObfuscatePhotoTopBar(
 						Icon(
 							imageVector = Icons.Filled.AddBox,
 							contentDescription = stringResource(id = R.string.obscure_action_button_add_region),
-						)
-					}
-
-					// Obscure button
-					IconButton(
-						onClick = {
-							Timber.e("blur click")
-							onObscureClick()
-						},
-						modifier = Modifier.padding(8.dp),
-						enabled = readyToObscure,
-					) {
-						Icon(
-							imageVector = Icons.Filled.BlurOn,
-							contentDescription = stringResource(id = R.string.obscure_action_button),
 						)
 					}
 				}

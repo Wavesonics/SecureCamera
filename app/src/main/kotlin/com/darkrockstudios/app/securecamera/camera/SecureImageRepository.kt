@@ -15,7 +15,8 @@ import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import kotlin.time.ExperimentalTime
 
 
@@ -92,10 +93,11 @@ class SecureImageRepository(
 	 * Encrypts and saves image data to a file, then renames it to the target file
 	 */
 	private suspend fun encryptAndSaveImage(imageBytes: ByteArray, tempFile: File, targetFile: File) {
-		tempFile.writeBytes(imageBytes)
+		tempFile.delete()
+		targetFile.delete()
 
 		encryptionScheme.encryptToFile(
-			plain = tempFile.readBytes(),
+			plain = imageBytes,
 			targetFile = tempFile,
 		)
 
@@ -113,23 +115,28 @@ class SecureImageRepository(
 		val newJpgBytes = compressBitmapToJpeg(bitmap, quality)
 		var updatedBytes = newJpgBytes
 
-		val metadata = Kim.readMetadata(sourceJpgBytes)
-		if (metadata != null) {
-			// Apply all existing metadata to the new image
-			metadata.convertToPhotoMetadata().let { photoMetadata ->
-				if (photoMetadata.takenDate != null) {
-					updatedBytes = Kim.update(bytes = updatedBytes, MetadataUpdate.TakenDate(photoMetadata.takenDate!!))
-				}
+		Kim.readMetadata(sourceJpgBytes)?.convertToPhotoMetadata()?.let { photoMetadata ->
+			if (photoMetadata.takenDate != null) {
+				updatedBytes = Kim.update(
+					bytes = updatedBytes,
+					MetadataUpdate.TakenDate(photoMetadata.takenDate!!)
+				)
+			}
 
-				if (photoMetadata.orientation != null) {
-					updatedBytes =
-						Kim.update(bytes = updatedBytes, MetadataUpdate.Orientation(photoMetadata.orientation!!))
-				}
+			if (photoMetadata.orientation != null) {
+				updatedBytes =
+					Kim.update(
+						bytes = updatedBytes,
+						MetadataUpdate.Orientation(photoMetadata.orientation!!)
+					)
+			}
 
-				if (photoMetadata.gpsCoordinates != null) {
-					updatedBytes =
-						Kim.update(bytes = updatedBytes, MetadataUpdate.GpsCoordinates(photoMetadata.gpsCoordinates!!))
-				}
+			if (photoMetadata.gpsCoordinates != null) {
+				updatedBytes =
+					Kim.update(
+						bytes = updatedBytes,
+						MetadataUpdate.GpsCoordinates(photoMetadata.gpsCoordinates!!)
+					)
 			}
 		}
 
@@ -139,7 +146,7 @@ class SecureImageRepository(
 	/**
 	 * Applies specific metadata to an image for the saveImage function
 	 */
-	private fun applySaveImageMetadata(
+	private fun applyImageMetadata(
 		imageBytes: ByteArray,
 		latLng: GpsCoordinates?,
 		applyRotation: Boolean,
@@ -189,7 +196,8 @@ class SecureImageRepository(
 		}
 
 		val jpgBytes = compressBitmapToJpeg(rawSensorBitmap, quality)
-		val updatedBytes = applySaveImageMetadata(jpgBytes, latLng, applyRotation, image.rotationDegrees)
+		val updatedBytes =
+			applyImageMetadata(jpgBytes, latLng, applyRotation, image.rotationDegrees)
 		encryptAndSaveImage(updatedBytes, tempFile, photoFile)
 
 		return photoFile

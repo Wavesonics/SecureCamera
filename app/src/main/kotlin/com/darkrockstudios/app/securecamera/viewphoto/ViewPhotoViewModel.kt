@@ -27,7 +27,7 @@ class ViewPhotoViewModel(
 	override fun createState() = ViewPhotoUiState()
 
 	fun initialize(initialPhoto: PhotoDef) {
-		val photos = imageManager.getPhotos().asReversed()
+		val photos = imageManager.getPhotos()
 		val initialIndex = photos.indexOfFirst { it == initialPhoto }
 
 		viewModelScope.launch {

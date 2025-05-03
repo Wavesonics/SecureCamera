@@ -2,7 +2,11 @@ package com.darkrockstudios.app.securecamera.security
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties.*
+import android.security.keystore.KeyProperties.BLOCK_MODE_GCM
+import android.security.keystore.KeyProperties.ENCRYPTION_PADDING_NONE
+import android.security.keystore.KeyProperties.KEY_ALGORITHM_AES
+import android.security.keystore.KeyProperties.PURPOSE_DECRYPT
+import android.security.keystore.KeyProperties.PURPOSE_ENCRYPT
 import android.security.keystore.StrongBoxUnavailableException
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
@@ -10,6 +14,7 @@ import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.PBKDF2
 import dev.whyoleg.cryptography.algorithms.SHA256
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 import java.io.File
 import java.security.KeyStore
 import java.security.SecureRandom
@@ -65,7 +70,7 @@ class HardwareBackedEncryptionScheme(
 	 */
 	override suspend fun createKey() {
 		// Sanity checks
-		if (ks.containsAlias(KEY_ALIAS)) error("KEK already exists!")
+		if (ks.containsAlias(KEY_ALIAS)) Timber.w("KEK already exists, will overwrite it")
 
 		val dSaltFile = dSaltFile()
 		if (dSaltFile.exists()) error("dSalt already exists!")

@@ -1,5 +1,7 @@
 package com.darkrockstudios.app.securecamera
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.WindowManager
@@ -24,8 +26,10 @@ class MainActivity : ComponentActivity() {
 		}
 
 		enableEdgeToEdge()
+
+		val photosToImport = receiveFiles()
 		setContent {
-			App(capturePhoto)
+			App(capturePhoto, photosToImport)
 		}
 	}
 
@@ -48,5 +52,36 @@ class MainActivity : ComponentActivity() {
 	override fun onResume() {
 		super.onResume()
 		locationRepository.refreshPermissionStatus()
+	}
+
+	private fun receiveFiles(): List<Uri> {
+		val intent = getIntent()
+
+		return if (Intent.ACTION_SEND == intent.action && intent.type != null) {
+			if (intent.type?.startsWith("image/jpeg") == true) {
+				handleSingleImage(intent)
+			} else {
+				emptyList()
+			}
+		} else if (Intent.ACTION_SEND_MULTIPLE == intent.action && intent.type != null) {
+			if (intent.type?.startsWith("image/jpeg") == true) {
+				handleMultipleImages(intent)
+			} else {
+				emptyList()
+			}
+		} else {
+			emptyList()
+		}
+	}
+
+	private fun handleSingleImage(intent: Intent): List<Uri> {
+		return intent.getParcelableExtra<Uri?>(Intent.EXTRA_STREAM)?.let { imageUri ->
+			listOf(imageUri)
+		} ?: emptyList()
+	}
+
+	private fun handleMultipleImages(intent: Intent): List<Uri> {
+		val imageUris = intent.getParcelableArrayListExtra<Uri?>(Intent.EXTRA_STREAM)
+		return imageUris?.filterNotNull() ?: emptyList()
 	}
 }

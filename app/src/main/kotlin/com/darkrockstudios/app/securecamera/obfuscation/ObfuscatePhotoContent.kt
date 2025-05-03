@@ -6,13 +6,33 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BlurOff
+import androidx.compose.material.icons.filled.BlurOn
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -101,21 +121,11 @@ fun ObfuscatePhotoContent(
 			.background(MaterialTheme.colorScheme.background)
 	) {
 		ObfuscatePhotoTopBar(
-			navController = navController,
-			onObscureClick = {
-				viewModel.obscureRegions()
-			},
-			readyToObscure = (uiState.regions.isNotEmpty()),
-			onClearClick = {
-				viewModel.clearFaces()
-			},
-			canClear = (uiState.obscuredBitmap != null),
 			onAddRegionClick = {
 				viewModel.startRegionCreation()
 			},
 			isFindingFaces = uiState.isFindingFaces,
 			isCreatingRegion = uiState.isCreatingRegion,
-			hasUnsavedChanges = hasUnsavedChanges,
 			onBackPressed = {
 				if (hasUnsavedChanges) {
 					showDiscardDialog.value = true
@@ -214,13 +224,22 @@ fun ObfuscatePhotoContent(
 													val scaleX = it.width / imageWidth
 													val scaleY = it.height / imageHeight
 
-													val startX = ((dragStart.x - imageTopLeft.x) * scaleX).toInt()
-													val startY = ((dragStart.y - imageTopLeft.y) * scaleY).toInt()
-													val endX = ((dragEnd.x - imageTopLeft.x) * scaleX).toInt()
-													val endY = ((dragEnd.y - imageTopLeft.y) * scaleY).toInt()
+													val startX =
+														((dragStart.x - imageTopLeft.x) * scaleX).toInt()
+													val startY =
+														((dragStart.y - imageTopLeft.y) * scaleY).toInt()
+													val endX =
+														((dragEnd.x - imageTopLeft.x) * scaleX).toInt()
+													val endY =
+														((dragEnd.y - imageTopLeft.y) * scaleY).toInt()
 
 													// Update the region in the ViewModel
-													viewModel.updateRegion(startX, startY, endX, endY)
+													viewModel.updateRegion(
+														startX,
+														startY,
+														endX,
+														endY
+													)
 												}
 											}
 										)
@@ -236,10 +255,14 @@ fun ObfuscatePhotoContent(
 													val boundingBox = region.rect
 
 													// Scale the bounding box to match the displayed image size
-													val scaledLeft = boundingBox.left * scaleX + imageTopLeft.x
-													val scaledTop = boundingBox.top * scaleY + imageTopLeft.y
-													val scaledRight = boundingBox.right * scaleX + imageTopLeft.x
-													val scaledBottom = boundingBox.bottom * scaleY + imageTopLeft.y
+													val scaledLeft =
+														boundingBox.left * scaleX + imageTopLeft.x
+													val scaledTop =
+														boundingBox.top * scaleY + imageTopLeft.y
+													val scaledRight =
+														boundingBox.right * scaleX + imageTopLeft.x
+													val scaledBottom =
+														boundingBox.bottom * scaleY + imageTopLeft.y
 
 													// Create a rectangle from the scaled coordinates
 													val scaledRect = Rect(
@@ -351,15 +374,58 @@ fun ObfuscatePhotoContent(
 						.padding(16.dp),
 					isVisible = (uiState.obscuredBitmap != null && uiState.isCreatingRegion.not())
 				) {
-					FloatingActionButton(
-						onClick = { viewModel.showSaveDialog() },
-						containerColor = MaterialTheme.colorScheme.error,
-						contentColor = MaterialTheme.colorScheme.onError
+					Column(
+						modifier = Modifier
+							.align(Alignment.BottomEnd)
+							.padding(16.dp),
+						verticalArrangement = Arrangement.spacedBy(8.dp)
 					) {
-						Icon(
-							imageVector = Icons.Filled.Save,
-							contentDescription = stringResource(id = R.string.obscure_action_button_save)
-						)
+						FloatingActionButton(
+							onClick = { viewModel.clearObfuscation() },
+							containerColor = MaterialTheme.colorScheme.error,
+							contentColor = MaterialTheme.colorScheme.onError
+						) {
+							Icon(
+								imageVector = Icons.Filled.BlurOff,
+								contentDescription = stringResource(id = R.string.obscure_action_button_clear)
+							)
+						}
+
+						FloatingActionButton(
+							onClick = { viewModel.showSaveDialog() },
+							containerColor = MaterialTheme.colorScheme.error,
+							contentColor = MaterialTheme.colorScheme.onError
+						) {
+							Icon(
+								imageVector = Icons.Filled.Save,
+								contentDescription = stringResource(id = R.string.obscure_action_button_save)
+							)
+						}
+					}
+				}
+
+				PlayfulScaleVisibility(
+					modifier = Modifier
+						.align(Alignment.BottomEnd)
+						.padding(16.dp),
+					isVisible = (uiState.obscuredBitmap == null && uiState.regions.isNotEmpty() && uiState.isCreatingRegion.not())
+				) {
+					Column(
+						modifier = Modifier
+							.align(Alignment.BottomEnd)
+							.padding(16.dp),
+						verticalArrangement = Arrangement.spacedBy(8.dp)
+					) {
+						FloatingActionButton(
+							onClick = { viewModel.obscureRegions() },
+							containerColor = MaterialTheme.colorScheme.error,
+							contentColor = MaterialTheme.colorScheme.onError
+						) {
+							Icon(
+								imageVector = Icons.Filled.BlurOn,
+								contentDescription = stringResource(id = R.string.obscure_action_button_obfuscate)
+							)
+						}
 					}
 				}
 			}

@@ -24,3 +24,17 @@ fun calculateTiffOrientation(
 
 	else -> TiffOrientation.STANDARD            // Fallback
 }
+
+fun TiffOrientation.toDegrees(): Int = when (this) {
+	TiffOrientation.STANDARD,
+	TiffOrientation.MIRROR_HORIZONTAL -> 0
+
+	TiffOrientation.ROTATE_RIGHT,
+	TiffOrientation.MIRROR_HORIZONTAL_AND_ROTATE_LEFT -> 90
+
+	TiffOrientation.UPSIDE_DOWN,
+	TiffOrientation.MIRROR_VERTICAL -> 180
+
+	TiffOrientation.ROTATE_LEFT,
+	TiffOrientation.MIRROR_HORIZONTAL_AND_ROTATE_RIGHT -> 270
+}

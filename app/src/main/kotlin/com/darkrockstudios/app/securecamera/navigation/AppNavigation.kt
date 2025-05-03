@@ -1,11 +1,18 @@
 package com.darkrockstudios.app.securecamera.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,6 +27,7 @@ import com.darkrockstudios.app.securecamera.auth.PinVerificationContent
 import com.darkrockstudios.app.securecamera.camera.CameraContent
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.gallery.GalleryContent
+import com.darkrockstudios.app.securecamera.import.ImportPhotosContent
 import com.darkrockstudios.app.securecamera.introduction.IntroductionContent
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoContent
 import com.darkrockstudios.app.securecamera.settings.SettingsContent
@@ -40,6 +48,7 @@ fun AppNavHost(
 	snackbarHostState: SnackbarHostState,
 	startDestination: String = AppDestinations.CAMERA_ROUTE,
 	paddingValues: PaddingValues,
+	photosToImport: MutableState<List<Uri>> = mutableStateOf(emptyList()),
 ) {
 	val imageManager = koinInject<SecureImageRepository>()
 	val authManager = koinInject<AuthorizationRepository>()
@@ -190,6 +199,24 @@ fun AppNavHost(
 					navController = navController,
 					snackbarHostState = snackbarHostState,
 					outerScope = scope,
+				)
+			} else {
+				Box(modifier = Modifier.fillMaxSize()) {
+					Text(
+						text = stringResource(R.string.unauthorized),
+						modifier = Modifier.align(Alignment.Center)
+					)
+				}
+			}
+		}
+
+		defaultAnimatedComposable(
+			route = AppDestinations.IMPORT_PHOTOS_ROUTE,
+		) {
+			if (authManager.checkSessionValidity()) {
+				ImportPhotosContent(
+					photosToImport = photosToImport,
+					navController = navController
 				)
 			} else {
 				Box(modifier = Modifier.fillMaxSize()) {

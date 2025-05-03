@@ -20,7 +20,7 @@
 
     <!-- Obscure Photo Screen -->
     <string name="obfuscate_photo_button">Obfuscate Photo</string>
-    <string name="obscure_action_button">Obscure</string>
+    <string name="obscure_action_button_obfuscate">Obscure</string>
     <string name="obscure_action_button_clear">Clear</string>
     <string name="obscure_action_button_save">Save</string>
     <string name="obscure_action_button_add_region">Add Region</string>
@@ -59,6 +59,14 @@
     <string name="decoy_limit_reached">Decoy limit reached: %1$d</string>
     <string name="decoy_added">Decoy added</string>
     <string name="decoy_removed">Decoy removed</string>
+
+    <!-- Import Photos Screen -->
+    <string name="import_photos_title">Import Photos</string>
+    <string name="close_import_photos_content_description">Close Import</string>
+    <string name="import_photos_progress_label">Importing photos: %1$d / %2$d</string>
+    <string name="import_photos_done_label">Import Complete!</string>
+    <string name="import_photos_done_button">Go to Gallery</string>
+    <string name="import_photos_current_photo_description">Current photo being imported</string>
 
     <!-- Gallery Screen -->
     <string name="gallery_title">Gallery</string>

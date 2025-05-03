@@ -133,7 +133,7 @@ class ObfuscatePhotoViewModel(
 		showMessage(message)
 	}
 
-	fun clearFaces() {
+	fun clearObfuscation() {
 		_uiState.update {
 			it.copy(
 				obscuredBitmap = null,

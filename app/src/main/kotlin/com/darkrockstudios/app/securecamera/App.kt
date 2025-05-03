@@ -1,5 +1,6 @@
 package com.darkrockstudios.app.securecamera
 
+import android.net.Uri
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -8,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -24,7 +26,10 @@ import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 
 @Composable
-fun App(capturePhoto: MutableState<Boolean?>) {
+fun App(
+	capturePhoto: MutableState<Boolean?>,
+	photosToImport: List<Uri>
+) {
 	KoinContext {
 		SecureCameraTheme {
 			val snackbarHostState = remember { SnackbarHostState() }
@@ -35,10 +40,16 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 			val hasCompletedIntro by preferencesManager.hasCompletedIntro.collectAsState(initial = null)
 			val startDestination = rememberSaveable(hasCompletedIntro) {
 				if (hasCompletedIntro == true) {
-					if (authorizationRepository.checkSessionValidity()) {
-						AppDestinations.CAMERA_ROUTE
+					val targetDestination = if (photosToImport.isNotEmpty()) {
+						AppDestinations.IMPORT_PHOTOS_ROUTE
 					} else {
-						AppDestinations.PIN_VERIFICATION_ROUTE
+						AppDestinations.CAMERA_ROUTE
+					}
+
+					if (authorizationRepository.checkSessionValidity()) {
+						targetDestination
+					} else {
+						AppDestinations.createPinVerificationRoute(targetDestination)
 					}
 				} else {
 					AppDestinations.INTRODUCTION_ROUTE
@@ -52,13 +63,17 @@ fun App(capturePhoto: MutableState<Boolean?>) {
 					snackbarHost = { SnackbarHost(snackbarHostState) },
 					modifier = Modifier.imePadding()
 				) { paddingValues ->
+					// Create a mutable state to hold the photos to import
+					val photosToImportState = remember { mutableStateOf(photosToImport) }
+
 					AppNavHost(
 						navController = navController,
 						capturePhoto = capturePhoto,
 						modifier = Modifier,
 						snackbarHostState = snackbarHostState,
 						startDestination = startDestination,
-						paddingValues = paddingValues
+						paddingValues = paddingValues,
+						photosToImport = photosToImportState
 					)
 				}
 			}
