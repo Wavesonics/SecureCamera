@@ -15,9 +15,9 @@ import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import kotlin.time.ExperimentalTime
+import kotlin.time.toJavaInstant
 
 
 class SecureImageRepository(
@@ -185,7 +185,7 @@ class SecureImageRepository(
 		}
 
 		val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss_SS", Locale.US)
-		val finalImageName: String = "photo_" + dateFormat.format(Date(image.timestamp)) + ".jpg"
+		val finalImageName: String = "photo_" + dateFormat.format(Date.from(image.timestamp.toJavaInstant())) + ".jpg"
 
 		val photoFile = File(dir, finalImageName)
 		val tempFile = File(dir, "$finalImageName.tmp")

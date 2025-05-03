@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class ImportPhotosViewModel(
 	private val appContext: Context,
@@ -25,6 +28,7 @@ class ImportPhotosViewModel(
 
 	override fun createState() = ImportPhotosState()
 
+	@OptIn(ExperimentalTime::class)
 	fun beginImport(
 		photos: List<Uri>,
 		progress: (curPhoto: Uri) -> Unit,
@@ -55,12 +59,13 @@ class ImportPhotosViewModel(
 					if (jpgBytes != null) {
 						var orientation: TiffOrientation = TiffOrientation.STANDARD
 						var coords: GpsCoordinates? = null
-						var timestamp: Long = 0L
+						var timestamp: Instant = Instant.fromEpochSeconds(0)
 
 						Kim.readMetadata(jpgBytes)?.convertToPhotoMetadata()?.let { imageMetadata ->
 							orientation = imageMetadata.orientation ?: TiffOrientation.STANDARD
 							coords = imageMetadata.gpsCoordinates
-							timestamp = imageMetadata.takenDate ?: 0L
+							timestamp =
+								Instant.fromEpochSeconds(imageMetadata.takenDate?.milliseconds?.inWholeSeconds ?: 0L)
 						}
 
 						try {
