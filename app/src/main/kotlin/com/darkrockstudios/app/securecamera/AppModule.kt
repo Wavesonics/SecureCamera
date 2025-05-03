@@ -1,6 +1,7 @@
 package com.darkrockstudios.app.securecamera
 
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
+import com.darkrockstudios.app.securecamera.auth.PinVerificationViewModel
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.camera.ThumbnailCache
 import com.darkrockstudios.app.securecamera.gallery.GalleryViewModel
@@ -50,4 +51,5 @@ val appModule = module {
 	viewModelOf(::GalleryViewModel)
 	viewModelOf(::SettingsViewModel)
 	viewModelOf(::IntroductionViewModel)
+	viewModelOf(::PinVerificationViewModel)
 }

@@ -13,24 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
-import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
-import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 /**
@@ -43,129 +37,22 @@ fun PinVerificationContent(
 	returnRoute: String,
 	modifier: Modifier = Modifier
 ) {
-	val authManager = koinInject<AuthorizationRepository>()
 	val imageManager = koinInject<SecureImageRepository>()
-	val securityResetUseCase = koinInject<SecurityResetUseCase>()
-	val verifyPinUseCase = koinInject<VerifyPinUseCase>()
-
-	val coroutineScope = rememberCoroutineScope()
-	val context = LocalContext.current
+	val viewModel: PinVerificationViewModel = koinViewModel()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val focusRequester = remember { FocusRequester() }
 
 	var pin by rememberSaveable { mutableStateOf("") }
-	var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
-	var isVerifying by rememberSaveable { mutableStateOf(false) }
 
-	// Backoff mechanism state
-	var failedAttempts by rememberSaveable { mutableStateOf(0) }
-	var isBackoffActive by rememberSaveable { mutableStateOf(false) }
-	var remainingBackoffSeconds by rememberSaveable { mutableStateOf(0) }
-
-	// Store string resources
-	val pinVerificationTitle = stringResource(R.string.pin_verification_title)
-	val pinVerificationLabel = stringResource(R.string.pin_verification_label)
-	val pinEmptyError = stringResource(R.string.pin_verification_empty_error)
-	val pinInvalidError = stringResource(R.string.pin_verification_invalid_error)
-	val verifyButtonText = stringResource(R.string.pin_verification_button)
-
-	// Additional string resources
-	val allDataDeletedText = stringResource(R.string.pin_verification_all_data_deleted)
-	val remainingAttemptsText = stringResource(
-		R.string.pin_verification_remaining_attempts,
-		AuthorizationRepository.MAX_FAILED_ATTEMPTS - failedAttempts,
-		AuthorizationRepository.MAX_FAILED_ATTEMPTS
-	)
-	val verifyWithCountdownText =
-		stringResource(R.string.pin_verification_verify_with_countdown, remainingBackoffSeconds)
-	val verifyOrWipeText = stringResource(R.string.pin_verification_verify_or_wipe)
-	val wipeWarningText =
-		stringResource(R.string.pin_verification_wipe_warning, AuthorizationRepository.MAX_FAILED_ATTEMPTS)
-
-	val focusRequester = remember { FocusRequester() }
+	val errorMessage = when (uiState.error) {
+		PinVerificationError.EMPTY_PIN -> stringResource(R.string.pin_verification_empty_error)
+		PinVerificationError.INVALID_PIN -> stringResource(R.string.pin_verification_invalid_error)
+		PinVerificationError.NONE -> null
+	}
 
 	LaunchedEffect(Unit) {
 		imageManager.evictKey()
 		focusRequester.requestFocus()
-
-		// Load the persisted failed attempts count
-		failedAttempts = authManager.getFailedAttempts()
-
-		// Check if there's an active backoff period
-		val remainingBackoff = authManager.calculateRemainingBackoffSeconds()
-		if (remainingBackoff > 0) {
-			remainingBackoffSeconds = remainingBackoff
-			isBackoffActive = true
-			errorMessage = pinInvalidError
-		}
-	}
-
-	// Countdown timer effect
-	LaunchedEffect(isBackoffActive) {
-		if (isBackoffActive && remainingBackoffSeconds > 0) {
-			while (remainingBackoffSeconds > 0) {
-				if (errorMessage?.startsWith(pinInvalidError) == true) {
-					errorMessage = pinInvalidError
-				}
-
-				delay(1000)
-				remainingBackoffSeconds--
-			}
-
-			if (errorMessage?.startsWith(pinInvalidError) == true) {
-				errorMessage = pinInvalidError
-			}
-
-			isBackoffActive = false
-		}
-	}
-
-	fun verify() {
-		if (pin.isBlank()) {
-			errorMessage = pinEmptyError
-			return
-		}
-
-		if (isBackoffActive) {
-			return
-		}
-
-		isVerifying = true
-		coroutineScope.launch(Dispatchers.Default) {
-			val isValid = verifyPinUseCase.verifyPin(pin)
-			isVerifying = false
-
-			if (isValid) {
-				failedAttempts = 0
-				authManager.resetFailedAttempts()
-
-				withContext(Dispatchers.Main) {
-					navController.navigate(returnRoute) {
-						popUpTo(AppDestinations.PIN_VERIFICATION_ROUTE) { inclusive = true }
-						launchSingleTop = true
-					}
-				}
-			} else {
-				failedAttempts = authManager.incrementFailedAttempts()
-
-				remainingBackoffSeconds = authManager.calculateRemainingBackoffSeconds()
-				isBackoffActive = remainingBackoffSeconds > 0
-
-				if (failedAttempts < AuthorizationRepository.MAX_FAILED_ATTEMPTS) {
-					withContext(Dispatchers.Main) {
-						vibrateDevice(context)
-
-						errorMessage = pinInvalidError
-						pin = ""
-					}
-				} else {
-					// Nuke it all
-					securityResetUseCase.reset()
-					withContext(Dispatchers.Main) {
-						snackbarHostState.showSnackbar(message = allDataDeletedText, duration = SnackbarDuration.Long)
-						navController.navigate(AppDestinations.INTRODUCTION_ROUTE)
-					}
-				}
-			}
-		}
 	}
 
 	Box(
@@ -191,29 +78,41 @@ fun PinVerificationContent(
 			)
 
 			Text(
-				text = pinVerificationTitle,
+				text = stringResource(R.string.pin_verification_title),
 				style = MaterialTheme.typography.headlineMedium,
 				modifier = Modifier.padding(bottom = 24.dp)
 			)
 
-			if (failedAttempts >= 3) {
+			if (uiState.failedAttempts >= 3) {
 				Text(
-					text = remainingAttemptsText,
+					text = stringResource(
+						R.string.pin_verification_remaining_attempts,
+						AuthorizationRepository.MAX_FAILED_ATTEMPTS - uiState.failedAttempts,
+						AuthorizationRepository.MAX_FAILED_ATTEMPTS
+					),
 					style = MaterialTheme.typography.headlineSmall,
 					color = MaterialTheme.colorScheme.error,
 					modifier = Modifier.padding(bottom = 12.dp)
 				)
 			}
 
+			fun verifyPin() {
+				viewModel.verify(
+					pin = pin,
+					returnRoute = returnRoute,
+					onNavigate = { navController.navigate(it) },
+					onFailure = { pin = "" }
+				)
+			}
+
 			OutlinedTextField(
 				value = pin,
 				onValueChange = {
-					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
+					if (viewModel.validatePin(it)) {
 						pin = it
-						errorMessage = null
 					}
 				},
-				label = { Text(pinVerificationLabel) },
+				label = { Text(stringResource(R.string.pin_verification_label)) },
 				visualTransformation = PasswordVisualTransformation(),
 				singleLine = true,
 				keyboardOptions = KeyboardOptions(
@@ -221,10 +120,10 @@ fun PinVerificationContent(
 					imeAction = ImeAction.Done
 				),
 				keyboardActions = KeyboardActions(
-					onDone = { verify() }
+					onDone = { verifyPin() }
 				),
 				isError = errorMessage != null,
-				enabled = !isVerifying && !isBackoffActive,
+				enabled = !uiState.isVerifying && !uiState.isBackoffActive,
 				modifier = Modifier
 					.fillMaxWidth()
 					.focusRequester(focusRequester)
@@ -242,7 +141,7 @@ fun PinVerificationContent(
 
 			Spacer(modifier = Modifier.height(24.dp))
 
-			val isLastAttempt = (failedAttempts >= (AuthorizationRepository.MAX_FAILED_ATTEMPTS - 1))
+			val isLastAttempt = (uiState.failedAttempts >= (AuthorizationRepository.MAX_FAILED_ATTEMPTS - 1))
 			val butColors = if (isLastAttempt) {
 				ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer)
 			} else {
@@ -250,28 +149,36 @@ fun PinVerificationContent(
 			}
 
 			Button(
-				onClick = { verify() },
-				enabled = !isVerifying && !isBackoffActive && (pin.length >= 4),
+				onClick = { verifyPin() },
+				enabled = !uiState.isVerifying && !uiState.isBackoffActive && (pin.length >= 4),
 				modifier = Modifier.fillMaxWidth(),
 				colors = butColors
 			) {
-				if (isBackoffActive) {
-					Text(verifyWithCountdownText)
+				if (uiState.isBackoffActive) {
+					Text(
+						stringResource(
+							R.string.pin_verification_verify_with_countdown,
+							uiState.remainingBackoffSeconds
+						)
+					)
 				} else {
 					if (isLastAttempt) {
 						Text(
-							verifyOrWipeText,
+							stringResource(R.string.pin_verification_verify_or_wipe),
 							color = MaterialTheme.colorScheme.onErrorContainer
 						)
 					} else {
-						Text(verifyButtonText)
+						Text(stringResource(R.string.pin_verification_button))
 					}
 				}
 			}
 
-			if (failedAttempts >= 3) {
+			if (uiState.failedAttempts >= 3) {
 				Text(
-					text = wipeWarningText,
+					text = stringResource(
+						R.string.pin_verification_wipe_warning,
+						AuthorizationRepository.MAX_FAILED_ATTEMPTS
+					),
 					style = MaterialTheme.typography.labelLarge,
 					color = MaterialTheme.colorScheme.error,
 					textAlign = TextAlign.Center,
@@ -279,11 +186,13 @@ fun PinVerificationContent(
 				)
 			}
 
-			if (isVerifying) {
+			if (uiState.isVerifying) {
 				CircularProgressIndicator(
 					modifier = Modifier.padding(top = 16.dp)
 				)
 			}
 		}
 	}
+
+	HandleUiEvents(viewModel.events, snackbarHostState, navController)
 }
