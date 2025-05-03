@@ -27,7 +27,9 @@ class ViewPhotoViewModel(
 	override fun createState() = ViewPhotoUiState()
 
 	fun initialize(initialPhoto: PhotoDef) {
-		val photos = imageManager.getPhotos()
+		val photos = imageManager.getPhotos().sortedByDescending { photoDef ->
+			photoDef.dateTaken()
+		}
 		val initialIndex = photos.indexOfFirst { it == initialPhoto }
 
 		viewModelScope.launch {
@@ -57,15 +59,8 @@ class ViewPhotoViewModel(
 		}
 	}
 
-	fun loadPhotoImage(photo: PhotoDef) {
-		viewModelScope.launch(Dispatchers.IO) {
-			val bitmap = imageManager.readImage(photo).asImageBitmap()
-			_uiState.update {
-				val photoImages = it.photoImages.toMutableMap()
-				photoImages[photo.photoName] = bitmap
-				it.copy(photoImages = photoImages)
-			}
-		}
+	suspend fun loadPhotoImage(photo: PhotoDef): ImageBitmap = withContext(Dispatchers.Default) {
+		return@withContext imageManager.readImage(photo).asImageBitmap()
 	}
 
 	fun setCurrentPhotoIndex(index: Int) {
@@ -158,7 +153,6 @@ class ViewPhotoViewModel(
 
 data class ViewPhotoUiState(
 	val photos: List<PhotoDef> = emptyList(),
-	val photoImages: Map<String, ImageBitmap> = emptyMap(),
 	val initialIndex: Int = 0,
 	val hasPoisonPill: Boolean = false,
 	val isDecoy: Boolean = false,

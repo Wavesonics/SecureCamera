@@ -14,10 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -131,11 +128,11 @@ fun ViewPhotoContent(
 			) {
 				items(count = uiState.photos.size, key = { uiState.photos[it].photoName }) { index ->
 					val photo = uiState.photos[index]
+
 					ViewPhoto(
 						modifier = Modifier.fillParentMaxSize(),
 						photo = photo,
-						imageBitmap = uiState.photoImages[photo.photoName],
-						onLoadImage = { viewModel.loadPhotoImage(photo) }
+						viewModel = viewModel,
 					)
 				}
 			}
@@ -159,32 +156,35 @@ fun ViewPhotoContent(
 private fun ViewPhoto(
 	modifier: Modifier,
 	photo: PhotoDef,
-	imageBitmap: ImageBitmap?,
-	onLoadImage: () -> Unit
+	viewModel: ViewPhotoViewModel,
 ) {
+	var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+
+	LaunchedEffect(photo) {
+		imageBitmap = viewModel.loadPhotoImage(photo)
+	}
+
 	val imageAlpha by animateFloatAsState(
 		targetValue = if (imageBitmap != null) 1f else 0f,
 		animationSpec = tween(durationMillis = 500),
 		label = "imageAlpha"
 	)
 
-	LaunchedEffect(photo) {
-		onLoadImage()
-	}
+	val zoomState = rememberZoomState()
 
 	Box(
 		modifier = modifier.clipToBounds(),
 		contentAlignment = Alignment.Center
 	) {
 		if (photo.photoFile.exists()) {
-			imageBitmap?.let {
+			imageBitmap?.let { bitmap ->
 				Image(
 					contentScale = ContentScale.Fit,
 					modifier = Modifier
 						.fillMaxSize()
 						.alpha(imageAlpha)
-						.zoomableWithScroll(rememberZoomState()),
-					bitmap = it,
+						.zoomableWithScroll(zoomState),
+					bitmap = bitmap,
 					contentDescription = stringResource(id = R.string.photo_content_description),
 				)
 			} ?: run {
