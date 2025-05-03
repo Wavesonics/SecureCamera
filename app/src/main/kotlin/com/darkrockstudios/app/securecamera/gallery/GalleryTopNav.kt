@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ fun GalleryTopNav(
 	navController: NavController?,
 	onDeleteClick: () -> Unit = {},
 	onShareClick: () -> Unit = {},
+	onSelectAll: () -> Unit = {},
 	isSelectionMode: Boolean = false,
 	selectedCount: Int = 0,
 	onCancelSelection: () -> Unit = {}
@@ -62,23 +64,34 @@ fun GalleryTopNav(
 			}
 		},
 		actions = {
-			if (isSelectionMode && selectedCount > 0) {
-				// Show delete button
-				IconButton(onClick = onDeleteClick) {
+			if (isSelectionMode) {
+				// Show select all button
+				IconButton(onClick = onSelectAll) {
 					Icon(
-						imageVector = Icons.Filled.Delete,
-						contentDescription = stringResource(id = R.string.gallery_delete_selected_content_description),
+						imageVector = Icons.Filled.SelectAll,
+						contentDescription = stringResource(id = R.string.gallery_select_all_content_description),
 						tint = MaterialTheme.colorScheme.onSurface
 					)
 				}
 
-				// Show share button
-				IconButton(onClick = onShareClick) {
-					Icon(
-						imageVector = Icons.Filled.Share,
-						contentDescription = stringResource(id = R.string.gallery_share_selected_content_description),
-						tint = MaterialTheme.colorScheme.onSurface
-					)
+				if (selectedCount > 0) {
+					// Show delete button
+					IconButton(onClick = onDeleteClick) {
+						Icon(
+							imageVector = Icons.Filled.Delete,
+							contentDescription = stringResource(id = R.string.gallery_delete_selected_content_description),
+							tint = MaterialTheme.colorScheme.onSurface
+						)
+					}
+
+					// Show share button
+					IconButton(onClick = onShareClick) {
+						Icon(
+							imageVector = Icons.Filled.Share,
+							contentDescription = stringResource(id = R.string.gallery_share_selected_content_description),
+							tint = MaterialTheme.colorScheme.onSurface
+						)
+					}
 				}
 			}
 		}

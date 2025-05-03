@@ -117,6 +117,16 @@ class GalleryViewModel(
 			}
 		}
 	}
+
+	fun selectAllPhotos() {
+		val allPhotoNames = uiState.value.photos.map { it.photoName }.toSet()
+		_uiState.update {
+			it.copy(
+				selectedPhotos = allPhotoNames,
+				isSelectionMode = allPhotoNames.isNotEmpty()
+			)
+		}
+	}
 }
 
 data class GalleryUiState(

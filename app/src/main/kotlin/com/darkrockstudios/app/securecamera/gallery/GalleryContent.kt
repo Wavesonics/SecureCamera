@@ -64,6 +64,7 @@ fun GalleryContent(
 			navController = navController,
 			onDeleteClick = { viewModel.showDeleteConfirmation() },
 			onShareClick = { viewModel.shareSelectedPhotos(context) },
+			onSelectAll = { viewModel.selectAllPhotos() },
 			isSelectionMode = uiState.isSelectionMode,
 			selectedCount = uiState.selectedPhotos.size,
 			onCancelSelection = { viewModel.clearSelection() }

@@ -78,6 +78,7 @@
     <string name="gallery_cancel_selection_content_description">Cancel Selection</string>
     <string name="gallery_delete_selected_content_description">Delete Selected</string>
     <string name="gallery_share_selected_content_description">Share Selected</string>
+    <string name="gallery_select_all_content_description">Select All</string>
     <string name="gallery_decoy_indicator">Is Decoy Photo</string>
 
     <!-- Camera Screen -->
@@ -227,7 +228,7 @@
         up anywhere.
     </string>
 
-    <string name="intro_slide3_title">Still Sharable</string>
+    <string name="intro_slide3_title">Still Shareable</string>
     <string name="intro_slide3_description">Most times we still need to be able to move our sensitive photos out and
         share them to another app or person. SnapSafe still allows you to do so safely.\n\nOnce the photo leaves
         SnapSafe, its privacy is up to you.
