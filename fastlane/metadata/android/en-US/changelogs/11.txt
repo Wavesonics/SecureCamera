@@ -1,0 +1,4 @@
+Our first production ready release!
+- Completely redesigned cryptography!
+- Security Hardening throughout the app
+- Import photos from other apps into the Safe
