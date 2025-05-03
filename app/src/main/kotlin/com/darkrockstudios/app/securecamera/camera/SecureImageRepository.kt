@@ -10,10 +10,7 @@ import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.TiffOrientation
-import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
-import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.SecurityPin
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -25,7 +22,6 @@ import kotlin.time.ExperimentalTime
 class SecureImageRepository(
 	private val appContext: Context,
 	private val preferencesManager: AppPreferencesDataSource,
-	private val authorizationRepository: AuthorizationRepository,
 	internal val thumbnailCache: ThumbnailCache,
 	private val encryptionScheme: EncryptionScheme,
 ) {
@@ -71,15 +67,15 @@ class SecureImageRepository(
 	/**
 	 * Derives the encryption key from the user's PIN, then encrypted the plainText bytes and writes it to targetFile
 	 */
-	internal suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File) {
-		encryptionScheme.encryptToFile(plainPin, hashedPin, plain, targetFile)
+	internal suspend fun encryptToFile(plain: ByteArray, targetFile: File) {
+		encryptionScheme.encryptToFile(plain, targetFile)
 	}
 
 	/**
 	 * Derives the encryption key from the user's PIN, then decrypts encryptedFile and returns the plainText bytes
 	 */
-	private suspend fun decryptFile(plainPin: String, hashedPin: HashedPin, encryptedFile: File): ByteArray {
-		return encryptionScheme.decryptFile(plainPin, hashedPin, encryptedFile)
+	private suspend fun decryptFile(encryptedFile: File): ByteArray {
+		return encryptionScheme.decryptFile(encryptedFile)
 	}
 
 	/**
@@ -98,10 +94,7 @@ class SecureImageRepository(
 	private suspend fun encryptAndSaveImage(imageBytes: ByteArray, tempFile: File, targetFile: File) {
 		tempFile.writeBytes(imageBytes)
 
-		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
 		encryptionScheme.encryptToFile(
-			plainPin = pin.plainPin,
-			hashedPin = pin.hashedPin,
 			plain = tempFile.readBytes(),
 			targetFile = tempFile,
 		)
@@ -247,11 +240,7 @@ class SecureImageRepository(
 	}
 
 	suspend fun readImage(photo: PhotoDef): Bitmap {
-		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
-
 		val plainBytes = decryptFile(
-			plainPin = pin.plainPin,
-			hashedPin = pin.hashedPin,
 			encryptedFile = photo.photoFile,
 		)
 		return BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size)
@@ -259,11 +248,8 @@ class SecureImageRepository(
 
 	suspend fun decryptJpg(
 		photo: PhotoDef,
-		pin: SecurityPin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
 	): ByteArray {
 		val plainBytes = decryptFile(
-			plainPin = pin.plainPin,
-			hashedPin = pin.hashedPin,
 			encryptedFile = photo.photoFile,
 		)
 		return plainBytes
@@ -283,22 +269,17 @@ class SecureImageRepository(
 	suspend fun readThumbnail(photo: PhotoDef): Bitmap {
 		thumbnailCache.getThumbnail(photo)?.let { return it }
 
-		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
 		val thumbFile = getThumbnail(photo)
 
 		val thumbnailBitmap = if (thumbFile.exists()) {
 			// Decrypt the thumbnail file, not the full image
 			val plainBytes = decryptFile(
-				plainPin = pin.plainPin,
-				hashedPin = pin.hashedPin,
 				encryptedFile = thumbFile,
 			)
 			BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size)
 		} else {
 			// Create thumbnail from the full image
 			val plainBytes = decryptFile(
-				plainPin = pin.plainPin,
-				hashedPin = pin.hashedPin,
 				encryptedFile = photo.photoFile,
 			)
 
@@ -314,8 +295,6 @@ class SecureImageRepository(
 				}
 			}
 			encryptionScheme.encryptToFile(
-				plainPin = pin.plainPin,
-				hashedPin = pin.hashedPin,
 				plain = thumbnailBytes,
 				targetFile = thumbFile,
 			)
@@ -453,7 +432,7 @@ class SecureImageRepository(
 
 			val ppp = preferencesManager.getHashedPoisonPillPin() ?: return false
 			val pin = preferencesManager.getPlainPoisonPillPin() ?: return false
-			val ppk = encryptionScheme.deriveKeyRaw(plainPin = pin, hashedPin = ppp)
+			val ppk = encryptionScheme.deriveKey(plainPin = pin, hashedPin = ppp)
 			encryptionScheme.encryptToFile(
 				plain = jpgBytes,
 				keyBytes = ppk,

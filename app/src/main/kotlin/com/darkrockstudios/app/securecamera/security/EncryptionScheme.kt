@@ -10,34 +10,31 @@ import java.io.File
 interface EncryptionScheme {
 	/**
 	 * Encrypts plaintext data and writes it to a file.
-	 * This will derive the key on-demand and cache it for later re-use.
+	 * This will use the pre-derived key in the cache.
 	 */
-	suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File)
+	suspend fun encryptToFile(plain: ByteArray, targetFile: File)
 
 	/**
-	 * Encrypts plaintext data using a pre-derived key and writes it to a file
+	 * Encrypts plaintext data using the provided key and writes it to a file
 	 */
 	suspend fun encryptToFile(plain: ByteArray, keyBytes: ByteArray, targetFile: File)
 
 	/**
 	 * Decrypts an encrypted file and returns the plaintext data
-	 * This will derive the key on-demand and cache it for later re-use.
+	 * This will use the pre-derived key in memory.
 	 */
-	suspend fun decryptFile(plainPin: String, hashedPin: HashedPin, encryptedFile: File): ByteArray
+	suspend fun decryptFile(encryptedFile: File): ByteArray
+
+	suspend fun deriveAndCacheKey(plainPin: String, hashedPin: HashedPin)
 
 	/**
-	 * Derives an encryption key from a PIN and its hash and caches it
+	 * Get the currently derived encryption key,
+	 * or throws if one hasn't been derived yet.
 	 */
+	suspend fun getDerivedKey(): ByteArray
+
 	suspend fun deriveKey(plainPin: String, hashedPin: HashedPin): ByteArray
 
-	/**
-	 * Derive a key, avoid mem caching
-	 */
-	suspend fun deriveKeyRaw(plainPin: String, hashedPin: HashedPin): ByteArray
-
-	/**
-	 * Clears any cached encryption keys
-	 */
 	fun evictKey()
 
 	/**

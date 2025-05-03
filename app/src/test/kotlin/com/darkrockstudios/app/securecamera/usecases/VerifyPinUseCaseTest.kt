@@ -3,6 +3,7 @@ package com.darkrockstudios.app.securecamera.usecases
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -20,16 +21,19 @@ class VerifyPinUseCaseTest {
 	private lateinit var imageManager: SecureImageRepository
 	private lateinit var preferencesManager: AppPreferencesDataSource
 	private lateinit var verifyPinUseCase: VerifyPinUseCase
+	private lateinit var encryptionScheme: EncryptionScheme
 
 	@Before
 	fun setup() {
 		authManager = mockk()
 		imageManager = mockk()
 		preferencesManager = mockk()
+		encryptionScheme = mockk(relaxed = true)
 		verifyPinUseCase = VerifyPinUseCase(
 			authManager = authManager,
 			imageManager = imageManager,
-			preferencesManager = preferencesManager
+			preferencesManager = preferencesManager,
+			encryptionScheme = encryptionScheme,
 		)
 	}
 
@@ -38,7 +42,7 @@ class VerifyPinUseCaseTest {
 		// Given
 		val pin = "1234"
 		coEvery { preferencesManager.hasPoisonPillPin() } returns false
-		coEvery { authManager.verifyPin(pin) } returns true
+		coEvery { authManager.verifyPin(pin) } returns mockk(relaxed = true)
 
 		// When
 		val result = verifyPinUseCase.verifyPin(pin)
@@ -55,7 +59,7 @@ class VerifyPinUseCaseTest {
 		// Given
 		val pin = "1234"
 		coEvery { preferencesManager.hasPoisonPillPin() } returns false
-		coEvery { authManager.verifyPin(pin) } returns false
+		coEvery { authManager.verifyPin(pin) } returns null
 
 		// When
 		val result = verifyPinUseCase.verifyPin(pin)
@@ -75,7 +79,7 @@ class VerifyPinUseCaseTest {
 		coEvery { preferencesManager.verifyPoisonPillPin(pin) } returns true
 		coEvery { authManager.activatePoisonPill() } returns Unit
 		coEvery { imageManager.activatePoisonPill() } returns Unit
-		coEvery { authManager.verifyPin(pin) } returns false // Even if PIN verification fails, poison pill should activate
+		coEvery { authManager.verifyPin(pin) } returns null // Even if PIN verification fails, poison pill should activate
 
 		// When
 		val result = verifyPinUseCase.verifyPin(pin)
@@ -95,7 +99,7 @@ class VerifyPinUseCaseTest {
 		val pin = "1234"
 		coEvery { preferencesManager.hasPoisonPillPin() } returns true
 		coEvery { preferencesManager.verifyPoisonPillPin(pin) } returns false
-		coEvery { authManager.verifyPin(pin) } returns true
+		coEvery { authManager.verifyPin(pin) } returns mockk(relaxed = true)
 
 		// When
 		val result = verifyPinUseCase.verifyPin(pin)
@@ -114,7 +118,7 @@ class VerifyPinUseCaseTest {
 		// Given
 		val pin = ""
 		coEvery { preferencesManager.hasPoisonPillPin() } returns false
-		coEvery { authManager.verifyPin(pin) } returns false
+		coEvery { authManager.verifyPin(pin) } returns null
 
 		// When
 		val result = verifyPinUseCase.verifyPin(pin)

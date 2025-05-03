@@ -4,9 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.ashampoo.kim.model.GpsCoordinates
-import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
-import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.SecurityPin
 import com.darkrockstudios.app.securecamera.camera.*
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
@@ -42,7 +40,7 @@ class SecureImageRepositoryTest {
 		preferencesManager = mockk(relaxed = true)
 		authorizationRepository = mockk(relaxed = true)
 		thumbnailCache = mockk(relaxed = true)
-		encryptionScheme = mockk(relaxed = true)
+		encryptionScheme = mockk()
 
 		// Mock the filesDir and cacheDir
 		val filesDir = tempFolder.newFolder("files")
@@ -54,24 +52,9 @@ class SecureImageRepositoryTest {
 		// Mock the encryption scheme methods
 		coEvery {
 			encryptionScheme.encryptToFile(
-				any<String>(),
-				any<HashedPin>(),
-				any<ByteArray>(),
-				any<File>()
-			)
-		} answers {
-			// Write the plain bytes to the target file for testing
-			val plain = arg<ByteArray>(2)
-			val targetFile = arg<File>(3)
-			targetFile.writeBytes(plain)
-		}
-
-		// Mock the second overload of encryptToFile
-		coEvery {
-			encryptionScheme.encryptToFile(
 				any<ByteArray>(),
 				any<ByteArray>(),
-				any<File>()
+				any<File>(),
 			)
 		} answers {
 			// Write the plain bytes to the target file for testing
@@ -80,15 +63,26 @@ class SecureImageRepositoryTest {
 			targetFile.writeBytes(plain)
 		}
 
+		// Mock the second overload of encryptToFile
+		coEvery {
+			encryptionScheme.encryptToFile(
+				any<ByteArray>(),
+				any<File>()
+			)
+		} answers {
+			// Write the plain bytes to the target file for testing
+			val plain = arg<ByteArray>(0)
+			val targetFile = arg<File>(1)
+			targetFile.writeBytes(plain)
+		}
+
 		coEvery {
 			encryptionScheme.decryptFile(
-				any<String>(),
-				any<HashedPin>(),
 				any<File>()
 			)
 		} answers {
 			// Read the "encrypted" bytes from the file for testing
-			val encryptedFile = arg<File>(2)
+			val encryptedFile = arg<File>(0)
 			encryptedFile.readBytes()
 		}
 
@@ -102,7 +96,6 @@ class SecureImageRepositoryTest {
 		secureImageRepository = SecureImageRepository(
 			appContext = context,
 			preferencesManager = preferencesManager,
-			authorizationRepository = authorizationRepository,
 			thumbnailCache = thumbnailCache,
 			encryptionScheme = encryptionScheme,
 		)
@@ -341,14 +334,7 @@ class SecureImageRepositoryTest {
 	@Test
 	fun `saveImage should encrypt and save the image`() = runTest {
 		// Given
-		val testBytes = "test image data".toByteArray()
-		val orientation = TiffOrientation.STANDARD
 		val coordinates = GpsCoordinates(latitude = 37.7749, longitude = -122.4194)
-
-		// Mock security PIN
-		val hashedPin = HashedPin("salt", "hash")
-		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
 
 		mockkStatic(BitmapFactory::class)
 		val mockBitmap = mockk<Bitmap>()
@@ -393,15 +379,9 @@ class SecureImageRepositoryTest {
 		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		val hashedPin = HashedPin("salt", "hash")
-		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
-
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		secureImageRepository.encryptToFile(
-			plainPin = securityPin.plainPin,
-			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
 			targetFile = photoFile,
 		)
@@ -433,16 +413,9 @@ class SecureImageRepositoryTest {
 		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		// Mock security PIN
-		val hashedPin = HashedPin("salt", "hash")
-		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
-
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		secureImageRepository.encryptToFile(
-			plainPin = securityPin.plainPin,
-			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
 			targetFile = photoFile,
 		)
@@ -531,16 +504,9 @@ class SecureImageRepositoryTest {
 		val decoyDir = secureImageRepository.getDecoyDirectory()
 		decoyDir.mkdirs()
 
-		// Mock security PIN
-		val hashedPin = HashedPin("salt", "hash")
-		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
-
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		secureImageRepository.encryptToFile(
-			plainPin = securityPin.plainPin,
-			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
 			targetFile = photoFile,
 		)
@@ -552,11 +518,12 @@ class SecureImageRepositoryTest {
 		)
 
 		// Mock poison pill PIN
-		coEvery { preferencesManager.getHashedPoisonPillPin() } returns hashedPin
+		val hashedPPP = HashedPin("salt", "hash")
+		coEvery { preferencesManager.getHashedPoisonPillPin() } returns hashedPPP
 		coEvery { preferencesManager.getPlainPoisonPillPin() } returns "5678"
 
 		val ppk = ByteArray(1)
-		coEvery { encryptionScheme.deriveKeyRaw(any(), any()) } returns ppk
+		coEvery { encryptionScheme.deriveKey(any(), any()) } returns ppk
 
 		// When
 		val result = secureImageRepository.addDecoyPhoto(photoDef)
@@ -641,11 +608,6 @@ class SecureImageRepositoryTest {
 			photoFile = photoFile
 		)
 
-		// Mock security PIN
-		val hashedPin = HashedPin("salt", "hash")
-		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
-
 		val mockBitmap = mockk<Bitmap>()
 
 		coEvery { thumbnailCache.getThumbnail(any()) } returns mockBitmap
@@ -665,11 +627,6 @@ class SecureImageRepositoryTest {
 
 	@Test
 	fun `readThumbnail should create thumbnail if not in cache or file`() = runTest {
-		// Mock security PIN
-		val hashedPin = HashedPin(hash = "salt", salt = "hash1234567890")
-		val securityPin = SecurityPin(plainPin = "1234", hashedPin = hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
-
 		// Given
 		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
@@ -677,8 +634,6 @@ class SecureImageRepositoryTest {
 		val jpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		secureImageRepository.encryptToFile(
-			plainPin = securityPin.plainPin,
-			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
 			targetFile = photoFile,
 		)
@@ -758,16 +713,9 @@ class SecureImageRepositoryTest {
 		val photoName = "photo_20230101_120000_00.jpg"
 		val photoFile = File(galleryDir, photoName)
 
-		// Mock security PIN
-		val hashedPin = HashedPin(hash = "hash", salt = "salt")
-		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
-
 		// Create an encrypted file
 		val jpgBytes = readResourceBytes("red.jpg")
 		secureImageRepository.encryptToFile(
-			plainPin = securityPin.plainPin,
-			hashedPin = securityPin.hashedPin,
 			plain = jpgBytes,
 			targetFile = photoFile,
 		)
@@ -841,17 +789,10 @@ class SecureImageRepositoryTest {
 		val galleryDir = secureImageRepository.getGalleryDirectory()
 		galleryDir.mkdirs()
 
-		// Mock security PIN
-		val hashedPin = HashedPin("salt", "hash")
-		val securityPin = SecurityPin("1234", hashedPin)
-		every { authorizationRepository.securityPin } returns securityPin
-
 		// Create original image
 		val originalJpgBytes = readResourceBytes("red.jpg")
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		secureImageRepository.encryptToFile(
-			plainPin = securityPin.plainPin,
-			hashedPin = securityPin.hashedPin,
 			plain = originalJpgBytes,
 			targetFile = photoFile,
 		)

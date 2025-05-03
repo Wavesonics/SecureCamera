@@ -31,11 +31,8 @@ open class SoftwareEncryptionScheme(
 	override suspend fun createKey() {
 	}
 
-	/**
-	 * Derives the encryption key from the user's PIN, then encrypts the plainText bytes and writes it to targetFile
-	 */
-	override suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File) {
-		val keyBytes = deriveKey(plainPin, hashedPin)
+	override suspend fun encryptToFile(plain: ByteArray, targetFile: File) {
+		val keyBytes = getDerivedKey()
 		encryptToFile(plain = plain, keyBytes = keyBytes, targetFile = targetFile)
 	}
 
@@ -51,9 +48,9 @@ open class SoftwareEncryptionScheme(
 	/**
 	 * Derives the encryption key from the user's PIN, then decrypts encryptedFile and returns the plainText bytes
 	 */
-	override suspend fun decryptFile(plainPin: String, hashedPin: HashedPin, encryptedFile: File): ByteArray {
+	override suspend fun decryptFile(encryptedFile: File): ByteArray {
 		val encryptedBytes = encryptedFile.readBytes()
-		val keyBytes = deriveKey(plainPin, hashedPin)
+		val keyBytes = getDerivedKey()
 
 		val aesKey = provider.get(AES.GCM).keyDecoder()
 			.decodeFromByteArray(AES.Key.Format.RAW, keyBytes)
@@ -61,23 +58,24 @@ open class SoftwareEncryptionScheme(
 		return aesKey.cipher().decrypt(encryptedBytes)
 	}
 
-	override suspend fun deriveKey(plainPin: String, hashedPin: HashedPin): ByteArray {
-		key?.let { return it.reconstructKey() }
+	override suspend fun deriveAndCacheKey(plainPin: String, hashedPin: HashedPin) {
+		keyMutex.withLock {
+			// Early out for race conditions
+			key?.let { return@withLock }
 
-		return keyMutex.withLock {
-			key?.let { return@withLock it.reconstructKey() }
-
-			val derivedKey = deriveKeyRaw(plainPin, hashedPin)
+			val derivedKey = deriveKey(plainPin, hashedPin)
 			key = ShardedKey(derivedKey)
-			derivedKey
 		}
 	}
 
-	/**
-	 * Raw key derivation function without caching
-	 */
+	override suspend fun getDerivedKey(): ByteArray {
+		return keyMutex.withLock {
+			key?.reconstructKey() ?: error("Key has not been derived!")
+		}
+	}
+
 	@OptIn(ExperimentalEncodingApi::class)
-	override suspend fun deriveKeyRaw(
+	override suspend fun deriveKey(
 		plainPin: String,
 		hashedPin: HashedPin,
 	): ByteArray {

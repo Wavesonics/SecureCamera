@@ -30,7 +30,7 @@ class HardwareBackedEncryptionScheme(
 	private val ks: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
 
 	@OptIn(ExperimentalStdlibApi::class, ExperimentalEncodingApi::class)
-	override suspend fun deriveKeyRaw(
+	override suspend fun deriveKey(
 		plainPin: String,
 		hashedPin: HashedPin,
 	): ByteArray {

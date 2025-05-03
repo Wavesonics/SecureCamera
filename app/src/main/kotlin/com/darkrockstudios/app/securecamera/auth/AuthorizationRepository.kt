@@ -25,9 +25,6 @@ class AuthorizationRepository(
 
 	private var lastAuthTimeMs: Long = 0
 
-	var securityPin: SecurityPin? = null
-		private set
-
 	suspend fun securityFailureReset() {
 		preferencesManager.securityFailureReset()
 	}
@@ -118,19 +115,17 @@ class AuthorizationRepository(
 	 * @param pin The PIN entered by the user
 	 * @return True if the PIN is correct, false otherwise
 	 */
-	suspend fun verifyPin(pin: String): Boolean {
+	suspend fun verifyPin(pin: String): HashedPin? {
 		val hashedPin = preferencesManager.getHashedPin()
 		val isValid = preferencesManager.verifySecurityPin(pin)
-		if (isValid && hashedPin != null) {
+		return if (isValid && hashedPin != null) {
 			authorizeSession()
-			securityPin = SecurityPin(
-				plainPin = pin,
-				hashedPin = hashedPin,
-			)
 			// Reset failed attempts counter on successful verification
 			resetFailedAttempts()
+			hashedPin
+		} else {
+			null
 		}
-		return isValid
 	}
 
 	/**
@@ -168,9 +163,4 @@ class AuthorizationRepository(
 		_isAuthorized.value = false
 		lastAuthTimeMs = 0
 	}
-
-	data class SecurityPin(
-		val plainPin: String,
-		val hashedPin: HashedPin,
-	)
 }

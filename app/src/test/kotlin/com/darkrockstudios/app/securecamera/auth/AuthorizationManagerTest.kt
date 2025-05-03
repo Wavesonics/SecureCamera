@@ -56,7 +56,7 @@ class AuthorizationManagerTest {
 		val result = authManager.verifyPin(pin)
 
 		// Then
-		assertTrue(result)
+		assertNotNull(result)
 		assertTrue(authManager.isAuthorized.first())
 	}
 
@@ -71,7 +71,7 @@ class AuthorizationManagerTest {
 		val result = authManager.verifyPin(incorrectPin)
 
 		// Then
-		assertFalse(result)
+		assertNull(result)
 		assertFalse(authManager.isAuthorized.first())
 	}
 
@@ -227,7 +227,7 @@ class AuthorizationManagerTest {
 		val result = authManager.verifyPin(pin)
 
 		// Then
-		assertTrue(result)
+		assertNotNull(result)
 		assertEquals(0, preferencesManager.getFailedPinAttempts())
 		assertEquals(0L, preferencesManager.getLastFailedAttemptTimestamp())
 	}
@@ -345,7 +345,7 @@ class AuthorizationManagerTest {
 		val result = authManager.verifyPin(pin)
 
 		// Then
-		assertTrue(result)
+		assertNull(result)
 		assertFalse(authManager.isAuthorized.first())
 		coVerify { preferencesManager.verifySecurityPin(pin) }
 	}
