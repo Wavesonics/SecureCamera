@@ -7,9 +7,7 @@ import com.darkrockstudios.app.securecamera.gallery.GalleryViewModel
 import com.darkrockstudios.app.securecamera.introduction.IntroductionViewModel
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoViewModel
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.security.DeviceInfo
-import com.darkrockstudios.app.securecamera.security.EncryptionManager
-import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
+import com.darkrockstudios.app.securecamera.security.*
 import com.darkrockstudios.app.securecamera.settings.SettingsViewModel
 import com.darkrockstudios.app.securecamera.usecases.CreatePinUseCase
 import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
@@ -19,6 +17,7 @@ import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
@@ -26,7 +25,16 @@ val appModule = module {
 	single<AppPreferencesDataSource> { AppPreferencesDataSource(context = get()) }
 	singleOf(::AuthorizationRepository)
 	singleOf(::LocationRepository)
-	singleOf(::EncryptionManager)
+	single<EncryptionScheme> {
+		val detector = get<SecurityLevelDetector>()
+		when (detector.detectSecurityLevel()) {
+			SecurityLevel.SOFTWARE ->
+				SoftwareEncryptionScheme(get())
+
+			SecurityLevel.TEE, SecurityLevel.STRONGBOX ->
+				HardwareBackedEncryptionScheme(get(), get(), get())
+		}
+	} bind EncryptionScheme::class
 	singleOf(::SecurityLevelDetector)
 
 	factoryOf(::DeviceInfo)

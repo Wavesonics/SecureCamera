@@ -2,7 +2,7 @@ package com.darkrockstudios.app.securecamera.auth
 
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import com.darkrockstudios.app.securecamera.security.EncryptionManager
+import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +14,7 @@ import kotlin.math.pow
  */
 class AuthorizationRepository(
 	private val preferencesManager: AppPreferencesDataSource,
-	private val encryptionManager: EncryptionManager,
+	private val encryptionScheme: EncryptionScheme,
 ) {
 	companion object {
 		const val MAX_FAILED_ATTEMPTS = 10
@@ -109,7 +109,7 @@ class AuthorizationRepository(
 	 * Initial key creation
 	 */
 	suspend fun createKey(): Boolean {
-		encryptionManager.createKey()
+		encryptionScheme.createKey()
 		return true
 	}
 

@@ -5,7 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.security.EncryptionManager
+import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -29,7 +29,7 @@ class AuthorizationManagerTest {
 	private lateinit var preferencesManager: AppPreferencesDataSource
 	private lateinit var authManager: AuthorizationRepository
 	private lateinit var dataStore: DataStore<Preferences>
-	private lateinit var encryptionManager: EncryptionManager
+	private lateinit var encryptionManager: EncryptionScheme
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	private val testScope = TestScope(UnconfinedTestDispatcher())

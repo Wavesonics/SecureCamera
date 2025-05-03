@@ -10,7 +10,7 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.Securit
 import com.darkrockstudios.app.securecamera.camera.*
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import com.darkrockstudios.app.securecamera.security.EncryptionManager
+import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -34,7 +34,7 @@ class SecureImageRepositoryTest {
 	private lateinit var authorizationRepository: AuthorizationRepository
 	private lateinit var secureImageRepository: SecureImageRepository
 	private lateinit var thumbnailCache: ThumbnailCache
-	private lateinit var encryptionScheme: EncryptionManager
+	private lateinit var encryptionScheme: EncryptionScheme
 
 	@Before
 	fun setup() {
@@ -104,7 +104,7 @@ class SecureImageRepositoryTest {
 			preferencesManager = preferencesManager,
 			authorizationRepository = authorizationRepository,
 			thumbnailCache = thumbnailCache,
-			encryptionManager = encryptionScheme,
+			encryptionScheme = encryptionScheme,
 		)
 	}
 

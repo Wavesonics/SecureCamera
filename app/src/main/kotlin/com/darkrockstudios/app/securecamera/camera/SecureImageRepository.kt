@@ -14,7 +14,7 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.SecurityPin
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import com.darkrockstudios.app.securecamera.security.EncryptionManager
+import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -27,7 +27,7 @@ class SecureImageRepository(
 	private val preferencesManager: AppPreferencesDataSource,
 	private val authorizationRepository: AuthorizationRepository,
 	internal val thumbnailCache: ThumbnailCache,
-	private val encryptionManager: EncryptionManager,
+	private val encryptionScheme: EncryptionScheme,
 ) {
 	fun getGalleryDirectory(): File = File(appContext.filesDir, PHOTOS_DIR)
 
@@ -38,7 +38,7 @@ class SecureImageRepository(
 	}
 
 	fun evictKey() {
-		encryptionManager.evictKey()
+		encryptionScheme.evictKey()
 	}
 
 	/**
@@ -72,14 +72,14 @@ class SecureImageRepository(
 	 * Derives the encryption key from the user's PIN, then encrypted the plainText bytes and writes it to targetFile
 	 */
 	internal suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File) {
-		encryptionManager.encryptToFile(plainPin, hashedPin, plain, targetFile)
+		encryptionScheme.encryptToFile(plainPin, hashedPin, plain, targetFile)
 	}
 
 	/**
 	 * Derives the encryption key from the user's PIN, then decrypts encryptedFile and returns the plainText bytes
 	 */
 	private suspend fun decryptFile(plainPin: String, hashedPin: HashedPin, encryptedFile: File): ByteArray {
-		return encryptionManager.decryptFile(plainPin, hashedPin, encryptedFile)
+		return encryptionScheme.decryptFile(plainPin, hashedPin, encryptedFile)
 	}
 
 	/**
@@ -99,7 +99,7 @@ class SecureImageRepository(
 		tempFile.writeBytes(imageBytes)
 
 		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
-		encryptionManager.encryptToFile(
+		encryptionScheme.encryptToFile(
 			plainPin = pin.plainPin,
 			hashedPin = pin.hashedPin,
 			plain = tempFile.readBytes(),
@@ -313,7 +313,7 @@ class SecureImageRepository(
 					outputStream.toByteArray()
 				}
 			}
-			encryptionManager.encryptToFile(
+			encryptionScheme.encryptToFile(
 				plainPin = pin.plainPin,
 				hashedPin = pin.hashedPin,
 				plain = thumbnailBytes,
@@ -371,13 +371,20 @@ class SecureImageRepository(
 	}
 
 	fun deleteNonDecoyImages() {
-		deleteAllImages(deleteDecoy = false)
-
 		val galleryDir = getGalleryDirectory()
+		val thumbnailsDir = getThumbnailsDir()
+
+		galleryDir.deleteRecursively()
+		thumbnailsDir.deleteRecursively()
+
+		galleryDir.mkdirs()
+		getThumbnailsDir().mkdirs()
+
 		getDecoyFiles().forEach { file ->
 			val targetFile = File(galleryDir, file.name)
 			file.renameTo(targetFile)
 		}
+		getDecoyDirectory().deleteRecursively()
 	}
 
 	fun getPhotoByName(photoName: String): PhotoDef? {
@@ -446,8 +453,8 @@ class SecureImageRepository(
 
 			val ppp = preferencesManager.getHashedPoisonPillPin() ?: return false
 			val pin = preferencesManager.getPlainPoisonPillPin() ?: return false
-			val ppk = encryptionManager.deriveKeyRaw(plainPin = pin, hashedPin = ppp)
-			encryptionManager.encryptToFile(
+			val ppk = encryptionScheme.deriveKeyRaw(plainPin = pin, hashedPin = ppp)
+			encryptionScheme.encryptToFile(
 				plain = jpgBytes,
 				keyBytes = ppk,
 				targetFile = decoyFile

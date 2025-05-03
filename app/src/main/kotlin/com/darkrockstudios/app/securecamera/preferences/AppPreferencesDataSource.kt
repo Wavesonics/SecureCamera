@@ -18,6 +18,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.minutes
 
@@ -58,7 +59,7 @@ class AppPreferencesDataSource(
 		val preferences = dataStore.data.first()
 
 		return preferences[SYMMETRIC_CIPHER_KEY] ?: run {
-			val newKey = CryptographyRandom.nextBytes(128).toHexString()
+			val newKey = CryptographyRandom.nextBytes(128).base64Encode()
 			dataStore.edit { preferences ->
 				preferences[SYMMETRIC_CIPHER_KEY] = newKey
 			}
@@ -142,12 +143,12 @@ class AppPreferencesDataSource(
 	fun hashPin(pin: String): HashedPin {
 		val salt = CryptographyRandom.nextBytes(16)
 		val hash = bcrypt.hash(BCRYPT_COST, salt, pin.toByteArray(Charsets.UTF_8))
-		return HashedPin(hash.toHexString(), salt.toHexString())
+		return HashedPin(hash.base64Encode(), salt.base64Encode())
 	}
 
 	@OptIn(ExperimentalStdlibApi::class)
 	fun verifyPin(inputPin: String, storedHash: HashedPin): Boolean {
-		val result = BCrypt.verifyer().verify(inputPin.toCharArray(), storedHash.hash.hexToByteArray())
+		val result = BCrypt.verifyer().verify(inputPin.toCharArray(), storedHash.hash.base64Decode())
 		return result.verified
 	}
 
@@ -170,14 +171,6 @@ class AppPreferencesDataSource(
 	}
 
 	/**
-	 * Get the failed PIN attempts count
-	 */
-	val failedPinAttempts: Flow<Int> = dataStore.data
-		.map { preferences ->
-			preferences[FAILED_PIN_ATTEMPTS]?.toIntOrNull() ?: 0
-		}
-
-	/**
 	 * Get the current failed PIN attempts count
 	 */
 	suspend fun getFailedPinAttempts(): Int {
@@ -192,14 +185,6 @@ class AppPreferencesDataSource(
 			preferences[FAILED_PIN_ATTEMPTS] = count.toString()
 		}
 	}
-
-	/**
-	 * Get the timestamp of the last failed PIN attempt
-	 */
-	val lastFailedAttemptTimestamp: Flow<Long> = dataStore.data
-		.map { preferences ->
-			preferences[LAST_FAILED_ATTEMPT_TIMESTAMP]?.toLongOrNull() ?: 0L
-		}
 
 	/**
 	 * Get the current timestamp of the last failed PIN attempt
@@ -325,3 +310,8 @@ class AppPreferencesDataSource(
 
 @Serializable
 data class HashedPin(val hash: String, val salt: String)
+
+@OptIn(ExperimentalEncodingApi::class)
+private fun ByteArray.base64Encode(): String = Base64.Default.encode(this)
+@OptIn(ExperimentalEncodingApi::class)
+private fun String.base64Decode(): ByteArray = Base64.Default.decode(this)
