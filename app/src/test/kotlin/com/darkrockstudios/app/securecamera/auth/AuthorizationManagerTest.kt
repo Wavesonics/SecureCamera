@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.security.EncryptionManager
+import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -27,6 +29,7 @@ class AuthorizationManagerTest {
 	private lateinit var preferencesManager: AppPreferencesDataSource
 	private lateinit var authManager: AuthorizationRepository
 	private lateinit var dataStore: DataStore<Preferences>
+	private lateinit var encryptionManager: EncryptionManager
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -39,14 +42,15 @@ class AuthorizationManagerTest {
 			produceFile = { File.createTempFile("prefs_test", ".preferences_pb") }
 		)
 		preferencesManager = spyk(AppPreferencesDataSource(context, dataStore))
-		authManager = AuthorizationRepository(preferencesManager)
+		encryptionManager = mockk(relaxed = true)
+		authManager = AuthorizationRepository(preferencesManager, encryptionManager)
 	}
 
 	@Test
 	fun `verifyPin should update authorization state when PIN is valid`() = runTest {
 		// Given
 		val pin = "1234"
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 
 		// When
 		val result = authManager.verifyPin(pin)
@@ -61,7 +65,7 @@ class AuthorizationManagerTest {
 		// Given
 		val correctPin = "1234"
 		val incorrectPin = "5678"
-		preferencesManager.setAppPin(correctPin)
+		preferencesManager.setAppPin(correctPin, SoftwareSchemeConfig)
 
 		// When
 		val result = authManager.verifyPin(incorrectPin)
@@ -88,7 +92,7 @@ class AuthorizationManagerTest {
 	fun `checkSessionValidity should return true when session is valid`() = runTest {
 		// Given
 		val pin = "1234"
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 		authManager.verifyPin(pin)
 
 		// When
@@ -103,7 +107,7 @@ class AuthorizationManagerTest {
 	fun `checkSessionValidity should return false when session has expired`() = runTest {
 		// Given
 		val pin = "1234"
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 
 		// Set a very small session timeout (1 millisecond)
 		preferencesManager.setSessionTimeout(1L)
@@ -125,7 +129,7 @@ class AuthorizationManagerTest {
 	fun `revokeAuthorization should reset authorization state`() = runTest {
 		// Given
 		val pin = "1234"
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 		authManager.verifyPin(pin)
 		assertTrue(authManager.isAuthorized.first())
 
@@ -141,7 +145,7 @@ class AuthorizationManagerTest {
 		// Given
 		val pin = "1234"
 		val customTimeout = TimeUnit.SECONDS.toMillis(30)
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 		preferencesManager.setSessionTimeout(customTimeout)
 
 		// When
@@ -215,7 +219,7 @@ class AuthorizationManagerTest {
 	fun `verifyPin should reset failed attempts when PIN is valid`() = runTest {
 		// Given
 		val pin = "1234"
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 		preferencesManager.setFailedPinAttempts(3)
 		preferencesManager.setLastFailedAttemptTimestamp(1000L)
 
@@ -289,7 +293,7 @@ class AuthorizationManagerTest {
 	fun `securityFailureReset should delegate to preferencesManager`() = runTest {
 		// Given
 		val pin = "1234"
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 		preferencesManager.setFailedPinAttempts(5)
 		preferencesManager.setLastFailedAttemptTimestamp(1000L)
 
@@ -313,7 +317,7 @@ class AuthorizationManagerTest {
 		// Given
 		val regularPin = "1234"
 		val poisonPillPin = "5678"
-		preferencesManager.setAppPin(regularPin)
+		preferencesManager.setAppPin(regularPin, SoftwareSchemeConfig)
 		preferencesManager.setPoisonPillPin(poisonPillPin)
 
 		// Verify initial state

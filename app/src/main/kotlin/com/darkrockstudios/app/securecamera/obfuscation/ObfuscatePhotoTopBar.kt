@@ -63,9 +63,6 @@ fun ObfuscatePhotoTopBar(
 			}
 		},
 		actions = {
-			Timber.tag("abrown")
-				.d("canClear: $canClear isFindingFaces: $isFindingFaces isCreatingRegion: $isCreatingRegion")
-
 			if (!isCreatingRegion) {
 				// Only show these buttons when not in region creation mode
 				if (canClear) {

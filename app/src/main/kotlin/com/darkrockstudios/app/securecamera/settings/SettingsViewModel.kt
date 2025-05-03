@@ -8,6 +8,8 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_DEFAULT
+import com.darkrockstudios.app.securecamera.security.SecurityLevel
+import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,10 +19,11 @@ class SettingsViewModel(
 	private val locationRepository: LocationRepository,
 	private val securityResetUseCase: SecurityResetUseCase,
 	private val authorizationRepository: AuthorizationRepository,
-	private val imageManager: SecureImageRepository
+	private val imageManager: SecureImageRepository,
+	private val securityLevelDetector: SecurityLevelDetector
 ) : BaseViewModel<SettingsUiState>() {
 
-	override fun createState() = SettingsUiState()
+	override fun createState() = SettingsUiState(securityLevel = securityLevelDetector.detectSecurityLevel())
 
 	init {
 		observePreferences()
@@ -186,5 +189,6 @@ data class SettingsUiState(
 	val showDecoyPhotoExplanationDialog: Boolean = false,
 	val showRemovePoisonPillDialog: Boolean = false,
 	val securityResetComplete: Boolean = false,
-	val poisonPillRemoved: Boolean = false
+	val poisonPillRemoved: Boolean = false,
+	val securityLevel: SecurityLevel = SecurityLevel.SOFTWARE
 )

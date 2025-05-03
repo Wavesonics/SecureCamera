@@ -13,13 +13,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_10_MIN
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_1_MIN
@@ -221,6 +224,40 @@ fun SettingsContent(
 			)
 
 			Spacer(modifier = Modifier.height(8.dp))
+
+			// Security status row
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Column(modifier = Modifier.weight(1f)) {
+					Text(
+						text = stringResource(id = R.string.settings_security_status),
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Text(
+						text = stringResource(id = R.string.settings_security_status_description),
+						style = MaterialTheme.typography.bodyMedium,
+						color = MaterialTheme.colorScheme.onSurfaceVariant
+					)
+				}
+				Text(
+					text = when (uiState.securityLevel) {
+						SecurityLevel.STRONGBOX -> stringResource(id = R.string.security_intro_security_level_strong)
+						SecurityLevel.TEE -> stringResource(id = R.string.security_intro_security_level_normal)
+						SecurityLevel.SOFTWARE -> stringResource(id = R.string.security_intro_security_level_weak)
+					},
+					style = MaterialTheme.typography.bodyMedium,
+					fontWeight = FontWeight.Bold,
+					color = when (uiState.securityLevel) {
+						SecurityLevel.STRONGBOX -> Color.Green
+						SecurityLevel.TEE -> MaterialTheme.colorScheme.primary
+						SecurityLevel.SOFTWARE -> Color.Red
+					}
+				)
+			}
+
+			Spacer(modifier = Modifier.height(16.dp))
 
 			// Session timeout dropdown
 			Row(

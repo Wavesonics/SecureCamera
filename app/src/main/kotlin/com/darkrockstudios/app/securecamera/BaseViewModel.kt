@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<S : Any> : ViewModel() {
-	protected val _uiState = MutableStateFlow(createState())
-	val uiState: StateFlow<S> = _uiState.asStateFlow()
+	protected val _uiState by lazy { MutableStateFlow(createState()) }
+	val uiState: StateFlow<S> by lazy { _uiState.asStateFlow() }
 
 	protected abstract fun createState(): S
 

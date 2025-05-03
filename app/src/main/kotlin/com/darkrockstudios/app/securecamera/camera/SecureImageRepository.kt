@@ -14,36 +14,21 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.SecurityPin
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import dev.whyoleg.cryptography.BinarySize
-import dev.whyoleg.cryptography.BinarySize.Companion.bytes
-import dev.whyoleg.cryptography.CryptographyProvider
-import dev.whyoleg.cryptography.algorithms.AES
-import dev.whyoleg.cryptography.algorithms.PBKDF2
-import dev.whyoleg.cryptography.algorithms.SHA256
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import com.darkrockstudios.app.securecamera.security.EncryptionManager
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.time.ExperimentalTime
 
-private data class KeyParams(
-	val iterations: Int = 600_000,
-	val outputSize: BinarySize = 32.bytes,
-)
 
 class SecureImageRepository(
 	private val appContext: Context,
 	private val preferencesManager: AppPreferencesDataSource,
 	private val authorizationRepository: AuthorizationRepository,
 	internal val thumbnailCache: ThumbnailCache,
+	private val encryptionManager: EncryptionManager,
 ) {
-
-	private val provider = CryptographyProvider.Default
-	private var key: ByteArray? = null
-	private val keyMutex = Mutex()
-
 	fun getGalleryDirectory(): File = File(appContext.filesDir, PHOTOS_DIR)
 
 	fun getDecoyDirectory(): File {
@@ -52,9 +37,8 @@ class SecureImageRepository(
 		return dir
 	}
 
-
 	fun evictKey() {
-		key = null
+		encryptionManager.evictKey()
 	}
 
 	/**
@@ -88,63 +72,14 @@ class SecureImageRepository(
 	 * Derives the encryption key from the user's PIN, then encrypted the plainText bytes and writes it to targetFile
 	 */
 	internal suspend fun encryptToFile(plainPin: String, hashedPin: HashedPin, plain: ByteArray, targetFile: File) {
-		val keyBytes = deriveKey(plainPin, hashedPin)
-		encryptToFile(plain = plain, keyBytes = keyBytes, targetFile = targetFile)
-	}
-
-	private suspend fun encryptToFile(plain: ByteArray, keyBytes: ByteArray, targetFile: File) {
-		val aesKey = provider
-			.get(AES.GCM)
-			.keyDecoder()
-			.decodeFromByteArray(AES.Key.Format.RAW, keyBytes)
-		val encryptedBytes = aesKey.cipher().encrypt(plain)
-		targetFile.writeBytes(encryptedBytes)
+		encryptionManager.encryptToFile(plainPin, hashedPin, plain, targetFile)
 	}
 
 	/**
 	 * Derives the encryption key from the user's PIN, then decrypts encryptedFile and returns the plainText bytes
 	 */
 	private suspend fun decryptFile(plainPin: String, hashedPin: HashedPin, encryptedFile: File): ByteArray {
-		val encryptedBytes = encryptedFile.readBytes()
-		val keyBytes = deriveKey(plainPin, hashedPin)
-
-		val aesKey = provider.get(AES.GCM).keyDecoder()
-			.decodeFromByteArray(AES.Key.Format.RAW, keyBytes)
-
-		return aesKey.cipher().decrypt(encryptedBytes)
-	}
-
-	private suspend fun deriveKey(
-		plainPin: String,
-		hashedPin: HashedPin,
-		keyParams: KeyParams = KeyParams(),
-	): ByteArray {
-		key?.let { return it }
-
-		return keyMutex.withLock {
-			key?.let { return@withLock it }
-
-			val derivedKey = deriveKeyRaw(plainPin, hashedPin, keyParams)
-			key = derivedKey
-			derivedKey
-		}
-	}
-
-	private suspend fun deriveKeyRaw(
-		plainPin: String,
-		hashedPin: HashedPin,
-		keyParams: KeyParams = KeyParams(),
-	): ByteArray {
-		val secretDerivation = provider.get(PBKDF2).secretDerivation(
-			digest = SHA256,
-			iterations = keyParams.iterations,
-			outputSize = keyParams.outputSize,
-			salt = hashedPin.salt.toByteArray()
-		)
-
-		// Double the input length
-		val keyInput = plainPin + plainPin.reversed()
-		return secretDerivation.deriveSecret(keyInput.toByteArray()).toByteArray()
+		return encryptionManager.decryptFile(plainPin, hashedPin, encryptedFile)
 	}
 
 	/**
@@ -164,7 +99,7 @@ class SecureImageRepository(
 		tempFile.writeBytes(imageBytes)
 
 		val pin = authorizationRepository.securityPin ?: throw IllegalStateException("No Security PIN")
-		encryptToFile(
+		encryptionManager.encryptToFile(
 			plainPin = pin.plainPin,
 			hashedPin = pin.hashedPin,
 			plain = tempFile.readBytes(),
@@ -256,7 +191,7 @@ class SecureImageRepository(
 		val tempFile = File(dir, "$finalImageName.tmp")
 
 		var rawSensorBitmap = image.sensorBitmap
-		if(applyRotation) {
+		if (applyRotation) {
 			rawSensorBitmap = rawSensorBitmap.rotate(image.rotationDegrees)
 		}
 
@@ -378,7 +313,7 @@ class SecureImageRepository(
 					outputStream.toByteArray()
 				}
 			}
-			encryptToFile(
+			encryptionManager.encryptToFile(
 				plainPin = pin.plainPin,
 				hashedPin = pin.hashedPin,
 				plain = thumbnailBytes,
@@ -511,8 +446,13 @@ class SecureImageRepository(
 
 			val ppp = preferencesManager.getHashedPoisonPillPin() ?: return false
 			val pin = preferencesManager.getPlainPoisonPillPin() ?: return false
-			val poisonPillKey = deriveKeyRaw(plainPin = pin, hashedPin = ppp)
-			encryptToFile(plain = jpgBytes, keyBytes = poisonPillKey, targetFile = decoyFile)
+			val ppk = encryptionManager.deriveKeyRaw(plainPin = pin, hashedPin = ppp)
+			encryptionManager.encryptToFile(
+				plain = jpgBytes,
+				keyBytes = ppk,
+				targetFile = decoyFile
+			)
+
 			true
 		} else {
 			false

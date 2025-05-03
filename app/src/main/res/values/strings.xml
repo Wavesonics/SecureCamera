@@ -108,6 +108,8 @@
 
     <!-- Security Settings -->
     <string name="settings_security_section">Security</string>
+    <string name="settings_security_status">Security Status</string>
+    <string name="settings_security_status_description">The level of hardware security available on your device</string>
     <string name="settings_session_timeout">Session Timeout</string>
     <string name="settings_session_timeout_description">Time before requiring PIN re-entry</string>
     <string name="settings_session_timeout_1_min">1 Minute</string>
@@ -249,6 +251,46 @@
     <string name="pin_creation_error_weak_pin">PIN is too weak, Please pick another.</string>
     <string name="pin_creation_success">PIN created successfully!</string>
     <string name="pin_creation_button">Create PIN</string>
+    <string name="pin_show_description">Show PIN</string>
+    <string name="pin_hide_description">Hide PIN</string>
+
+    <!-- Security Introduction -->
+    <string name="security_intro_icon">Security Selection</string>
+    <string name="security_intro_supported_security_label">Your Security Is:</string>
+    <string name="security_intro_security_level_strong">Strong</string>
+    <string name="security_intro_security_level_strong_explainer">Your encryption keys are stored in a Secure Element on
+        this device. This is the highest level of protection possible. It is resistant to all forms of attack, even the
+        most determined and well resourced.
+    </string>
+    <string name="security_intro_string_biometric_label">Require Biometrics?</string>
+    <string name="security_intro_string_biometric_explainer">Because your device has a Secure Element (SE), we can offer
+        a further level of protection.
+        \n\n
+        In addition to your PIN, the SE can require you to enter your Fingerprint as well before it will allow access to
+        the encryption key.
+        \n\n
+        This is generally not required for most users, but is an optional level of security if your threat model demands
+        it.
+    </string>
+    <string name="security_intro_string_biometric_checkbox">Require Biometrics + PIN</string>
+    <string name="security_intro_advanced_section">Advanced</string>
+    <string name="security_intro_expand">Expand advanced options</string>
+    <string name="security_intro_collapse">Collapse advanced options</string>
+
+    <string name="security_intro_security_level_normal">Normal</string>
+    <string name="security_intro_security_level_normal_explainer">Your encryption keys are stored in your chips Trusted
+        Execution Environment on this device. This is the reasonable level of security for all but the highest risk
+        threat models.
+    </string>
+
+    <string name="security_intro_security_level_weak">Weak</string>
+    <string name="security_intro_security_level_weak_explainer">Your device lacks any hardware-backed key storage. While
+        we can still provide you with a reasonable level of security, you will be vulnerable to offline attacks. This
+        would be where
+        your data is dumped and your key is brute-forced.
+        \n\n
+        If you believe yourself to have a high-risk threat model, you should consider upgrading to a newer device.
+    </string>
 
     <!-- PIN Verification -->
     <string name="pin_verification_icon">Create Pin Icon</string>

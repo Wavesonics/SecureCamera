@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -14,6 +15,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import kotlin.test.assertTrue
 
 class AppPreferencesManagerTest {
 
@@ -121,7 +123,7 @@ class AppPreferencesManagerTest {
 	fun `verifySecurityPin returns true for correct PIN`() = runTest {
 		// Given
 		val pin = "1234"
-		preferencesManager.setAppPin(pin)
+		preferencesManager.setAppPin(pin, SoftwareSchemeConfig)
 
 		// When
 		val result = preferencesManager.verifySecurityPin(pin)
@@ -135,7 +137,7 @@ class AppPreferencesManagerTest {
 		// Given
 		val correctPin = "1234"
 		val incorrectPin = "5678"
-		preferencesManager.setAppPin(correctPin)
+		preferencesManager.setAppPin(correctPin, SoftwareSchemeConfig)
 
 		// When
 		val result = preferencesManager.verifySecurityPin(incorrectPin)
@@ -213,7 +215,12 @@ class AppPreferencesManagerTest {
 		// No poison pill PIN is stored in the dataStore by default
 
 		// When
-		preferencesManager.activatePoisonPill()
+		try {
+			preferencesManager.activatePoisonPill()
+			assertTrue(false, "activatePoisonPill should have thrown an exception")
+		} catch (e: Exception) {
+			assertTrue(true)
+		}
 
 		// Then
 		// No exception should be thrown
@@ -309,7 +316,7 @@ class AppPreferencesManagerTest {
 	fun `securityFailureReset clears all preferences`() = runTest {
 		// Given
 		// Set some preferences
-		preferencesManager.setAppPin("1234")
+		preferencesManager.setAppPin("1234", SoftwareSchemeConfig)
 		preferencesManager.setPoisonPillPin("5678")
 		preferencesManager.setSessionTimeout(AppPreferencesDataSource.SESSION_TIMEOUT_10_MIN)
 		preferencesManager.setFailedPinAttempts(5)

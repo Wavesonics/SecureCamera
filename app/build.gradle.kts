@@ -103,6 +103,7 @@ dependencies {
 	implementation(libs.zoomable)
 	implementation(libs.androidx.runtime.livedata)
 	implementation(libs.face.detection)
+	implementation(libs.bcrypt)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

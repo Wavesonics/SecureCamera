@@ -4,35 +4,24 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
-import com.darkrockstudios.app.securecamera.auth.pinSize
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Main content for the Introduction screen
@@ -43,106 +32,103 @@ fun IntroductionContent(
 	navController: NavHostController,
 	modifier: Modifier = Modifier
 ) {
-	val preferencesManager = koinInject<AppPreferencesDataSource>()
-	val authorizationRepository = koinInject<AuthorizationRepository>()
+	val viewModel: IntroductionViewModel = koinViewModel()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val coroutineScope = rememberCoroutineScope()
 
-	val slides = listOf(
-		IntroductionSlide(
-			icon = Icons.Filled.Camera,
-			title = stringResource(R.string.intro_slide0_title),
-			description = stringResource(R.string.intro_slide0_description)
-		),
-		IntroductionSlide(
-			icon = Icons.Filled.PrivacyTip,
-			title = stringResource(R.string.intro_slide1_title),
-			description = stringResource(R.string.intro_slide1_description)
-		),
-		IntroductionSlide(
-			icon = Icons.Filled.Lock,
-			title = stringResource(R.string.intro_slide2_title),
-			description = stringResource(R.string.intro_slide2_description)
-		),
-		IntroductionSlide(
-			icon = Icons.AutoMirrored.Filled.Send,
-			title = stringResource(R.string.intro_slide3_title),
-			description = stringResource(R.string.intro_slide3_description),
-		),
-		IntroductionSlide(
-			icon = Icons.Filled.LocationOff,
-			title = stringResource(R.string.intro_slide4_title),
-			description = stringResource(R.string.intro_slide4_description),
-		),
-		IntroductionSlide(
-			icon = Icons.Filled.MyLocation,
-			title = stringResource(R.string.intro_slide5_title),
-			description = stringResource(R.string.intro_slide5_description),
-		),
-	)
+	// Navigate to camera when PIN is created
+	LaunchedEffect(uiState.pinCreated) {
+		if (uiState.pinCreated) {
+			navController.navigate(AppDestinations.CAMERA_ROUTE) {
+				popUpTo(0)
+			}
+		}
+	}
 
-	val pagerState = rememberPagerState(pageCount = { slides.size + 1 })
+	val pagerState = rememberPagerState(pageCount = { uiState.slides.size + 2 })
 
-	Column(
+	LaunchedEffect(Unit) {
+		viewModel.skipToPage.collect { page ->
+			withContext(Dispatchers.Main) {
+				pagerState.animateScrollToPage(page)
+			}
+		}
+	}
+
+	// Update ViewModel when pager state changes
+	LaunchedEffect(pagerState.currentPage) {
+		if (uiState.currentPage != pagerState.currentPage) {
+			viewModel.setPage(pagerState.currentPage)
+		}
+	}
+
+	Box(
 		modifier = modifier.fillMaxSize(),
-		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		HorizontalPager(
 			state = pagerState,
 			modifier = Modifier
-				.weight(1f)
-				.fillMaxWidth()
+				.fillMaxHeight()
 		) { page ->
-			if (page < slides.size) {
-				IntroductionSlideContent(
-					slide = slides[page],
-					modifier = Modifier
-						.fillMaxSize()
-						.padding(16.dp)
-				)
-			} else {
-				PinCreationContent(
-					onPinCreated = { pin ->
-						coroutineScope.launch {
-							preferencesManager.setAppPin(pin)
-							authorizationRepository.verifyPin(pin)
-							preferencesManager.setIntroCompleted(true)
-							// Navigate to camera and clear the back stack
-							navController.navigate(AppDestinations.CAMERA_ROUTE) {
-								popUpTo(0)
-							}
-						}
-					},
-					modifier = Modifier
-						.fillMaxSize()
-						.padding(16.dp)
-				)
+			when {
+				page < uiState.slides.size -> {
+					IntroductionSlideContent(
+						slide = uiState.slides[page],
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(16.dp)
+					)
+				}
+
+				page == uiState.slides.size -> {
+					SecurityContent(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(16.dp),
+						viewModel = viewModel,
+					)
+				}
+
+				page == (uiState.slides.size + 1) -> {
+					PinCreationContent(
+						viewModel = viewModel,
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(16.dp)
+					)
+				}
 			}
 		}
 
 		// Bottom navigation buttons
 		Row(
 			modifier = Modifier
+				.align(Alignment.BottomCenter)
 				.fillMaxWidth()
 				.padding(16.dp),
 			horizontalArrangement = Arrangement.SpaceBetween
 		) {
-			if (pagerState.currentPage < slides.size) {
+			if (pagerState.currentPage < uiState.slides.size + 1) {
 				// Skip button (only on intro slides)
-				TextButton(
-					onClick = {
-						coroutineScope.launch {
-							pagerState.animateScrollToPage(slides.size) // Go to PIN creation
+				if (pagerState.currentPage < uiState.slides.size) {
+					TextButton(
+						onClick = {
+							coroutineScope.launch {
+								viewModel.navigateToSecurity()
+							}
 						}
+					) {
+						Text(stringResource(R.string.intro_skip))
 					}
-				) {
-					Text(stringResource(R.string.intro_skip))
+				} else {
+					Spacer(Modifier.size(8.dp))
 				}
 
 				// Next button
 				Button(
 					onClick = {
 						coroutineScope.launch {
-							pagerState.animateScrollToPage(pagerState.currentPage + 1)
+							viewModel.navigateToNextPage()
 						}
 					}
 				) {
@@ -190,134 +176,6 @@ fun IntroductionSlideContent(
 				style = MaterialTheme.typography.bodyLarge,
 				textAlign = TextAlign.Center
 			)
-		}
-	}
-}
-
-/**
- * Content for PIN creation
- */
-@Composable
-fun PinCreationContent(
-	onPinCreated: (String) -> Unit,
-	modifier: Modifier = Modifier
-) {
-	var pin by rememberSaveable { mutableStateOf("") }
-	var confirmPin by rememberSaveable { mutableStateOf("") }
-	var showError by rememberSaveable { mutableStateOf<String?>(null) }
-	val pinStrengthCheck = koinInject<PinStrengthCheckUseCase>()
-
-	Box(modifier = modifier) {
-		Column(
-			modifier = Modifier
-				.verticalScroll(rememberScrollState())
-				.widthIn(max = 512.dp)
-				.align(Alignment.Center),
-			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Center
-		) {
-			Icon(
-				modifier = Modifier
-					.size(96.dp)
-					.padding(16.dp),
-				imageVector = Icons.Filled.Pin,
-				contentDescription = stringResource(id = R.string.pin_verification_icon),
-				tint = MaterialTheme.colorScheme.onBackground
-			)
-
-			Text(
-				text = stringResource(R.string.pin_creation_title),
-				style = MaterialTheme.typography.headlineMedium,
-				textAlign = TextAlign.Center,
-				modifier = Modifier.padding(bottom = 8.dp)
-			)
-
-			Text(
-				text = stringResource(R.string.pin_creation_description),
-				style = MaterialTheme.typography.bodyLarge,
-				textAlign = TextAlign.Center,
-				modifier = Modifier.padding(bottom = 24.dp)
-			)
-
-			Text(
-				text = stringResource(R.string.pin_creation_warning),
-				style = MaterialTheme.typography.bodyMedium,
-				fontStyle = FontStyle.Italic,
-				color = Color.Red,
-				textAlign = TextAlign.Center,
-				modifier = Modifier.padding(bottom = 24.dp)
-			)
-
-			// PIN input
-			OutlinedTextField(
-				value = pin,
-				onValueChange = {
-					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
-						pin = it
-						showError = null
-					}
-				},
-				label = { Text(stringResource(R.string.pin_creation_hint)) },
-				visualTransformation = PasswordVisualTransformation(),
-				keyboardOptions = KeyboardOptions(
-					keyboardType = KeyboardType.NumberPassword,
-					imeAction = ImeAction.Next
-				),
-				singleLine = true,
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(bottom = 16.dp)
-			)
-
-			// Confirm PIN input
-			OutlinedTextField(
-				value = confirmPin,
-				onValueChange = {
-					if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
-						confirmPin = it
-						showError = null
-					}
-				},
-				label = { Text(stringResource(R.string.pin_creation_confirm_hint)) },
-				visualTransformation = PasswordVisualTransformation(),
-				keyboardOptions = KeyboardOptions(
-					keyboardType = KeyboardType.NumberPassword,
-					imeAction = ImeAction.Done
-				),
-				singleLine = true,
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(bottom = 24.dp)
-			)
-
-			// Error message
-			if (showError != null) {
-				Text(
-					text = showError ?: "",
-					color = MaterialTheme.colorScheme.error,
-					style = MaterialTheme.typography.bodyMedium,
-					modifier = Modifier.padding(bottom = 16.dp)
-				)
-			}
-
-			val context = LocalContext.current
-			// Create PIN button
-			Button(
-				onClick = {
-					val strongPin = pinStrengthCheck.isPinStrongEnough(pin)
-					if (pin != confirmPin || (pin.length in pinSize).not()) {
-						showError = context.getString(R.string.pin_creation_error)
-					} else if (strongPin.not()) {
-						showError = context.getString(R.string.pin_creation_error_weak_pin)
-					} else {
-						onPinCreated(pin)
-					}
-				},
-				enabled = pin.length in pinSize && confirmPin.length in pinSize,
-				modifier = Modifier.fillMaxWidth()
-			) {
-				Text(stringResource(R.string.pin_creation_button))
-			}
 		}
 	}
 }

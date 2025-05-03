@@ -10,6 +10,7 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository.Securit
 import com.darkrockstudios.app.securecamera.camera.*
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.security.EncryptionManager
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -33,13 +34,15 @@ class SecureImageRepositoryTest {
 	private lateinit var authorizationRepository: AuthorizationRepository
 	private lateinit var secureImageRepository: SecureImageRepository
 	private lateinit var thumbnailCache: ThumbnailCache
+	private lateinit var encryptionScheme: EncryptionManager
 
 	@Before
 	fun setup() {
 		context = mockk(relaxed = true)
 		preferencesManager = mockk(relaxed = true)
-		authorizationRepository = mockk()
+		authorizationRepository = mockk(relaxed = true)
 		thumbnailCache = mockk(relaxed = true)
+		encryptionScheme = mockk(relaxed = true)
 
 		// Mock the filesDir and cacheDir
 		val filesDir = tempFolder.newFolder("files")
@@ -48,12 +51,60 @@ class SecureImageRepositoryTest {
 		every { context.filesDir } returns filesDir
 		every { context.cacheDir } returns cacheDir
 
+		// Mock the encryption scheme methods
+		coEvery {
+			encryptionScheme.encryptToFile(
+				any<String>(),
+				any<HashedPin>(),
+				any<ByteArray>(),
+				any<File>()
+			)
+		} answers {
+			// Write the plain bytes to the target file for testing
+			val plain = arg<ByteArray>(2)
+			val targetFile = arg<File>(3)
+			targetFile.writeBytes(plain)
+		}
+
+		// Mock the second overload of encryptToFile
+		coEvery {
+			encryptionScheme.encryptToFile(
+				any<ByteArray>(),
+				any<ByteArray>(),
+				any<File>()
+			)
+		} answers {
+			// Write the plain bytes to the target file for testing
+			val plain = arg<ByteArray>(0)
+			val targetFile = arg<File>(2)
+			targetFile.writeBytes(plain)
+		}
+
+		coEvery {
+			encryptionScheme.decryptFile(
+				any<String>(),
+				any<HashedPin>(),
+				any<File>()
+			)
+		} answers {
+			// Read the "encrypted" bytes from the file for testing
+			val encryptedFile = arg<File>(2)
+			encryptedFile.readBytes()
+		}
+
+		coEvery {
+			encryptionScheme.deriveKey(any<String>(), any<HashedPin>())
+		} returns ByteArray(32) // Return a dummy key
+
+		every { encryptionScheme.evictKey() } just Runs
+
 		// Create the SecureImageManager with real dependencies
 		secureImageRepository = SecureImageRepository(
 			appContext = context,
 			preferencesManager = preferencesManager,
 			authorizationRepository = authorizationRepository,
 			thumbnailCache = thumbnailCache,
+			encryptionManager = encryptionScheme,
 		)
 	}
 
@@ -504,6 +555,9 @@ class SecureImageRepositoryTest {
 		coEvery { preferencesManager.getHashedPoisonPillPin() } returns hashedPin
 		coEvery { preferencesManager.getPlainPoisonPillPin() } returns "5678"
 
+		val ppk = ByteArray(1)
+		coEvery { encryptionScheme.deriveKeyRaw(any(), any()) } returns ppk
+
 		// When
 		val result = secureImageRepository.addDecoyPhoto(photoDef)
 
@@ -691,9 +745,8 @@ class SecureImageRepositoryTest {
 		val photos = secureImageRepository.getPhotos()
 		assertTrue(photos.isEmpty())
 
-		val field = SecureImageRepository::class.java.getDeclaredField("key")
-		field.isAccessible = true
-		assertNull(field.get(secureImageRepository))
+		// Verify that evictKey was called on the encryptionScheme
+		verify { encryptionScheme.evictKey() }
 	}
 
 	@Test
@@ -778,9 +831,8 @@ class SecureImageRepositoryTest {
 		assertEquals("Should have 1 photo after moving decoy", 1, photos.size)
 		assertEquals("Photo name should match decoy name", "photo_20230101_120000_00.jpg", photos[0].photoName)
 
-		val field = SecureImageRepository::class.java.getDeclaredField("key")
-		field.isAccessible = true
-		assertNull(field.get(secureImageRepository))
+		// Verify that evictKey was called on the encryptionScheme
+		verify { encryptionScheme.evictKey() }
 	}
 
 	@Test

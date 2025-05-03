@@ -2,16 +2,19 @@ package com.darkrockstudios.app.securecamera.auth
 
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.security.EncryptionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
+import kotlin.math.pow
 
 /**
  * Manages user authorization state, including PIN verification and session expiration.
  */
 class AuthorizationRepository(
-	private val preferencesManager: AppPreferencesDataSource
+	private val preferencesManager: AppPreferencesDataSource,
+	private val encryptionManager: EncryptionManager,
 ) {
 	companion object {
 		const val MAX_FAILED_ATTEMPTS = 10
@@ -87,7 +90,7 @@ class AuthorizationRepository(
 			return 0
 		}
 
-		val backoffTime = (2 * Math.pow(2.0, failedAttempts - 1.0)).toInt()
+		val backoffTime = (2 * 2.0.pow(failedAttempts - 1.0)).toInt()
 		val elapsedSeconds = ((System.currentTimeMillis() - lastFailedTimestamp) / 1000).toInt()
 		val remainingSeconds = backoffTime - elapsedSeconds
 
@@ -100,6 +103,14 @@ class AuthorizationRepository(
 	suspend fun resetFailedAttempts() {
 		setFailedAttempts(0)
 		preferencesManager.setLastFailedAttemptTimestamp(0)
+	}
+
+	/**
+	 * Initial key creation
+	 */
+	suspend fun createKey(): Boolean {
+		encryptionManager.createKey()
+		return true
 	}
 
 	/**
