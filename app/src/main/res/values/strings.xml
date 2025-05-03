@@ -260,6 +260,7 @@
     <string name="pin_creation_error_weak_pin">PIN is too weak, Please pick another.</string>
     <string name="pin_creation_success">PIN created successfully!</string>
     <string name="pin_creation_button">Create PIN</string>
+    <string name="pin_creating_vault">Creating photo vault…</string>
     <string name="pin_show_description">Show PIN</string>
     <string name="pin_hide_description">Hide PIN</string>
 

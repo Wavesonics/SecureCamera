@@ -15,6 +15,7 @@ import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
 import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
 import com.darkrockstudios.app.securecamera.usecases.CreatePinUseCase
 import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
@@ -109,10 +110,15 @@ class IntroductionViewModel(
 			return
 		}
 
-		viewModelScope.launch {
+		// Set loading state to true before starting PIN creation
+		_uiState.update { it.copy(isCreatingPin = true, errorMessage = null) }
+
+		viewModelScope.launch(Dispatchers.Default) {
 			if (createPinUseCase.createPin(pin, config)) {
 				preferencesDataSource.setIntroCompleted(true)
-				_uiState.update { it.copy(pinCreated = true) }
+				_uiState.update { it.copy(pinCreated = true, isCreatingPin = false) }
+			} else {
+				_uiState.update { it.copy(isCreatingPin = false) }
 			}
 		}
 	}
@@ -129,4 +135,5 @@ data class IntroductionUiState(
 	val securityLevel: SecurityLevel,
 	val requireBiometrics: Boolean = false,
 	val currentPage: Int = 0,
+	val isCreatingPin: Boolean = false,
 )

@@ -148,10 +148,31 @@ fun PinCreationContent(
 			// Create PIN button
 			Button(
 				onClick = { viewModel.createPin(pin, confirmPin) },
-				enabled = pin.length in pinSize && confirmPin.length in pinSize,
+				enabled = (pin.length in pinSize && confirmPin.length in pinSize) && !uiState.isCreatingPin,
 				modifier = Modifier.fillMaxWidth()
 			) {
 				Text(stringResource(R.string.pin_creation_button))
+			}
+
+			// Loading indicator
+			if (uiState.isCreatingPin) {
+				Row(
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(top = 16.dp),
+					horizontalArrangement = Arrangement.Center,
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					CircularProgressIndicator(
+						modifier = Modifier.size(24.dp),
+						strokeWidth = 2.dp
+					)
+					Spacer(modifier = Modifier.width(8.dp))
+					Text(
+						text = stringResource(R.string.pin_creating_vault),
+						style = MaterialTheme.typography.bodyMedium
+					)
+				}
 			}
 		}
 	}
