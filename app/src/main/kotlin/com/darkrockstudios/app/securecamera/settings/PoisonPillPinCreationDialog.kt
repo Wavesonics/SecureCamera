@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.pinSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,6 +30,8 @@ fun PoisonPillPinCreationDialog(
 	onDismiss: () -> Unit,
 	onPinCreated: (String) -> Unit
 ) {
+	val uiState by viewModel.uiState.collectAsState()
+
 	val scope = rememberCoroutineScope()
 	var pin by rememberSaveable { mutableStateOf("") }
 	var confirmPin by rememberSaveable { mutableStateOf("") }
@@ -77,7 +78,7 @@ fun PoisonPillPinCreationDialog(
 				OutlinedTextField(
 					value = pin,
 					onValueChange = {
-						if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
+						if (it.length <= uiState.pinSize.max() && it.all { char -> char.isDigit() }) {
 							pin = it
 							showError = null
 						}
@@ -98,7 +99,7 @@ fun PoisonPillPinCreationDialog(
 				OutlinedTextField(
 					value = confirmPin,
 					onValueChange = {
-						if (it.length <= pinSize.max() && it.all { char -> char.isDigit() }) {
+						if (it.length <= uiState.pinSize.max() && it.all { char -> char.isDigit() }) {
 							confirmPin = it
 							showError = null
 						}
@@ -149,7 +150,7 @@ fun PoisonPillPinCreationDialog(
 								}
 							}
 						},
-						enabled = pin.length in pinSize && confirmPin.length in pinSize,
+						enabled = pin.length in uiState.pinSize && confirmPin.length in uiState.pinSize,
 					) {
 						Text(stringResource(R.string.pin_creation_button))
 					}

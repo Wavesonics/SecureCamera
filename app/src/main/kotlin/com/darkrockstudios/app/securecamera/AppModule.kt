@@ -17,10 +17,7 @@ import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.HardwareBackedEncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.SoftwareEncryptionScheme
 import com.darkrockstudios.app.securecamera.settings.SettingsViewModel
-import com.darkrockstudios.app.securecamera.usecases.CreatePinUseCase
-import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
-import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
-import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
+import com.darkrockstudios.app.securecamera.usecases.*
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -54,6 +51,7 @@ val appModule = module {
 	factoryOf(::PinStrengthCheckUseCase)
 	factoryOf(::VerifyPinUseCase)
 	factoryOf(::CreatePinUseCase)
+	factoryOf(::PinSizeUseCase)
 
 	viewModelOf(::ObfuscatePhotoViewModel)
 	viewModelOf(::ViewPhotoViewModel)

@@ -7,6 +7,7 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.usecases.PinSizeUseCase
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,8 @@ class PinVerificationViewModel(
 	private val authManager: AuthorizationRepository,
 	private val imageManager: SecureImageRepository,
 	private val securityResetUseCase: SecurityResetUseCase,
-	private val verifyPinUseCase: VerifyPinUseCase
+	private val verifyPinUseCase: VerifyPinUseCase,
+	private val pinSizeUseCase: PinSizeUseCase,
 ) : BaseViewModel<PinVerificationUiState>() {
 
 	override fun createState() = PinVerificationUiState()
@@ -71,6 +73,7 @@ class PinVerificationViewModel(
 	}
 
 	fun validatePin(newPin: String): Boolean {
+		val pinSize = pinSizeUseCase.getPinSizeRange()
 		return if (newPin.length <= pinSize.max() && newPin.all { char -> char.isDigit() }) {
 			clearError()
 			true

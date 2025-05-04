@@ -6,12 +6,12 @@ import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.pinSize
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_DEFAULT
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
+import com.darkrockstudios.app.securecamera.usecases.PinSizeUseCase
 import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import kotlinx.coroutines.flow.update
@@ -23,11 +23,15 @@ class SettingsViewModel(
 	private val locationRepository: LocationRepository,
 	private val securityResetUseCase: SecurityResetUseCase,
 	private val pinStrengthCheck: PinStrengthCheckUseCase,
+	private val pinSizeUseCase: PinSizeUseCase,
 	private val imageManager: SecureImageRepository,
 	private val securityLevelDetector: SecurityLevelDetector
 ) : BaseViewModel<SettingsUiState>() {
 
-	override fun createState() = SettingsUiState(securityLevel = securityLevelDetector.detectSecurityLevel())
+	override fun createState() = SettingsUiState(
+		securityLevel = securityLevelDetector.detectSecurityLevel(),
+		pinSize = pinSizeUseCase.getPinSizeRange(),
+	)
 
 	init {
 		observePreferences()
@@ -181,7 +185,7 @@ class SettingsViewModel(
 
 	suspend fun validatePoisonPillPin(pin: String, confirmPin: String): String? {
 		val strongPin = pinStrengthCheck.isPinStrongEnough(pin)
-		return if (pin != confirmPin || (pin.length in pinSize).not()) {
+		return if (pin != confirmPin || (pin.length in uiState.value.pinSize).not()) {
 			appContext.getString(R.string.pin_creation_error)
 		} else if (isSameAsAuthPin(pin)) {
 			appContext.getString(R.string.poison_pill_creation_error)
@@ -207,5 +211,6 @@ data class SettingsUiState(
 	val showRemovePoisonPillDialog: Boolean = false,
 	val securityResetComplete: Boolean = false,
 	val poisonPillRemoved: Boolean = false,
-	val securityLevel: SecurityLevel = SecurityLevel.SOFTWARE
+	val securityLevel: SecurityLevel = SecurityLevel.SOFTWARE,
+	val pinSize: IntRange,
 )
