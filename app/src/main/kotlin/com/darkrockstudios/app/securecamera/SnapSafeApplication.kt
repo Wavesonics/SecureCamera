@@ -1,9 +1,9 @@
 package com.darkrockstudios.app.securecamera
 
 import android.app.Application
-import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
@@ -15,8 +15,8 @@ import timber.log.Timber
 
 class SnapSafeApplication : Application(), KoinComponent {
 	private val imageManager by inject<SecureImageRepository>()
-	private val authRepository by inject<AuthorizationRepository>()
 	private val preferences by inject<AppPreferencesDataSource>()
+	private val securityReset by inject<SecurityResetUseCase>()
 
 	override fun onCreate() {
 		super.onCreate()
@@ -53,8 +53,7 @@ class SnapSafeApplication : Application(), KoinComponent {
 			val isProdReady = (preferences.isProdReady.first() == true)
 			val wasInBeta = intoComplete && !isProdReady
 			if (wasInBeta) {
-				imageManager.securityFailureReset()
-				authRepository.securityFailureReset()
+				securityReset.reset()
 				preferences.markProdReady()
 			} else if (!isProdReady) {
 				preferences.markProdReady()
