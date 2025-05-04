@@ -69,6 +69,8 @@
     <string name="import_photos_done_summary">%1$d successful, %2$d failed</string>
     <string name="import_photos_done_button">Go to Gallery</string>
     <string name="import_photos_current_photo_description">Current photo being imported</string>
+    <string name="import_chooser_intent_title">Select Photos to Import</string>
+    <string name="import_error_no_photos">Error: no photos to import</string>
 
     <!-- Import Worker -->
     <string name="import_worker_notification_title">Importing Photos</string>

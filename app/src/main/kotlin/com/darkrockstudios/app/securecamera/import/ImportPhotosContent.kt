@@ -22,7 +22,7 @@ import timber.log.Timber
 
 @Composable
 fun ImportPhotosContent(
-	photosToImport: MutableState<List<Uri>>,
+	photosToImport: List<Uri>,
 	navController: NavHostController
 ) {
 	val viewModel: ImportPhotosViewModel = koinViewModel()
@@ -76,7 +76,7 @@ fun ImportPhotosContent(
 
 	LaunchedEffect(Unit) {
 		viewModel.beginImport(
-			photos = photosToImport.value,
+			photos = photosToImport,
 			progress = { curPhoto ->
 				currentBitmap = try {
 					loadBitmapFromUri(curPhoto)

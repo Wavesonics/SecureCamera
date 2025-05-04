@@ -2,22 +2,20 @@ package com.darkrockstudios.app.securecamera.gallery
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.SelectAll
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.navigation.AppDestinations.createImportPhotosRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GalleryTopNav(
-	navController: NavController?,
+	navController: NavController,
 	onDeleteClick: () -> Unit = {},
 	onShareClick: () -> Unit = {},
 	onSelectAll: () -> Unit = {},
@@ -25,6 +23,10 @@ fun GalleryTopNav(
 	selectedCount: Int = 0,
 	onCancelSelection: () -> Unit = {}
 ) {
+	val openPhotoPicker = rememberPhotoPickerLauncher { uris ->
+		navController.navigate(createImportPhotosRoute(uris))
+	}
+
 	TopAppBar(
 		title = {
 			Text(
@@ -47,7 +49,7 @@ fun GalleryTopNav(
 						// Exit selection mode
 						onCancelSelection()
 					} else {
-						navController?.navigateUp()
+						navController.navigateUp()
 					}
 				},
 				modifier = Modifier.padding(8.dp)
@@ -92,6 +94,39 @@ fun GalleryTopNav(
 							tint = MaterialTheme.colorScheme.onSurface
 						)
 					}
+				}
+			} else {
+				// Show More menu when not in selection mode
+				var showMoreMenu by remember { mutableStateOf(false) }
+
+				IconButton(
+					onClick = { showMoreMenu = true },
+					modifier = Modifier.padding(8.dp)
+				) {
+					Icon(
+						imageVector = Icons.Filled.MoreVert,
+						contentDescription = stringResource(id = R.string.camera_more_options_content_description),
+						tint = MaterialTheme.colorScheme.onPrimaryContainer,
+					)
+				}
+
+				DropdownMenu(
+					expanded = showMoreMenu,
+					onDismissRequest = { showMoreMenu = false }
+				) {
+					DropdownMenuItem(
+						text = { Text(stringResource(id = R.string.import_photos_title)) },
+						onClick = {
+							openPhotoPicker()
+							showMoreMenu = false
+						},
+						leadingIcon = {
+							Icon(
+								imageVector = Icons.Filled.AddPhotoAlternate,
+								contentDescription = null
+							)
+						}
+					)
 				}
 			}
 		}
