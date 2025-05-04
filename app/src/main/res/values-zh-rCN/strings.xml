@@ -103,14 +103,15 @@
 		是一款以隐私为重点的相机应用程序，旨在通过强大的加密和安全存储来保护您的敏感照片。
 	</string>
 	<string name="about_open_source">开源</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="decoy_explanation_dialog_message">在您被强迫提供 PIN 码的情况下，如果您提供了您的 Poison Pill PIN，而相册中完全没有照片，这可能会显得可疑。\n\n为了解决这个问题，建议您拍摄几张各种无害事物的照片，然后在相册中查看这些照片，并将它们标记为“诱饵”照片。\n\n当您的 Poison Pill 被激活时，除了您的诱饵照片，所有照片都将被删除，从而留下一个较不引人 suspicious 的情况。</string>
 	<string name="about_privacy_policy">隐私政策</string>
 	<string name="about_open_source_description">拍安箱 是一个开源项目。在 GitHub 上查看源代码：</string>
 	<string name="about_privacy_policy_description">阅读我们的隐私政策：</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+	</string>
 	<string name="about_report_bugs_description">发现了一个错误？请在 GitHub 上报告：</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_denied">请求位置权限</string>
 	<string name="about_report_bugs">报告错误</string>
 	<string name="location_dialog_title_coarse">请求精确位置</string>
@@ -226,9 +227,12 @@
 	<string name="import_error_no_photos">错误：没有要导入的照片</string>
 	<string name="import_chooser_intent_title">选择要导入的照片</string>
 	<string name="security_intro_string_ephemeral_label">短期加密密钥</string>
-	<string name="security_intro_string_ephemeral_explainer">作为一种可选的安全层，我们可以为您提供一个临时密钥。
-		选择此选项后，您的数据加密密钥将不会以任何形式保存在磁盘上，即使是我们通常使用的高度加密形式。相反，每次您通过应用程序进行身份验证时，它都是在内存中纯粹生成的。
-		代价是每次使用应用程序进行身份验证的速度会慢得多。
-		对于大多数用户来说，这通常不是必需的，但如果您的威胁模型要求，可以作为一种可选的安全层。
+	<string name="security_intro_string_ephemeral_explainer">作为一层可选的安全措施，我们可以为您提供一个临时密钥。
+		\n\n
+		使用此选项，您的数据加密密钥将永远不会保存到磁盘，即使是我们通常使用的高度加密形式。相反，它会在每次您使用该应用进行身份验证时，纯粹在内存中派生。
+		\n\n
+		缺点是每次使用该应用进行身份验证时将会慢得多。
+		\n\n
+		这对于大多数用户来说通常不是必需的，但如果您的威胁模型要求，这是一层可选的安全措施。
 	</string>
 </resources>

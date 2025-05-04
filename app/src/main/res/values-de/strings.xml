@@ -106,14 +106,15 @@
 	<string name="about_open_source_description">SnapTresor ist ein Open-Source-Projekt. Sehen Sie sich den Quellcode
 		auf GitHub an:
 	</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_privacy_policy">Datenschutzrichtlinie</string>
 	<string name="decoy_explanation_dialog_message">Im Falle, dass Sie gezwungen werden, Ihre PIN preiszugeben, und Sie stattdessen Ihre Poison Pill PIN angeben, könnte es verdächtig erscheinen, dass es überhaupt keine Fotos in der Galerie gibt.\n\nUm dies zu lösen, wird empfohlen, mehrere Fotos von verschiedenen harmlosen Dingen zu machen und diese dann in der Galerie als „Decoy“-Fotos zu kennzeichnen.\n\nWenn Ihre Poison Pill aktiviert wird, werden alle Fotos, MIT AUSNAHME Ihrer Decoy-Fotos, gelöscht, was eine weniger verdächtige Situation schafft.</string>
 	<string name="about_privacy_policy_description">Lesen Sie unsere Datenschutzrichtlinie:</string>
 	<string name="about_report_bugs">Fehler melden</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+	</string>
 	<string name="about_report_bugs_description">Hast du einen Fehler gefunden? Melde ihn auf GitHub:</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_coarse">Präzise Standort anfordern</string>
 	<string name="location_dialog_message_denied">Darf die App auf Ihren Standort zugreifen?</string>
 	<string name="location_dialog_title_fine">Standortberechtigung entfernen</string>
@@ -246,12 +247,11 @@
 	<string name="import_chooser_intent_title">Fotos zum Importieren auswählen</string>
 	<string name="security_intro_string_ephemeral_label">Ephemeral Verschlüsselungsschlüssel</string>
 	<string name="security_intro_string_ephemeral_explainer">Als optionale Sicherheitsebene können wir Ihnen einen
-		ephemeral Key anbieten.
-		Mit dieser Option wird Ihr Data Encryption Key niemals auf der Festplatte gespeichert, selbst nicht in der stark
-		verschlüsselten Form, die wir normalerweise verwenden. Stattdessen wird er jedes Mal rein im Speicher
-		abgeleitet, wenn Sie sich mit der App authentifizieren.
-		Der Nachteil ist, dass die Authentifizierung mit der App jedes Mal viel langsamer sein wird.
-		Dies ist für die meisten Benutzer im Allgemeinen nicht erforderlich, bietet jedoch eine optionale
-		Sicherheitsebene, wenn Ihr Bedrohungsmodell dies erfordert.
+		temporären Schlüssel anbieten. \n\n Mit dieser Option wird Ihr Datenverschlüsselungsschlüssel niemals auf der
+		Festplatte gespeichert, selbst nicht in der stark verschlüsselten Form, die wir normalerweise verwenden.
+		Stattdessen wird er jedes Mal, wenn Sie sich bei der App authentifizieren, rein im Speicher abgeleitet. \n\n Der
+		Nachteil ist, dass die Authentifizierung bei der App jedes Mal viel langsamer sein wird. \n\n Dies ist für die
+		meisten Benutzer im Allgemeinen nicht erforderlich, bietet jedoch eine optionale Sicherheitsebene, wenn Ihr
+		Bedrohungsmodell dies verlangt.
 	</string>
 </resources>

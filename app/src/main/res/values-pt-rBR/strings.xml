@@ -103,7 +103,7 @@
 	<string name="about_version">Versão</string>
 	<string name="about_back_description">Voltar</string>
 	<string name="about_open_source">Código Aberto</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_privacy_policy">Política de Privacidade</string>
 	<string name="about_open_source_description">SnapCofre é um projeto de código aberto. Veja o código-fonte no
 		GitHub:
@@ -112,9 +112,10 @@
 	<string name="about_report_bugs">Relatar Bugs</string>
 	<string name="about_report_bugs_description">Encontrou um bug? Reporte-o no GitHub:</string>
 	<string name="about_privacy_policy_description">Leia nossa política de privacidade:</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+	</string>
 	<string name="location_dialog_title_denied">Solicitar Permissão de Localização</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_coarse">Solicitar Localização Precisa</string>
 	<string name="location_dialog_title_fine">Remover Permissão de Localização</string>
 	<string name="location_dialog_message_denied">Permitir que o aplicativo acesse sua localização?</string>
@@ -241,12 +242,15 @@
 	<string name="import_error_no_photos">Erro: não há fotos para importar</string>
 	<string name="security_intro_string_ephemeral_label">Chave de Criptografia Efêmera</string>
 	<string name="security_intro_string_ephemeral_explainer">Como uma camada opcional de segurança, podemos oferecer a
-		você uma chave efêmera.
-		Com esta opção, sua Chave de Criptografia de Dados nunca será salva em disco, mesmo na forma fortemente
+		você uma Chave efêmera.
+		\n\n
+		Com esta opção, sua Chave de Criptografia de Dados nunca será salva no disco, mesmo na forma fortemente
 		criptografada que normalmente usamos. Em vez disso, ela é derivada puramente na memória toda vez que você se
 		autentica no aplicativo.
-		A desvantagem é que a autenticação no aplicativo será muito mais lenta a cada vez.
-		Isso geralmente não é necessário para a maioria dos usuários, mas é uma camada opcional de segurança se seu
+		\n\n
+		O troco é que a autenticação no aplicativo será muito mais lenta a cada vez.
+		\n\n
+		Isso geralmente não é necessário para a maioria dos usuários, mas é uma camada opcional de segurança se o seu
 		modelo de ameaça exigir.
 	</string>
 </resources>

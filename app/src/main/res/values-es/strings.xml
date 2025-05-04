@@ -103,7 +103,7 @@
 	</string>
 	<string name="about_back_description">Atrás</string>
 	<string name="about_open_source">Código Abierto</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_open_source_description">SnapCofre es un proyecto de código abierto. Mira el código fuente en
 		GitHub:
 	</string>
@@ -111,8 +111,9 @@
 	<string name="decoy_explanation_dialog_message">En el caso de que se te coaccione para que compartas tu PIN, y en su lugar entregues tu PIN de Poison Pill, podría resultar sospechoso que no haya fotos en la Galería.\n\nPara resolver esto, se recomienda que tomes varias fotos de cosas inocuas, y luego entres a esas fotos en la Galería y las marques como fotos "Decoy".\n\nCuando se active tu Poison Pill, todas las fotos EXCEPTO tus Decoys serán eliminadas, dejando una situación menos sospechosa.</string>
 	<string name="about_privacy_policy_description">Lee nuestra política de privacidad:</string>
 	<string name="about_report_bugs">Informar sobre errores</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+	</string>
+	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="about_report_bugs_description">¿Encontraste un error? Infórmalo en GitHub:</string>
 	<string name="location_dialog_title_denied">Solicitar permiso de ubicación</string>
 	<string name="location_dialog_title_coarse">Solicitar ubicación precisa</string>
@@ -241,16 +242,13 @@
 	<string name="import_chooser_intent_title">Seleccionar fotos para importar</string>
 	<string name="import_error_no_photos">Error: no hay fotos para importar</string>
 	<string name="security_intro_string_ephemeral_label">Clave de Cifrado Efímera</string>
-	<string name="security_intro_string_ephemeral_explainer">Como una capa de seguridad opcional, podemos ofrecerte una
+	<string name="security_intro_string_ephemeral_explainer">Como una capa de seguridad opcional, podemos ofrecerle una
 		clave efímera.
-		\n\n
-		Con esta opción, tu clave de cifrado de datos nunca se guardará en el disco, incluso en la forma fuertemente
-		cifrada que normalmente utilizamos. En su lugar, se deriva puramente en memoria cada vez que te autenticas con
-		la aplicación.
-		\n\n
-		La desventaja es que autenticarte con la aplicación será mucho más lento cada vez.
-		\n\n
-		Esto generalmente no es necesario para la mayoría de los usuarios, pero es una capa de seguridad opcional si tu
+		Con esta opción, su Clave de Cifrado de Datos nunca se guardará en disco, ni siquiera en la forma fuertemente
+		cifrada que normalmente usamos. En su lugar, se genera únicamente en memoria cada vez que inicie sesión en la
+		aplicación.
+		La desventaja es que autenticar con la aplicación será mucho más lento cada vez.
+		Esto generalmente no es necesario para la mayoría de los usuarios, pero es una capa de seguridad opcional si su
 		modelo de amenazas lo exige.
 	</string>
 </resources>

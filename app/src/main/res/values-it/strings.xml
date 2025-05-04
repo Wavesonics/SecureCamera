@@ -104,16 +104,17 @@
 	</string>
 	<string name="about_open_source">Open Source</string>
 	<string name="decoy_explanation_dialog_message">Nel caso in cui tu venga costretto a fornire il tuo PIN e tu dia invece il tuo PIN della Pillola Velenosa, potrebbe sembrare sospetto che non ci siano foto nella Galleria.\n\nPer risolvere questo problema, è consigliabile scattare diverse foto di cose innocue e poi accedere a quelle foto nella Galleria e contrassegnarle come foto \"Decoy\".\n\nQuando la tua Pillola Velenosa viene attivata, tutte le foto eccetto quelle dei tuoi Decoy verranno eliminate, lasciando una situazione meno sospetta.</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_open_source_description">SnapCassaforte è un progetto open source. Visualizza il codice sorgente
 		su GitHub:
 	</string>
 	<string name="about_privacy_policy">Informativa sulla Privacy</string>
 	<string name="about_privacy_policy_description">Leggi la nostra informativa sulla privacy:</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+	</string>
 	<string name="about_report_bugs">Segnala bug</string>
 	<string name="about_report_bugs_description">Hai trovato un bug? Segnalalo su GitHub:</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_coarse">Richiedi Posizione Precisa</string>
 	<string name="location_dialog_title_denied">Richiesta di autorizzazione della posizione</string>
 	<string name="location_dialog_title_fine">Rimuovi il permesso della posizione</string>
@@ -240,13 +241,16 @@ Questo generalmente non è richiesto per la maggior parte degli utenti, ma è un
 	<string name="import_chooser_intent_title">Seleziona Foto da Importare</string>
 	<string name="import_error_no_photos">Errore: nessuna foto da importare</string>
 	<string name="security_intro_string_ephemeral_label">Chiave di Crittografia Effimera</string>
-	<string name="security_intro_string_ephemeral_explainer">Come misura di sicurezza opzionale, possiamo offrirti una
-		chiave effimera.
-		Con questa opzione, la tua chiave di crittografia dei dati non verrà mai salvata su disco, nemmeno nella forma
-		pesantemente crittografata che usiamo normalmente. Invece, viene derivata puramente in memoria ogni volta che ti
-		autentichi con l\'app.
-		Lo svantaggio è che l\'autenticazione con l\'app sarà molto più lenta ogni volta.
-		Questo di solito non è necessario per la maggior parte degli utenti, ma è un livello di sicurezza opzionale se
-		il tuo modello di minaccia lo richiede.
+	<string name="security_intro_string_ephemeral_explainer">Come un livello di sicurezza opzionale, possiamo offrirti
+		una Chiave effimera.
+		\n\n
+		Con questa opzione, la tua Chiave di Crittografia dei Dati non verrà mai salvata su disco, nemmeno nella forma
+		pesantemente crittografata che utilizziamo normalmente. Invece, viene derivata puramente in memoria ogni volta
+		che ti autentichi con l\'app.
+		\n\n
+		Lo scambio è che l\'autenticazione con l\'app sarà molto più lenta ogni volta.
+		\n\n
+		Questo non è generalmente necessario per la maggior parte degli utenti, ma rappresenta un livello di sicurezza
+		opzionale se il tuo modello di minaccia lo richiede.
 	</string>
 </resources>

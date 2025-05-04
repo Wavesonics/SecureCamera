@@ -101,7 +101,7 @@
 	<string name="about_version">Версія</string>
 	<string name="about_back_description">Назад</string>
 	<string name="about_open_source">Відкритий код</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_open_source_description">СнапСейф — це проект з відкритим вихідним кодом. Перегляньте вихідний
 		код на GitHub:
 	</string>
@@ -109,10 +109,11 @@
 		захисту ваших чутливих фотографій за допомогою потужного шифрування та захищеного зберігання.
 	</string>
 	<string name="about_privacy_policy">Політика конфіденційності</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+	</string>
 	<string name="about_privacy_policy_description">Прочитайте нашу політику конфіденційності:</string>
 	<string name="about_report_bugs">Повідомити про помилки</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="about_report_bugs_description">Знайшли помилку? Повідомте про неї на GitHub:</string>
 	<string name="location_dialog_title_denied">Запит на дозволи на доступ до місця розташування</string>
 	<string name="location_dialog_title_coarse">Запитати точне місцезнаходження</string>
@@ -239,13 +240,16 @@
 	<string name="import_chooser_intent_title">Виберіть фотографії для імпорту</string>
 	<string name="import_error_no_photos">Помилка: немає фотографій для імпорту</string>
 	<string name="security_intro_string_ephemeral_label">Ефемерний ключ шифрування</string>
-	<string name="security_intro_string_ephemeral_explainer">Як додатковий рівень безпеки, ми можемо запропонувати вам
+	<string name="security_intro_string_ephemeral_explainer">Як необов\'язковий шар безпеки, ми можемо запропонувати вам
 		ефемерний ключ.
+		\n\n
 		З цим варіантом ваш ключ шифрування даних ніколи не буде збережений на диску, навіть у сильно зашифрованій
-		формі, яку ми зазвичай використовуємо. Замість цього він генерується виключно в пам’яті кожного разу, коли ви
-		автентифікуєтеся в додатку.
-		Обмін у тому, що автентифікація в додатку буде значно повільнішою щораз.
-		Це зазвичай не є необхідним для більшості користувачів, але є додатковим рівнем безпеки, якщо ваша модель загроз
-		вимагає цього.
+		формі, яку ми зазвичай використовуємо. Натомість він
+		виводиться виключно в пам\'яті щоразу, коли ви здійснюєте аутентифікацію в додатку.
+		\n\n
+		Компроміс полягає в тому, що аутентифікація в додатку буде значно повільнішою кожного разу.
+		\n\n
+		Це зазвичай не потрібно для більшості користувачів, але є необов\'язковим шаром безпеки, якщо ваша модель
+		загрози це вимагає.
 	</string>
 </resources>

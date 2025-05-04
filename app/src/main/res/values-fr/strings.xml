@@ -107,14 +107,15 @@
 	<string name="about_open_source_description">SnapCoffre est un projet open source. Consultez le code source sur
 		GitHub :
 	</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_privacy_policy">Politique de confidentialité</string>
 	<string name="about_report_bugs">Signaler des bugs</string>
 	<string name="about_privacy_policy_description">Lisez notre politique de confidentialité :</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+	</string>
 	<string name="about_report_bugs_description">Vous avez trouvé un bug ? Signalez-le sur GitHub :</string>
 	<string name="location_dialog_title_denied">Demande d\'autorisation de localisation</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_coarse">Demander la localisation précise</string>
 	<string name="location_dialog_title_fine">Supprimer l\'autorisation de localisation</string>
 	<string name="location_dialog_message_denied">Autoriser l\'application à accéder à votre position ?</string>
@@ -248,10 +249,10 @@
 	<string name="security_intro_string_ephemeral_label">Clé de chiffrement éphémère</string>
 	<string name="security_intro_string_ephemeral_explainer">En tant que couche de sécurité optionnelle, nous pouvons
 		vous offrir une clé éphémère. \n\n Avec cette option, votre clé de chiffrement de données ne sera jamais
-		sauvegardée sur le disque, même sous la forme fortement chiffrée que nous utilisons normalement. Au lieu de
-		cela, elle est dérivée purement en mémoire chaque fois que vous vous authentifiez avec l\'application. \n\n Le
+		enregistrée sur le disque, même sous la forme fortement chiffrée que nous utilisons normalement. Au lieu de
+		cela, elle est Derivée uniquement en mémoire chaque fois que vous vous authentifiez avec l\'application. \n\n Le
 		compromis est que l\'authentification avec l\'application sera beaucoup plus lente à chaque fois. \n\n Cela
 		n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue une couche de sécurité
-		optionnelle si votre modèle de menaces l\'exige.
+		optionnelle si votre modèle de menace l\'exige.
 	</string>
 </resources>
