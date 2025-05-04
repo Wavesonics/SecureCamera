@@ -1,6 +1,9 @@
-package com.darkrockstudios.app.securecamera.security
+package com.darkrockstudios.app.securecamera.security.schemes
 
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.security.DeviceInfo
+import com.darkrockstudios.app.securecamera.security.KeyParams
+import com.darkrockstudios.app.securecamera.security.ShardedKey
 import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.AES
 import dev.whyoleg.cryptography.algorithms.PBKDF2
@@ -28,7 +31,13 @@ open class SoftwareEncryptionScheme(
 		key = null
 	}
 
-	override suspend fun createKey() {
+	override suspend fun createKey(plainPin: String, hashedPin: HashedPin) {
+	}
+
+	override suspend fun securityFailureReset() {
+	}
+
+	override fun activatePoisonPill(oldPin: HashedPin?) {
 	}
 
 	override suspend fun encryptToFile(plain: ByteArray, targetFile: File) {

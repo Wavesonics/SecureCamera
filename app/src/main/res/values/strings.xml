@@ -292,6 +292,19 @@
         This is generally not required for most users, but is an optional level of security if your threat model demands
         it.
     </string>
+    <string name="security_intro_string_ephemeral_label">Ephemeral Encryption Key</string>
+    <string name="security_intro_string_ephemeral_explainer">As an optional layer of security, we can offer you an
+        ephemeral Key.
+        \n\n
+        With this option your Data Encryption Key will never be saved to disk, even in the heavily encrypted form we
+        normally use. Instead, it is
+        derived purely in memory every time you authenticate with the app.
+        \n\n
+        The trade off is authenticating with the app will be much slower each time.
+        \n\n
+        This is generally not required for most users, but is an optional layer of security if your threat model demands
+        it.
+    </string>
     <string name="security_intro_string_biometric_checkbox">Require Biometrics + PIN</string>
     <string name="security_intro_advanced_section">Advanced</string>
     <string name="security_intro_expand">Expand advanced options</string>

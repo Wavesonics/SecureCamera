@@ -5,8 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.security.EncryptionScheme
 import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
+import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

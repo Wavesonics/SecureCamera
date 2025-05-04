@@ -237,4 +237,16 @@
 	<string name="gallery_select_all_content_description">Alle auswählen</string>
 	<string name="pin_creating_vault">Foto-Vault wird erstellt…</string>
 	<string name="import_photos_failed_label">Fehlgeschlagen: %1$d</string>
+	<string name="import_error_no_photos">Fehler: Keine Fotos zum Importieren</string>
+	<string name="import_chooser_intent_title">Fotos zum Importieren auswählen</string>
+	<string name="security_intro_string_ephemeral_label">Ephemeral Verschlüsselungsschlüssel</string>
+	<string name="security_intro_string_ephemeral_explainer">Als optionale Sicherheitsebene können wir Ihnen einen
+		ephemeral Key anbieten.
+		Mit dieser Option wird Ihr Data Encryption Key niemals auf der Festplatte gespeichert, selbst nicht in der stark
+		verschlüsselten Form, die wir normalerweise verwenden. Stattdessen wird er jedes Mal rein im Speicher
+		abgeleitet, wenn Sie sich mit der App authentifizieren.
+		Der Nachteil ist, dass die Authentifizierung mit der App jedes Mal viel langsamer sein wird.
+		Dies ist für die meisten Benutzer im Allgemeinen nicht erforderlich, bietet jedoch eine optionale
+		Sicherheitsebene, wenn Ihr Bedrohungsmodell dies erfordert.
+	</string>
 </resources>

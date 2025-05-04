@@ -1,4 +1,4 @@
-package com.darkrockstudios.app.securecamera.security
+package com.darkrockstudios.app.securecamera.security.schemes
 
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import java.io.File
@@ -40,5 +40,9 @@ interface EncryptionScheme {
 	/**
 	 * First time key creation
 	 */
-	suspend fun createKey()
+	suspend fun createKey(plainPin: String, hashedPin: HashedPin)
+
+	suspend fun securityFailureReset()
+
+	fun activatePoisonPill(oldPin: HashedPin?)
 }

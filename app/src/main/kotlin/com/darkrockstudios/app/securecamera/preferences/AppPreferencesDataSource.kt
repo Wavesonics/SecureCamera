@@ -224,6 +224,7 @@ class AppPreferencesDataSource(
 		dataStore.edit { preferences ->
 			preferences.clear()
 		}
+		markProdReady()
 	}
 
 	/**

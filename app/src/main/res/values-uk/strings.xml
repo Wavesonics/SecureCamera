@@ -122,22 +122,22 @@
 	<string name="intro_finish">Завершити</string>
 	<string name="intro_next">Далі</string>
 	<string name="intro_slide_icon">Слайд-іконка</string>
-    <string name="intro_slide0_title">SnapSafe</string>
+	<string name="intro_slide0_title">SnapSafe</string>
 	<string name="intro_slide1_title">Сфокусоване на конфіденційності</string>
 	<string name="intro_slide2_title">Безпечне зберігання</string>
 	<string name="intro_slide1_description">Ваш PIN-код потрібен для того, щоб робити та переглядати фотографії, зберігаючи їх у безпеці від несанкціонованого доступу, навіть якщо решта вашого пристрою розблокована.\n\nЧерез кілька хвилин вам буде потрібно ще раз ввести свій PIN-код, щоб підтвердити, що це все ще ви.</string>
-    <string name="intro_slide0_description">Ласкаво просимо до SnapSafe! Безкоштовний та з відкритим вихідним кодом
+	<string name="intro_slide0_description">Ласкаво просимо до SnapSafe! Безкоштовний та з відкритим вихідним кодом
         додаток, призначений для захисту вашої конфіденційності.\n\nРазом із високим рівнем шифрування вживаються всі
         заходи для захисту ваших фотографій від сторонніх очей, навіть якщо ваш телефон буде конфіскований та
         перевірений.
     </string>
-    <string name="intro_slide3_title">Все ще можна ділитися</string>
+	<string name="intro_slide3_title">Все ще можна ділитися</string>
 	<string name="intro_slide4_title">Мета Дані</string>
 	<string name="intro_slide2_description">Ваші фотографії зберігаються у приватному зашифрованому сховищі програми. Ключ шифрування ґрунтується на вашому PIN-коді та ніколи не зберігається на диску.\n\nЖодні дані, включаючи фотографії, ніколи не завантажуються або не резервуються десь.</string>
 	<string name="intro_skip">Пропустити</string>
 	<string name="intro_slide5_title">Дані місцезнаходження</string>
 	<string name="pin_creation_title">Створіть свій PIN-код</string>
-    <string name="intro_slide3_description">У більшості випадків нам все ще потрібно мати можливість переміщати наші
+	<string name="intro_slide3_description">У більшості випадків нам все ще потрібно мати можливість переміщати наші
         чутливі фотографії і ділитися ними з іншою програмою або особою. SnapSafe все ще дозволяє вам робити це
         безпечно.\n\nКоли фотографія покидає SnapSafe, її конфіденційність залежить від вас.
     </string>
@@ -163,73 +163,85 @@
 	<string name="pin_verification_verify_with_countdown">Підтвердьте (%1$d)</string>
 	<string name="pin_verification_remaining_attempts">Залишилось спроб: %1$d/%2$d</string>
 	<string name="pin_verification_wipe_warning">%1$d невдалих спроб призведе до повного видалення даних.\nВСІ ФОТО БУДУТЬ ВТРАЧЕНІ!</string>
-    <string name="obscure_action_button_save">Зберегти</string>
-    <string name="obscure_action_button_clear">Очистити</string>
-    <string name="obfuscate_photo_button">Обфускувати фото</string>
-    <string name="obscure_action_button_cancel_region">Скасувати</string>
-    <string name="obscure_action_button_add_region">Додати регіон</string>
-    <string name="obscure_action_button_finish_region">Завершити регіон</string>
-    <string name="save_photo_dialog_title">Зберегти фотографію</string>
-    <string name="overwrite_button">Перезаписати</string>
-    <string name="save_copy_button">Зберегти Копію</string>
-    <string name="obscure_toast_face_error">Автоматичний пошук облич не вдався</string>
-    <string name="save_photo_dialog_message">Чи хочете ви замінити оригінальне фото або зберегти нову копію?</string>
-    <string name="obscure_toast_save_error">Не вдалося зберегти фото</string>
-    <string name="obscure_toast_overwrite_success">Фото перезаписано</string>
-    <string name="obscure_toast_copy_success">Копіювання фотографії збережено</string>
-    <string name="obscure_toast_faces_found">Знайдено %1$d обличчя</string>
-    <string name="obscure_toast_faces_obscured">%1$d обличчя закриті</string>
-    <string name="obscure_toast_faces_cleared">Відкликано обфускації</string>
-    <string name="discard_button">Видалити</string>
-    <string name="decoy_photo_set_menu_item">Встановити як приманку</string>
-    <string name="discard_changes_dialog_message">У вас є незбережені зміни. Ви впевнені, що хочете їх скасувати?
+	<string name="obscure_action_button_save">Зберегти</string>
+	<string name="obscure_action_button_clear">Очистити</string>
+	<string name="obfuscate_photo_button">Обфускувати фото</string>
+	<string name="obscure_action_button_cancel_region">Скасувати</string>
+	<string name="obscure_action_button_add_region">Додати регіон</string>
+	<string name="obscure_action_button_finish_region">Завершити регіон</string>
+	<string name="save_photo_dialog_title">Зберегти фотографію</string>
+	<string name="overwrite_button">Перезаписати</string>
+	<string name="save_copy_button">Зберегти Копію</string>
+	<string name="obscure_toast_face_error">Автоматичний пошук облич не вдався</string>
+	<string name="save_photo_dialog_message">Чи хочете ви замінити оригінальне фото або зберегти нову копію?</string>
+	<string name="obscure_toast_save_error">Не вдалося зберегти фото</string>
+	<string name="obscure_toast_overwrite_success">Фото перезаписано</string>
+	<string name="obscure_toast_copy_success">Копіювання фотографії збережено</string>
+	<string name="obscure_toast_faces_found">Знайдено %1$d обличчя</string>
+	<string name="obscure_toast_faces_obscured">%1$d обличчя закриті</string>
+	<string name="obscure_toast_faces_cleared">Відкликано обфускації</string>
+	<string name="discard_button">Видалити</string>
+	<string name="decoy_photo_set_menu_item">Встановити як приманку</string>
+	<string name="discard_changes_dialog_message">У вас є незбережені зміни. Ви впевнені, що хочете їх скасувати?
     </string>
-    <string name="decoy_photo_remove_menu_item">Прибрати димову завісу</string>
-    <string name="discard_changes_dialog_title">Відкинути зміни</string>
-    <string name="obscure_action_button_obfuscate">Затемнити</string>
-    <string name="close_import_photos_content_description">Закрити імпорт</string>
-    <string name="import_photos_title">Імпортувати фотографії</string>
-    <string name="import_photos_done_label">Імпорт завершено!</string>
-    <string name="import_photos_progress_label">Імпортація фотографій: %1$d / %2$d</string>
-    <string name="import_photos_done_button">Перейти до Галереї</string>
-    <string name="import_photos_current_photo_description">Поточне фото, що імпортується</string>
-    <string name="settings_security_status">Статус безпеки</string>
-    <string name="pin_hide_description">Сховати PIN-код</string>
-    <string name="security_intro_icon">Вибір безпеки</string>
-    <string name="pin_show_description">Показати PIN</string>
-    <string name="security_intro_supported_security_label">Ваш захист є:</string>
-    <string name="security_intro_security_level_strong">Сильний</string>
-    <string name="settings_security_status_description">Рівень апаратної безпеки, доступний на вашому пристрої</string>
-    <string name="security_intro_string_biometric_label">Потребуєте біометрику?</string>
-    <string name="security_intro_string_biometric_checkbox">Вимагати біометричних даних + PIN-код</string>
-    <string name="security_intro_advanced_section">Розширений</string>
-    <string name="security_intro_security_level_strong_explainer">Ваші ключі шифрування зберігаються в Безпечному
+	<string name="decoy_photo_remove_menu_item">Прибрати димову завісу</string>
+	<string name="discard_changes_dialog_title">Відкинути зміни</string>
+	<string name="obscure_action_button_obfuscate">Затемнити</string>
+	<string name="close_import_photos_content_description">Закрити імпорт</string>
+	<string name="import_photos_title">Імпортувати фотографії</string>
+	<string name="import_photos_done_label">Імпорт завершено!</string>
+	<string name="import_photos_progress_label">Імпортація фотографій: %1$d / %2$d</string>
+	<string name="import_photos_done_button">Перейти до Галереї</string>
+	<string name="import_photos_current_photo_description">Поточне фото, що імпортується</string>
+	<string name="settings_security_status">Статус безпеки</string>
+	<string name="pin_hide_description">Сховати PIN-код</string>
+	<string name="security_intro_icon">Вибір безпеки</string>
+	<string name="pin_show_description">Показати PIN</string>
+	<string name="security_intro_supported_security_label">Ваш захист є:</string>
+	<string name="security_intro_security_level_strong">Сильний</string>
+	<string name="settings_security_status_description">Рівень апаратної безпеки, доступний на вашому пристрої</string>
+	<string name="security_intro_string_biometric_label">Потребуєте біометрику?</string>
+	<string name="security_intro_string_biometric_checkbox">Вимагати біометричних даних + PIN-код</string>
+	<string name="security_intro_advanced_section">Розширений</string>
+	<string name="security_intro_security_level_strong_explainer">Ваші ключі шифрування зберігаються в Безпечному
         елементі на цьому пристрої. Це найвищий рівень захисту, який можливий. Він стійкий до всіх форм атаки, навіть до
         найрішучіших та добре ресурсованих.
     </string>
-    <string name="security_intro_expand">Розгорнути розширені параметри</string>
-    <string name="security_intro_collapse">Згорнути розширені параметри</string>
-    <string name="security_intro_security_level_normal">Нормальний</string>
-    <string name="security_intro_security_level_weak">Слабкий</string>
-    <string name="security_intro_string_biometric_explainer">Оскільки ваш пристрій має Безпечний елемент (SE), ми можемо
+	<string name="security_intro_expand">Розгорнути розширені параметри</string>
+	<string name="security_intro_collapse">Згорнути розширені параметри</string>
+	<string name="security_intro_security_level_normal">Нормальний</string>
+	<string name="security_intro_security_level_weak">Слабкий</string>
+	<string name="security_intro_string_biometric_explainer">Оскільки ваш пристрій має Безпечний елемент (SE), ми можемо
         запропонувати додатковий рівень захисту.
 Додатково до вашого PIN-коду, SE може вимагати, щоб ви також ввели свій відбиток пальця перед тим, як дозволити доступ до ключа шифрування. 
 Це зазвичай не є обов\'язковим для більшості користувачів, але є додатковим рівнем безпеки, якщо ваша модель загрози це потребує.</string>
-    <string name="security_intro_security_level_normal_explainer">Ваші ключі шифрування зберігаються в середовищі
+	<string name="security_intro_security_level_normal_explainer">Ваші ключі шифрування зберігаються в середовищі
         довіреного виконання вашого чіпа на цьому пристрої. Це розумний рівень безпеки для всіх, крім моделей загрози
         найвищого рівня.
     </string>
-    <string name="security_intro_security_level_weak_explainer">Ваш пристрій не має жодного сховища ключів, захищеного
+	<string name="security_intro_security_level_weak_explainer">Ваш пристрій не має жодного сховища ключів, захищеного
         апаратним способом. Хоча ми все ще можемо забезпечити вам розумний рівень безпеки, ви будете вразливі до
         офлайн-атак. Це йдеться про те, що ваші дані скидаються, а ваш ключ піддається брутфорсингу. Якщо ви вважаєте,
         що у вас високий ризик загроз, вам слід розглянути можливість оновлення до новішого пристрою.
     </string>
-    <string name="import_photos_failed_label">Не вдалося: %1$d</string>
-    <string name="import_worker_notification_title">Імпорт фотографій</string>
-    <string name="import_photos_done_summary">%1$d успішно, %2$d не вдалося</string>
-    <string name="import_worker_notification_content">Імпорт фото %1$d з %2$d</string>
-    <string name="import_worker_channel_description">Показує прогрес імпорту фото</string>
-    <string name="import_worker_channel_name">Імпорт фотографій</string>
-    <string name="gallery_select_all_content_description">Вибрати все</string>
-    <string name="pin_creating_vault">Створення фотосейфу…</string>
+	<string name="import_photos_failed_label">Не вдалося: %1$d</string>
+	<string name="import_worker_notification_title">Імпорт фотографій</string>
+	<string name="import_photos_done_summary">%1$d успішно, %2$d не вдалося</string>
+	<string name="import_worker_notification_content">Імпорт фото %1$d з %2$d</string>
+	<string name="import_worker_channel_description">Показує прогрес імпорту фото</string>
+	<string name="import_worker_channel_name">Імпорт фотографій</string>
+	<string name="gallery_select_all_content_description">Вибрати все</string>
+	<string name="pin_creating_vault">Створення фотосейфу…</string>
+	<string name="import_chooser_intent_title">Виберіть фотографії для імпорту</string>
+	<string name="import_error_no_photos">Помилка: немає фотографій для імпорту</string>
+	<string name="security_intro_string_ephemeral_label">Ефемерний ключ шифрування</string>
+	<string name="security_intro_string_ephemeral_explainer">Як додатковий рівень безпеки, ми можемо запропонувати вам
+		ефемерний ключ.
+		З цим варіантом ваш ключ шифрування даних ніколи не буде збережений на диску, навіть у сильно зашифрованій
+		формі, яку ми зазвичай використовуємо. Замість цього він генерується виключно в пам’яті кожного разу, коли ви
+		автентифікуєтеся в додатку.
+		Обмін у тому, що автентифікація в додатку буде значно повільнішою щораз.
+		Це зазвичай не є необхідним для більшості користувачів, але є додатковим рівнем безпеки, якщо ваша модель загроз
+		вимагає цього.
+	</string>
 </resources>

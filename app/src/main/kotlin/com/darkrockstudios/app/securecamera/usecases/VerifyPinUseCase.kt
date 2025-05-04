@@ -3,7 +3,7 @@ package com.darkrockstudios.app.securecamera.usecases
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.security.EncryptionScheme
+import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 
 class VerifyPinUseCase(
 	private val authManager: AuthorizationRepository,
@@ -13,6 +13,7 @@ class VerifyPinUseCase(
 ) {
 	suspend fun verifyPin(pin: String): Boolean {
 		if (preferencesManager.hasPoisonPillPin() && preferencesManager.verifyPoisonPillPin(pin)) {
+			encryptionScheme.activatePoisonPill(oldPin = preferencesManager.getHashedPin())
 			imageManager.activatePoisonPill()
 			authManager.activatePoisonPill()
 		}

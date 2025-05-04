@@ -1,20 +1,19 @@
-package com.darkrockstudios.app.securecamera.security
+package com.darkrockstudios.app.securecamera.security.schemes
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties.BLOCK_MODE_GCM
-import android.security.keystore.KeyProperties.ENCRYPTION_PADDING_NONE
-import android.security.keystore.KeyProperties.KEY_ALGORITHM_AES
-import android.security.keystore.KeyProperties.PURPOSE_DECRYPT
-import android.security.keystore.KeyProperties.PURPOSE_ENCRYPT
+import android.security.keystore.KeyProperties.*
 import android.security.keystore.StrongBoxUnavailableException
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.security.DeviceInfo
+import com.darkrockstudios.app.securecamera.security.HardwareSchemeConfig
 import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.PBKDF2
 import dev.whyoleg.cryptography.algorithms.SHA256
+import dev.whyoleg.cryptography.algorithms.SHA512
+import dev.whyoleg.cryptography.operations.Hasher
 import kotlinx.coroutines.sync.withLock
-import timber.log.Timber
 import java.io.File
 import java.security.KeyStore
 import java.security.SecureRandom
@@ -33,9 +32,22 @@ class HardwareBackedEncryptionScheme(
 ) : SoftwareEncryptionScheme(deviceInfo) {
 	private val provider = CryptographyProvider.Default
 	private val ks: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+	private val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
+
+	override suspend fun deriveKey(
+		plainPin: String,
+		hashedPin: HashedPin,
+	): ByteArray {
+		val config = appPreferencesDataSource.getSchemeConfig() as HardwareSchemeConfig
+		return if (config.ephemeralKey) {
+			deriveEphemeralKey(plainPin, hashedPin)
+		} else {
+			deriveWrappedKey(plainPin, hashedPin)
+		}
+	}
 
 	@OptIn(ExperimentalStdlibApi::class, ExperimentalEncodingApi::class)
-	override suspend fun deriveKey(
+	private suspend fun deriveEphemeralKey(
 		plainPin: String,
 		hashedPin: HashedPin,
 	): ByteArray {
@@ -64,31 +76,95 @@ class HardwareBackedEncryptionScheme(
 		return secretDerivation.deriveSecret(dekInput).toByteArray()
 	}
 
+	private suspend fun deriveWrappedKey(
+		plainPin: String,
+		hashedPin: HashedPin,
+	): ByteArray {
+		val dekFile = dekFile(hashedPin)
+		if (dekFile.exists().not()) {
+			createKey(plainPin, hashedPin)
+		}
+
+		val cipheredDek = dekFile.readBytes()
+		return decryptWithHardwareBackedKey(cipheredDek)
+	}
+
 	/**
 	 * Creates the Hardware backed key, and creates and encrypts the dSalt
 	 * then stores it to disk.
 	 */
-	override suspend fun createKey() {
-		// Sanity checks
-		if (ks.containsAlias(KEY_ALIAS)) Timber.w("KEK already exists, will overwrite it")
-
-		val dSaltFile = dSaltFile()
-		if (dSaltFile.exists()) error("dSalt already exists!")
-
+	override suspend fun createKey(plainPin: String, hashedPin: HashedPin) {
 		val config = appPreferencesDataSource.getSchemeConfig() as HardwareSchemeConfig
 
 		keyMutex.withLock {
-			// Create hardware backed KEK
-			generateHardwareBackedKey(config)
+			// Create hardware backed KEK if it doesn't exist
+			if (ks.containsAlias(KEY_ALIAS).not()) {
+				generateHardwareBackedKey(config)
+			}
 
-			// Create the dSalt
-			val dSalt = ByteArray(DSALT_SIZE)
-			SecureRandom.getInstanceStrong().nextBytes(dSalt)
-
-			// Write it to disk
-			val cipheredDSalt = encryptWithHardwareBackedKey(dSalt)
-			dSaltFile.writeBytes(cipheredDSalt)
+			if (config.ephemeralKey) {
+				createEphemeralKey(plainPin, hashedPin)
+			} else {
+				createWrappedKey(plainPin, hashedPin)
+			}
 		}
+	}
+
+	private suspend fun createEphemeralKey(plainPin: String, hashedPin: HashedPin) {
+		val dSaltFile = dSaltFile()
+		if (dSaltFile.exists()) error("dSalt already exists!")
+
+		// Create the dSalt
+		val dSalt = ByteArray(DSALT_SIZE)
+		SecureRandom.getInstanceStrong().nextBytes(dSalt)
+
+		// Write it to disk
+		val cipheredDSalt = encryptWithHardwareBackedKey(dSalt)
+		dSaltFile.writeBytes(cipheredDSalt)
+	}
+
+	@OptIn(ExperimentalStdlibApi::class, ExperimentalEncodingApi::class)
+	private suspend fun createWrappedKey(plainPin: String, hashedPin: HashedPin) {
+		// Create the dSalt
+		val dSalt = ByteArray(DSALT_SIZE)
+		SecureRandom.getInstanceStrong().nextBytes(dSalt)
+
+		// Derive the key
+		val encodedDsalt = Base64.Default.encode(dSalt)
+
+		val deviceId = deviceInfo.getDeviceIdentifier()
+		val encodedDeviceId = Base64.Default.encode(deviceId)
+
+		val dekInput =
+			plainPin.toByteArray(Charsets.UTF_8) + encodedDsalt.toByteArray(Charsets.UTF_8) + encodedDeviceId.toByteArray(
+				Charsets.UTF_8
+			)
+
+		val secretDerivation = provider.get(PBKDF2).secretDerivation(
+			digest = SHA256,
+			iterations = defaultKeyParams.iterations,
+			outputSize = defaultKeyParams.outputSize,
+			salt = hashedPin.salt.toByteArray()
+		)
+
+		val dekBytes = secretDerivation.deriveSecret(dekInput).toByteArray()
+		val cipheredDek = encryptWithHardwareBackedKey(dekBytes)
+
+		val key = dekFile(hashedPin)
+		key.writeBytes(cipheredDek)
+	}
+
+	override suspend fun securityFailureReset() {
+		// Delete all DEKs
+		keyDir().listFiles { dir, name ->
+			name.startsWith(DEK_FILENAME_PREFIX)
+		}?.forEach { keyFile ->
+			keyFile.delete()
+		}
+	}
+
+	override fun activatePoisonPill(oldPin: HashedPin?) {
+		oldPin?.let { dekFile(oldPin).delete() }
 	}
 
 	private fun generateHardwareBackedKey(config: HardwareSchemeConfig) {
@@ -193,7 +269,18 @@ class HardwareBackedEncryptionScheme(
 		return cipher.doFinal(cipherAndTag)
 	}
 
-	private fun dSaltFile(): File = File(appContext.filesDir, DSALT_FILENAME)
+	private fun dSaltFile(): File = File(keyDir(), DSALT_FILENAME)
+
+	private fun keyDir(): File {
+		return File(appContext.filesDir, DEK_DIRECTORY).apply { mkdirs() }
+	}
+
+	@OptIn(ExperimentalEncodingApi::class)
+	private fun dekFile(hashedPin: HashedPin): File {
+		val decoded = String(Base64.decode(hashedPin.hash))
+		val hashed = Base64.UrlSafe.encode(hasher.hashBlocking(decoded.toByteArray()))
+		return File(keyDir(), "${DEK_FILENAME_PREFIX}_${hashed}")
+	}
 
 	companion object {
 		private const val KEY_ALIAS = "snapsafe_kek"
@@ -202,5 +289,7 @@ class HardwareBackedEncryptionScheme(
 		private const val TAG_LENGTH_BITS = 128            // 16-byte tag appended automatically
 		private const val DSALT_SIZE = 64
 		private const val DSALT_FILENAME = "dSalt"
+		private const val DEK_FILENAME_PREFIX = "dek"
+		private const val DEK_DIRECTORY = "keys"
 	}
 }
