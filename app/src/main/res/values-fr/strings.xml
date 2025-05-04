@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="delete_photo_title_plural">Supprimer des photos</string>
-	<string name="app_name">SnapSafe</string>
+	<string name="app_name">SnapCoffre</string>
 	<string name="delete_photo_title_singular">Supprimer la photo</string>
 	<string name="delete_photo_message_singular">Êtes-vous sûr de vouloir supprimer cette photo ?</string>
 	<string name="cancel_button">Annuler</string>
@@ -95,14 +95,18 @@
 	<string name="remove_poison_pill_complete">Pillule empoisonnée supprimée</string>
 	<string name="decoy_explanation_dialog_title">Système de Photos Leurres</string>
 	<string name="decoy_explanation_dialog_ok_button">D\'accord</string>
-	<string name="settings_about_button">À propos de SnapSafe</string>
-	<string name="about_title">À propos de SnapSafe</string>
+	<string name="settings_about_button">À propos de SnapCoffre</string>
+	<string name="about_title">À propos de SnapCoffre</string>
 	<string name="about_version">Version</string>
 	<string name="about_back_description">Retour</string>
-	<string name="about_description">SnapSafe est une application de caméra axée sur la confidentialité, conçue pour protéger vos photos sensibles avec un chiffrement robuste et un stockage sécurisé.</string>
+	<string name="about_description">SnapCoffre est une application de caméra axée sur la confidentialité, conçue pour
+		protéger vos photos sensibles avec un chiffrement robuste et un stockage sécurisé.
+	</string>
 	<string name="about_open_source">Source Ouverte</string>
 	<string name="decoy_explanation_dialog_message">Dans le cas où vous êtes contraint de donner votre code PIN, et que vous donnez plutôt votre code PIN Poison Pill, il pourrait sembler suspect qu\'il n\'y ait aucune photo dans la Galerie.\n\nPour résoudre ce problème, il est recommandé de prendre plusieurs photos de diverses choses inoffensives, puis d\'entrer dans ces photos dans la Galerie et de les marquer comme photos « Decoy ».\n\nLorsque votre Poison Pill est activé, toutes les photos SAUF vos Decoys seront supprimées, laissant une situation moins suspecte.</string>
-	<string name="about_open_source_description">SnapSafe est un projet open source. Consultez le code source sur GitHub :</string>
+	<string name="about_open_source_description">SnapCoffre est un projet open source. Consultez le code source sur
+		GitHub :
+	</string>
 	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
 	<string name="about_privacy_policy">Politique de confidentialité</string>
 	<string name="about_report_bugs">Signaler des bugs</string>
@@ -116,15 +120,16 @@
 	<string name="location_dialog_message_denied">Autoriser l\'application à accéder à votre position ?</string>
 	<string name="location_dialog_message_coarse">Autoriser l\'application à accéder à votre emplacement précis ?</string>
 	<string name="location_dialog_change_settings">Modifier dans les paramètres</string>
-	<string name="intro_title">Bienvenue à SnapSafe !</string>
+	<string name="intro_title">Bienvenue à SnapCoffre !</string>
 	<string name="location_dialog_message_fine">Retirer l\'autorisation de localisation pour cette application ? Vous devrez aller dans les paramètres système.</string>
 	<string name="intro_next">Suivant</string>
 	<string name="intro_skip">Passer</string>
 	<string name="intro_slide_icon">Icône de diapositive</string>
 	<string name="intro_finish">Terminer</string>
-	<string name="intro_slide0_title">SnapSafe</string>
+	<string name="intro_slide0_title">SnapCoffre</string>
 	<string name="intro_slide1_title">Axé sur la confidentialité</string>
-	<string name="intro_slide0_description">Bienvenue sur SnapSafe ! Une application gratuite et open source conçue pour
+	<string name="intro_slide0_description">Bienvenue sur SnapCoffre ! Une application gratuite et open source conçue
+		pour
         protéger votre vie privée.\n\nAvec un chiffrement fort, toutes les mesures sont prises pour protéger vos photos
         des regards indiscrets, même si votre téléphone est confisqué et fouillé.
     </string>
@@ -135,8 +140,9 @@
 	<string name="intro_slide2_description">Vos photos sont stockées dans un espace de stockage privé de l\'application, crypté. La clé de cryptage est dérivée de votre code PIN et n\'est jamais stockée sur le disque.\n\nAucune donnée, y compris les photos, n\'est jamais téléchargée ou sauvegardée ailleurs.</string>
 	<string name="intro_slide5_title">Données de localisation</string>
 	<string name="intro_slide3_description">La plupart du temps, nous devons encore pouvoir déplacer nos photos
-        sensibles et les partager avec une autre application ou une personne. SnapSafe vous permet toujours de le faire
-        en toute sécurité.\n\nUne fois que la photo quitte SnapSafe, sa confidentialité dépend de vous.
+		sensibles et les partager avec une autre application ou une personne. SnapCoffre vous permet toujours de le
+		faire
+		en toute sécurité.\n\nUne fois que la photo quitte SnapCoffre, sa confidentialité dépend de vous.
     </string>
 	<string name="pin_creation_title">Créez votre PIN</string>
 	<string name="pin_creation_description">Créez un code PIN d\'au moins 4 chiffres pour sécuriser vos photos.</string>

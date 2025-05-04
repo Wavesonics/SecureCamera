@@ -2,7 +2,7 @@
 <resources>
 	<string name="delete_photo_title_plural">Excluir Fotos</string>
 	<string name="delete_photo_title_singular">Excluir Foto</string>
-	<string name="app_name">SnapSafe</string>
+	<string name="app_name">SnapCofre</string>
 	<string name="delete_photo_message_singular">Você tem certeza de que deseja excluir esta foto?</string>
 	<string name="delete_photo_message_plural">Você tem certeza de que deseja excluir essas %1$d fotos?</string>
 	<string name="delete_button">Excluir</string>
@@ -95,15 +95,19 @@
 	<string name="remove_poison_pill_complete">Pílula Venenosa removida</string>
 	<string name="decoy_explanation_dialog_ok_button">Ok</string>
 	<string name="decoy_explanation_dialog_title">Sistema de Fotos Falsas</string>
-	<string name="settings_about_button">Sobre o SnapSafe</string>
-	<string name="about_title">Sobre o SnapSafe</string>
-	<string name="about_description">O SnapSafe é um aplicativo de câmera voltado para a privacidade, projetado para proteger suas fotos sensíveis com forte criptografia e armazenamento seguro.</string>
+	<string name="settings_about_button">Sobre o SnapCofre</string>
+	<string name="about_title">Sobre o SnapCofre</string>
+	<string name="about_description">O SnapCofre é um aplicativo de câmera voltado para a privacidade, projetado para
+		proteger suas fotos sensíveis com forte criptografia e armazenamento seguro.
+	</string>
 	<string name="about_version">Versão</string>
 	<string name="about_back_description">Voltar</string>
 	<string name="about_open_source">Código Aberto</string>
 	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
 	<string name="about_privacy_policy">Política de Privacidade</string>
-	<string name="about_open_source_description">SnapSafe é um projeto de código aberto. Veja o código-fonte no GitHub:</string>
+	<string name="about_open_source_description">SnapCofre é um projeto de código aberto. Veja o código-fonte no
+		GitHub:
+	</string>
 	<string name="decoy_explanation_dialog_message">No caso em que você for coagido a fornecer seu PIN, e você entregar seu PIN do Poison Pill em vez disso, pode ser suspeito que não haja fotos alguma na Galeria.\n\nPara resolver isso, é recomendado que você tire várias fotos de coisas inócuas e, em seguida, vá até essas fotos na Galeria e marque-as como fotos "Decoy".\n\nQuando seu Poison Pill for ativado, todas as fotos, EXCETO suas Decoys, serão excluídas, deixando uma situação menos suspeita.</string>
 	<string name="about_report_bugs">Relatar Bugs</string>
 	<string name="about_report_bugs_description">Encontrou um bug? Reporte-o no GitHub:</string>
@@ -117,15 +121,15 @@
 	<string name="location_dialog_message_coarse">Permitir que o aplicativo acesse sua localização precisa?</string>
 	<string name="location_dialog_change_settings">Alterar nas Configurações</string>
 	<string name="location_dialog_message_fine">Remover a permissão de localização para este app? Você precisará ir para as configurações do sistema.</string>
-	<string name="intro_title">Bem-vindo ao SnapSafe!</string>
+	<string name="intro_title">Bem-vindo ao SnapCofre!</string>
 	<string name="intro_next">Próximo</string>
 	<string name="intro_skip">Pular</string>
 	<string name="intro_slide_icon">Ícone do Slide</string>
 	<string name="intro_finish">Concluir</string>
-	<string name="intro_slide0_title">SnapSafe</string>
+	<string name="intro_slide0_title">SnapCofre</string>
 	<string name="intro_slide1_title">Focado em Privacidade</string>
 	<string name="intro_slide2_title">Armazenamento Seguro</string>
-	<string name="intro_slide0_description">Bem-vindo ao SnapSafe! Um aplicativo gratuito e de código aberto projetado
+	<string name="intro_slide0_description">Bem-vindo ao SnapCofre! Um aplicativo gratuito e de código aberto projetado
         para proteger sua privacidade.\n\nJuntamente com criptografia forte, todas as medidas são tomadas para proteger
         suas fotos de olhares curiosos, mesmo que seu telefone seja confiscado e pesquisado.
     </string>
@@ -134,8 +138,8 @@
 	<string name="intro_slide4_title">Meta Dados</string>
 	<string name="intro_slide2_description">Suas fotos são armazenadas em um armazenamento privado do app, criptografado. A chave de criptografia é derivada do seu PIN e nunca é armazenada em disco.\n\nNenhum dado, incluindo fotos, é enviado ou feito backup em nenhum lugar.</string>
 	<string name="intro_slide3_description">Na maioria das vezes, ainda precisamos ser capazes de mover nossas fotos
-        sensíveis para compartilhá-las com outro aplicativo ou pessoa. O SnapSafe ainda permite que você faça isso de
-        forma segura.\n\nUma vez que a foto sai do SnapSafe, sua privacidade depende de você.
+		sensíveis para compartilhá-las com outro aplicativo ou pessoa. O SnapCofre ainda permite que você faça isso de
+		forma segura.\n\nUma vez que a foto sai do SnapCofre, sua privacidade depende de você.
     </string>
 	<string name="intro_slide5_title">Dados de Localização</string>
 	<string name="pin_creation_title">Crie seu PIN</string>
