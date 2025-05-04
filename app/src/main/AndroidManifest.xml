@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" android:minSdkVersion="34"/>
 
     <application
             android:name=".SnapSafeApplication"
@@ -63,6 +65,10 @@
                 android:authorities="${applicationId}.decryptingprovider"
                 android:exported="false"
                 android:grantUriPermissions="true"/>
+
+        <service
+                android:name="androidx.work.impl.foreground.SystemForegroundService"
+                android:foregroundServiceType="dataSync"/>
     </application>
 
 </manifest>

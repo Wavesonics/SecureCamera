@@ -11,7 +11,7 @@ import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.security.EncryptionScheme
+import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -29,9 +29,7 @@ class SecureImageRepository(
 	fun getGalleryDirectory(): File = File(appContext.filesDir, PHOTOS_DIR)
 
 	fun getDecoyDirectory(): File {
-		val dir = File(appContext.filesDir, DECOYS_DIR)
-		dir.mkdirs()
-		return dir
+		return File(appContext.filesDir, DECOYS_DIR)
 	}
 
 	fun evictKey() {
@@ -421,7 +419,11 @@ class SecureImageRepository(
 	}
 
 	fun isDecoyPhoto(photoDef: PhotoDef): Boolean = getDecoyFile(photoDef).exists()
-	internal fun getDecoyFile(photoDef: PhotoDef) = File(getDecoyDirectory(), photoDef.photoName)
+
+	internal fun getDecoyFile(photoDef: PhotoDef): File {
+		return File(getDecoyDirectory(), photoDef.photoName)
+	}
+
 	private fun getDecoyFiles(): List<File> {
 		val dir = getDecoyDirectory()
 		if (!dir.exists()) {
@@ -436,6 +438,7 @@ class SecureImageRepository(
 	suspend fun addDecoyPhoto(photoDef: PhotoDef): Boolean {
 		return if (numDecoys() < MAX_DECOY_PHOTOS) {
 			val jpgBytes = decryptJpg(photoDef)
+			getDecoyDirectory().mkdirs()
 			val decoyFile = getDecoyFile(photoDef)
 
 			val ppp = preferencesManager.getHashedPoisonPillPin() ?: return false

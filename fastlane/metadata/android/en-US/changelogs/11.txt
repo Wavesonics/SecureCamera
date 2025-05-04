@@ -1,4 +1,6 @@
-Our first production ready release!
+Our first production ready release.
+All data from the Beta will be wiped!
 - Completely redesigned cryptography!
 - Security Hardening throughout the app
 - Import photos from other apps into the Safe
+- UI Cleanup and improvements

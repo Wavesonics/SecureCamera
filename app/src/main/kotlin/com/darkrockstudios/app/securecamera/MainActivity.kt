@@ -9,11 +9,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateOf
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
+import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 	private var capturePhoto = mutableStateOf<Boolean?>(null)
 	private val locationRepository: LocationRepository by inject()
+	private val preferences: AppPreferencesDataSource by inject()
+	private val authorizationRepository: AuthorizationRepository by inject()
+	lateinit var navController: NavHostController
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -27,10 +37,31 @@ class MainActivity : ComponentActivity() {
 
 		enableEdgeToEdge()
 
-		val photosToImport = receiveFiles()
+		val startDestination = determineStartRoute()
 		setContent {
-			App(capturePhoto, photosToImport)
+			navController = rememberNavController()
+			App(capturePhoto, startDestination, navController)
 		}
+	}
+
+	private fun determineStartRoute(): String {
+		val photosToImport = receiveFiles()
+		val hasCompletedIntro = runBlocking { preferences.hasCompletedIntro.firstOrNull() ?: false }
+		val startDestination = if (hasCompletedIntro) {
+			val targetDestination = if (photosToImport.isNotEmpty()) {
+				AppDestinations.createImportPhotosRoute(photosToImport)
+			} else {
+				AppDestinations.CAMERA_ROUTE
+			}
+			if (authorizationRepository.checkSessionValidity()) {
+				targetDestination
+			} else {
+				AppDestinations.createPinVerificationRoute(targetDestination)
+			}
+		} else {
+			AppDestinations.INTRODUCTION_ROUTE
+		}
+		return startDestination
 	}
 
 	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

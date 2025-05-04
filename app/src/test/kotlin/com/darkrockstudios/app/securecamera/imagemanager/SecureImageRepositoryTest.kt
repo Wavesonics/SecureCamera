@@ -8,7 +8,7 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.*
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import com.darkrockstudios.app.securecamera.security.EncryptionScheme
+import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -20,6 +20,8 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @ExperimentalCoroutinesApi
 class SecureImageRepositoryTest {
@@ -121,6 +123,7 @@ class SecureImageRepositoryTest {
 	fun `getDecoyDirectory should return correct directory and create it if needed`() {
 		// When
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Then
 		assertEquals(File(context.filesDir, SecureImageRepository.Companion.DECOYS_DIR), decoyDir)
@@ -271,6 +274,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		photoFile.createNewFile()
@@ -317,6 +321,7 @@ class SecureImageRepositoryTest {
 	fun `numDecoys should return correct count`() {
 		// Given
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Create some test decoy files
 		val decoy1 = File(decoyDir, "photo_20230101_120000_00.jpg")
@@ -331,6 +336,7 @@ class SecureImageRepositoryTest {
 		assertEquals(2, count)
 	}
 
+	@OptIn(ExperimentalTime::class)
 	@Test
 	fun `saveImage should encrypt and save the image`() = runTest {
 		// Given
@@ -354,7 +360,7 @@ class SecureImageRepositoryTest {
 
 		val image = CapturedImage(
 			sensorBitmap = mockBitmap,
-			timestamp = 1L,
+			timestamp = Instant.fromEpochSeconds(1L),
 			rotationDegrees = 0
 		)
 
@@ -465,6 +471,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Create some test photo files
 		val photo1 = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -572,6 +579,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		photoFile.createNewFile()
@@ -750,6 +758,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Create some test photo files
 		val photo1 = File(galleryDir, "photo_20230101_120000_00.jpg")

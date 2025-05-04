@@ -122,19 +122,19 @@
 	<string name="intro_skip">Passer</string>
 	<string name="intro_slide_icon">Icône de diapositive</string>
 	<string name="intro_finish">Terminer</string>
-    <string name="intro_slide0_title">SnapSafe</string>
+	<string name="intro_slide0_title">SnapSafe</string>
 	<string name="intro_slide1_title">Axé sur la confidentialité</string>
-    <string name="intro_slide0_description">Bienvenue sur SnapSafe ! Une application gratuite et open source conçue pour
+	<string name="intro_slide0_description">Bienvenue sur SnapSafe ! Une application gratuite et open source conçue pour
         protéger votre vie privée.\n\nAvec un chiffrement fort, toutes les mesures sont prises pour protéger vos photos
         des regards indiscrets, même si votre téléphone est confisqué et fouillé.
     </string>
 	<string name="intro_slide2_title">Stockage sécurisé</string>
 	<string name="intro_slide1_description">Votre code PIN est requis pour prendre et visualiser les photos, les protégeant ainsi d\'un accès non autorisé même si le reste de votre appareil est déverrouillé.\n\nAprès quelques minutes, vous devrez entrer à nouveau votre code PIN pour vérifier que c\'est toujours vous.</string>
-	<string name="intro_slide3_title">Toujours partageable</string>
+	<string name="intro_slide3_title">Encore partageable</string>
 	<string name="intro_slide4_title">Données métamétriques</string>
 	<string name="intro_slide2_description">Vos photos sont stockées dans un espace de stockage privé de l\'application, crypté. La clé de cryptage est dérivée de votre code PIN et n\'est jamais stockée sur le disque.\n\nAucune donnée, y compris les photos, n\'est jamais téléchargée ou sauvegardée ailleurs.</string>
 	<string name="intro_slide5_title">Données de localisation</string>
-    <string name="intro_slide3_description">La plupart du temps, nous devons encore pouvoir déplacer nos photos
+	<string name="intro_slide3_description">La plupart du temps, nous devons encore pouvoir déplacer nos photos
         sensibles et les partager avec une autre application ou une personne. SnapSafe vous permet toujours de le faire
         en toute sécurité.\n\nUne fois que la photo quitte SnapSafe, sa confidentialité dépend de vous.
     </string>
@@ -161,55 +161,91 @@
 	<string name="pin_verification_verify_or_wipe">Vérifier OU Effacer toutes les données</string>
 	<string name="pin_verification_wipe_warning">%1$d tentatives échouées entraîneront une suppression complète des données.\nTOUTES LES PHOTOS SERONT
         PERDUES!</string>
-    <string name="obscure_action_button_save">Enregistrer</string>
-    <string name="obscure_action_button_clear">Effacer</string>
-    <string name="obfuscate_photo_button">Obfusquer la photo</string>
-    <string name="obscure_action_button_add_region">Ajouter une région</string>
-    <string name="obscure_action_button_finish_region">Terminer la région</string>
-    <string name="obscure_action_button_cancel_region">Annuler</string>
-    <string name="save_photo_dialog_title">Enregistrer la photo</string>
-    <string name="overwrite_button">Écraser</string>
-    <string name="save_copy_button">Enregistrer une copie</string>
-    <string name="save_photo_dialog_message">Voulez-vous écraser la photo originale ou enregistrer une nouvelle copie
+	<string name="obscure_action_button_save">Enregistrer</string>
+	<string name="obscure_action_button_clear">Effacer</string>
+	<string name="obfuscate_photo_button">Obfusquer la photo</string>
+	<string name="obscure_action_button_add_region">Ajouter une région</string>
+	<string name="obscure_action_button_finish_region">Terminer la région</string>
+	<string name="obscure_action_button_cancel_region">Annuler</string>
+	<string name="save_photo_dialog_title">Enregistrer la photo</string>
+	<string name="overwrite_button">Écraser</string>
+	<string name="save_copy_button">Enregistrer une copie</string>
+	<string name="save_photo_dialog_message">Voulez-vous écraser la photo originale ou enregistrer une nouvelle copie
         ?
     </string>
-    <string name="obscure_toast_face_error">La recherche automatique de visages a échoué.</string>
-    <string name="obscure_toast_overwrite_success">Photo écrasée</string>
-    <string name="obscure_toast_copy_success">Copie de la photo enregistrée</string>
-    <string name="obscure_toast_faces_found">%1$d visages trouvés</string>
-    <string name="obscure_toast_save_error">Échec de l\'enregistrement de la photo</string>
-    <string name="obscure_toast_faces_obscured">%1$d visages obscurcis</string>
-    <string name="obscure_toast_faces_cleared">Obfuscations annulées</string>
-    <string name="discard_changes_dialog_title">Annuler les modifications</string>
-    <string name="discard_button">Rejeter</string>
-    <string name="discard_changes_dialog_message">Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir
+	<string name="obscure_toast_face_error">La recherche automatique de visages a échoué.</string>
+	<string name="obscure_toast_overwrite_success">Photo écrasée</string>
+	<string name="obscure_toast_copy_success">Copie de la photo enregistrée</string>
+	<string name="obscure_toast_faces_found">%1$d visages trouvés</string>
+	<string name="obscure_toast_save_error">Échec de l\'enregistrement de la photo</string>
+	<string name="obscure_toast_faces_obscured">%1$d visages obscurcis</string>
+	<string name="obscure_toast_faces_cleared">Obfuscations annulées</string>
+	<string name="discard_changes_dialog_title">Annuler les modifications</string>
+	<string name="discard_button">Rejeter</string>
+	<string name="discard_changes_dialog_message">Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir
         les abandonner ?
     </string>
-    <string name="decoy_photo_set_menu_item">Définir comme leurre</string>
-    <string name="decoy_photo_remove_menu_item">Retirer le leurre</string>
-    <string name="obscure_action_button_obfuscate">Obscur</string>
-    <string name="import_photos_title">Importer des photos</string>
-    <string name="close_import_photos_content_description">Fermer l\'importation</string>
-    <string name="import_photos_progress_label">Importation de photos : %1$d / %2$d</string>
-    <string name="import_photos_done_label">Importation terminée !</string>
-    <string name="import_photos_done_button">Aller à la Galerie</string>
-    <string name="import_photos_current_photo_description">Photo actuelle en cours d\'importation</string>
-    <string name="settings_security_status">État de sécurité</string>
-    <string name="settings_security_status_description">Le niveau de sécurité matérielle disponible sur votre appareil</string>
-    <string name="pin_show_description">Afficher le PIN</string>
-    <string name="security_intro_icon">Sélection de sécurité</string>
-    <string name="pin_hide_description">Masquer le PIN</string>
-    <string name="security_intro_supported_security_label">Votre sécurité est :</string>
-    <string name="security_intro_security_level_strong">Forte</string>
-    <string name="security_intro_string_biometric_label">Exiger des biométriques ?</string>
-    <string name="security_intro_string_biometric_checkbox">Exiger des biométriques + PIN</string>
-    <string name="security_intro_advanced_section">Avancé</string>
-    <string name="security_intro_expand">Développer les options avancées</string>
-    <string name="security_intro_security_level_strong_explainer">Vos clés de chiffrement sont stockées dans un Élément Sécurisé sur cet appareil. C\'est le niveau de protection le plus élevé possible. Il résiste à toutes les formes d\'attaque, même aux plus déterminées et bien dotées en ressources.</string>
-    <string name="security_intro_security_level_normal">Normal</string>
-    <string name="security_intro_collapse">Réduire les options avancées</string>
-    <string name="security_intro_security_level_weak">Faible</string>
-    <string name="security_intro_string_biometric_explainer">Parce que votre appareil possède un Éléments Sécurisé (SE), nous pouvons offrir un niveau de protection supplémentaire. \n\n En plus de votre code PIN, le SE peut exiger que vous saisissiez votre empreinte digitale avant de permettre l\'accès à la clé de chiffrement. \n\n Cela n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue un niveau de sécurité optionnel si votre modèle de menace l\'exige.</string>
-    <string name="security_intro_security_level_normal_explainer">Vos clés de cryptage sont stockées dans l\'environnement d\'exécution de confiance de vos puces sur cet appareil. C\'est un niveau de sécurité raisonnable pour tous sauf les modèles de menace les plus élevés.</string>
-    <string name="security_intro_security_level_weak_explainer">Votre appareil ne dispose d\'aucun stockage de clé matériel. Bien que nous puissions encore vous fournir un niveau de sécurité raisonnable, vous serez vulnérable aux attaques hors ligne. Cela signifie que vos données peuvent être récupérées et que votre clé peut être forcée par attaque par force brute. \n\n Si vous pensez avoir un modèle de menace à haut risque, vous devriez envisager de mettre à niveau vers un appareil plus récent.</string>
+	<string name="decoy_photo_set_menu_item">Définir comme leurre</string>
+	<string name="decoy_photo_remove_menu_item">Retirer le leurre</string>
+	<string name="obscure_action_button_obfuscate">Obscur</string>
+	<string name="import_photos_title">Importer des photos</string>
+	<string name="close_import_photos_content_description">Fermer l\'importation</string>
+	<string name="import_photos_progress_label">Importation de photos : %1$d / %2$d</string>
+	<string name="import_photos_done_label">Importation terminée !</string>
+	<string name="import_photos_done_button">Aller à la Galerie</string>
+	<string name="import_photos_current_photo_description">Photo actuelle en cours d\'importation</string>
+	<string name="settings_security_status">État de sécurité</string>
+	<string name="settings_security_status_description">Le niveau de sécurité matérielle disponible sur votre appareil
+    </string>
+	<string name="pin_show_description">Afficher le PIN</string>
+	<string name="security_intro_icon">Sélection de sécurité</string>
+	<string name="pin_hide_description">Masquer le PIN</string>
+	<string name="security_intro_supported_security_label">Votre sécurité est :</string>
+	<string name="security_intro_security_level_strong">Forte</string>
+	<string name="security_intro_string_biometric_label">Exiger des biométriques ?</string>
+	<string name="security_intro_string_biometric_checkbox">Exiger des biométriques + PIN</string>
+	<string name="security_intro_advanced_section">Avancé</string>
+	<string name="security_intro_expand">Développer les options avancées</string>
+	<string name="security_intro_security_level_strong_explainer">Vos clés de chiffrement sont stockées dans un Élément
+        Sécurisé sur cet appareil. C\'est le niveau de protection le plus élevé possible. Il résiste à toutes les formes
+        d\'attaque, même aux plus déterminées et bien dotées en ressources.
+    </string>
+	<string name="security_intro_security_level_normal">Normal</string>
+	<string name="security_intro_collapse">Réduire les options avancées</string>
+	<string name="security_intro_security_level_weak">Faible</string>
+	<string name="security_intro_string_biometric_explainer">Parce que votre appareil possède un Éléments Sécurisé (SE),
+        nous pouvons offrir un niveau de protection supplémentaire. \n\n En plus de votre code PIN, le SE peut exiger
+        que vous saisissiez votre empreinte digitale avant de permettre l\'accès à la clé de chiffrement. \n\n Cela
+        n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue un niveau de sécurité
+        optionnel si votre modèle de menace l\'exige.
+    </string>
+	<string name="security_intro_security_level_normal_explainer">Vos clés de cryptage sont stockées dans
+        l\'environnement d\'exécution de confiance de vos puces sur cet appareil. C\'est un niveau de sécurité
+        raisonnable pour tous sauf les modèles de menace les plus élevés.
+    </string>
+	<string name="security_intro_security_level_weak_explainer">Votre appareil ne dispose d\'aucun stockage de clé
+        matériel. Bien que nous puissions encore vous fournir un niveau de sécurité raisonnable, vous serez vulnérable
+        aux attaques hors ligne. Cela signifie que vos données peuvent être récupérées et que votre clé peut être forcée
+        par attaque par force brute. \n\n Si vous pensez avoir un modèle de menace à haut risque, vous devriez envisager
+        de mettre à niveau vers un appareil plus récent.
+    </string>
+	<string name="import_worker_notification_title">Importation de photos</string>
+	<string name="import_photos_done_summary">%1$d réussi, %2$d échoué</string>
+	<string name="import_photos_failed_label">Échec : %1$d</string>
+	<string name="import_worker_notification_content">Importation de la photo %1$d sur %2$d</string>
+	<string name="import_worker_channel_name">Importation de photos</string>
+	<string name="import_worker_channel_description">Affiche la progression de l\'importation des photos</string>
+	<string name="gallery_select_all_content_description">Sélectionner tout</string>
+	<string name="pin_creating_vault">Création du coffre-fort photo…</string>
+	<string name="import_error_no_photos">Erreur : aucune photo à importer</string>
+	<string name="import_chooser_intent_title">Sélectionnez des photos à importer</string>
+	<string name="security_intro_string_ephemeral_label">Clé de chiffrement éphémère</string>
+	<string name="security_intro_string_ephemeral_explainer">En tant que couche de sécurité optionnelle, nous pouvons
+		vous offrir une clé éphémère. \n\n Avec cette option, votre clé de chiffrement de données ne sera jamais
+		sauvegardée sur le disque, même sous la forme fortement chiffrée que nous utilisons normalement. Au lieu de
+		cela, elle est dérivée purement en mémoire chaque fois que vous vous authentifiez avec l\'application. \n\n Le
+		compromis est que l\'authentification avec l\'application sera beaucoup plus lente à chaque fois. \n\n Cela
+		n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue une couche de sécurité
+		optionnelle si votre modèle de menaces l\'exige.
+	</string>
 </resources>

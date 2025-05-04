@@ -4,21 +4,22 @@ faceDetection = "16.1.7"
 kotlinxCoroutinesTest = "1.10.2"
 versionCode = "11"
 versionName = "2.0.0"
+workManager = "2.10.1"
 
 javaVersion = "11"
 agp = "8.9.2"
 targetSdk = "35"
 
-accompanistPermissions = "0.37.0"
+accompanistPermissions = "0.37.3"
 compileSdk = "35"
 coreSplashscreen = "1.0.1"
 lifecycleRuntimeCompose = "2.8.7"
 lifecycleViewModel = "2.8.7"
 materialIconsExtended = "1.7.8"
 minSdk = "29"
-mockk = "1.14.0"
+mockk = "1.14.2"
 kim = "0.24"
-kotlin = "2.1.10"
+kotlin = "2.1.20"
 kotlinx-serialization = "1.8.1"
 runtimeLivedata = "1.8.0"
 coreKtx = "1.16.0"
@@ -88,6 +89,7 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferences" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManager" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

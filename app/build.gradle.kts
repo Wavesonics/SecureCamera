@@ -3,6 +3,7 @@ plugins {
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
 	alias(libs.plugins.kotlin.serialization)
+	id("kotlin-parcelize")
 }
 
 android {
@@ -104,6 +105,7 @@ dependencies {
 	implementation(libs.androidx.runtime.livedata)
 	implementation(libs.face.detection)
 	implementation(libs.bcrypt)
+	implementation(libs.androidx.work.runtime.ktx)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

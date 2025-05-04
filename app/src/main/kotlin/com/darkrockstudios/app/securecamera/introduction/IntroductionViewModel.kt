@@ -93,7 +93,8 @@ class IntroductionViewModel(
 		val config = when (uiState.value.securityLevel) {
 			SecurityLevel.TEE, SecurityLevel.STRONGBOX -> HardwareSchemeConfig(
 				requireBiometricAttestation = uiState.value.requireBiometrics,
-				authTimeout = 5.minutes // Hard coded for now
+				authTimeout = 5.minutes, // Hard coded for now
+				ephemeralKey = uiState.value.ephemeralKey
 			)
 
 			SecurityLevel.SOFTWARE -> SoftwareSchemeConfig
@@ -126,6 +127,10 @@ class IntroductionViewModel(
 	fun toggleBiometricsRequired() {
 		_uiState.update { it.copy(requireBiometrics = it.requireBiometrics.not()) }
 	}
+
+	fun toggleEphemeralKey() {
+		_uiState.update { it.copy(ephemeralKey = it.ephemeralKey.not()) }
+	}
 }
 
 data class IntroductionUiState(
@@ -134,6 +139,7 @@ data class IntroductionUiState(
 	val pinCreated: Boolean = false,
 	val securityLevel: SecurityLevel,
 	val requireBiometrics: Boolean = false,
+	val ephemeralKey: Boolean = false,
 	val currentPage: Int = 0,
 	val isCreatingPin: Boolean = false,
 )

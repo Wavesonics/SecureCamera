@@ -1,13 +1,18 @@
 package com.darkrockstudios.app.securecamera.introduction
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,9 +73,6 @@ fun SecurityContent(modifier: Modifier, viewModel: IntroductionViewModel) {
 
 @Composable
 fun ColumnScope.StrongSecurityContent(modifier: Modifier = Modifier, viewModel: IntroductionViewModel) {
-	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	var expanded by remember { mutableStateOf(false) }
-
 	Text(
 		text = stringResource(R.string.security_intro_security_level_strong),
 		style = MaterialTheme.typography.headlineMedium,
@@ -87,49 +89,7 @@ fun ColumnScope.StrongSecurityContent(modifier: Modifier = Modifier, viewModel: 
 		modifier = Modifier.Companion.padding(bottom = 8.dp)
 	)
 
-	// Advanced section header
-//	Card(modifier = Modifier.padding(16.dp)) {
-//		Row(
-//			modifier = Modifier.clickable { expanded = !expanded }.fillMaxWidth().padding(8.dp),
-//			verticalAlignment = Alignment.CenterVertically
-//		) {
-//			Text(
-//				text = stringResource(R.string.security_intro_advanced_section),
-//				style = MaterialTheme.typography.bodyLarge,
-//				fontWeight = FontWeight.Bold,
-//				modifier = Modifier.Companion.padding(vertical = 8.dp)
-//			)
-//			Icon(
-//				imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-//				contentDescription = if (expanded) stringResource(R.string.security_intro_collapse) else stringResource(R.string.security_intro_expand)
-//			)
-//		}
-//
-//		// Expandable content
-//		if (expanded) {
-//			Column(modifier = Modifier.padding(8.dp)) {
-//				Text(
-//					text = stringResource(R.string.security_intro_string_biometric_explainer),
-//					style = MaterialTheme.typography.bodyLarge,
-//					modifier = Modifier.Companion.padding(bottom = 8.dp),
-//				)
-//
-//				Row(verticalAlignment = Alignment.CenterVertically) {
-//					Checkbox(
-//						modifier = Modifier.Companion.padding(bottom = 8.dp),
-//						checked = uiState.requireBiometrics,
-//						onCheckedChange = { viewModel.toggleBiometricsRequired() },
-//					)
-//
-//					Text(
-//						text = stringResource(R.string.security_intro_string_biometric_checkbox),
-//						style = MaterialTheme.typography.bodyLarge,
-//						modifier = Modifier.Companion.padding(bottom = 8.dp),
-//					)
-//				}
-//			}
-//		}
-//	}
+	AdvancedHardwareSection(viewModel)
 }
 
 @Composable
@@ -147,6 +107,8 @@ fun ColumnScope.TeeSecurityContent(viewModel: IntroductionViewModel) {
 		style = MaterialTheme.typography.bodyLarge,
 		modifier = Modifier.Companion.padding(bottom = 8.dp)
 	)
+
+	AdvancedHardwareSection(viewModel)
 }
 
 @Composable
@@ -166,4 +128,81 @@ fun ColumnScope.SoftwareSecurityContent(viewModel: IntroductionViewModel) {
 		style = MaterialTheme.typography.bodyLarge,
 		modifier = Modifier.Companion.padding(bottom = 8.dp)
 	)
+}
+
+@Composable
+fun ColumnScope.AdvancedHardwareSection(viewModel: IntroductionViewModel) {
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	var expanded by remember { mutableStateOf(false) }
+	// Advanced section header
+	Card(modifier = Modifier.padding(16.dp)) {
+		Row(
+			modifier = Modifier
+				.clickable { expanded = !expanded }
+				.fillMaxWidth()
+				.padding(8.dp),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Text(
+				text = stringResource(R.string.security_intro_advanced_section),
+				style = MaterialTheme.typography.bodyLarge,
+				fontWeight = FontWeight.Bold,
+				modifier = Modifier.Companion.padding(vertical = 8.dp)
+			)
+			Icon(
+				imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+				contentDescription = if (expanded) stringResource(R.string.security_intro_collapse) else stringResource(
+					R.string.security_intro_expand
+				)
+			)
+		}
+
+		// Expandable content
+		AnimatedVisibility(
+			visible = expanded,
+			enter = expandVertically(animationSpec = tween(300)),
+			exit = shrinkVertically(animationSpec = tween(300))
+		) {
+			Column(modifier = Modifier.padding(8.dp)) {
+				Text(
+					text = stringResource(R.string.security_intro_string_ephemeral_label),
+					style = MaterialTheme.typography.headlineSmall,
+					modifier = Modifier.Companion.padding(start = 8.dp, bottom = 16.dp, end = 8.dp),
+				)
+
+				Row(verticalAlignment = Alignment.Top) {
+					Checkbox(
+						modifier = Modifier.Companion.padding(bottom = 8.dp),
+						checked = uiState.ephemeralKey,
+						onCheckedChange = { viewModel.toggleEphemeralKey() },
+					)
+
+					Text(
+						text = stringResource(R.string.security_intro_string_ephemeral_explainer),
+						style = MaterialTheme.typography.bodyMedium,
+						modifier = Modifier.Companion.padding(bottom = 8.dp),
+					)
+				}
+//				Text(
+//					text = stringResource(R.string.security_intro_string_biometric_explainer),
+//					style = MaterialTheme.typography.bodyLarge,
+//					modifier = Modifier.Companion.padding(bottom = 8.dp),
+//				)
+//
+//				Row(verticalAlignment = Alignment.CenterVertically) {
+//					Checkbox(
+//						modifier = Modifier.Companion.padding(bottom = 8.dp),
+//						checked = uiState.requireBiometrics,
+//						onCheckedChange = { viewModel.toggleBiometricsRequired() },
+//					)
+//
+//					Text(
+//						text = stringResource(R.string.security_intro_string_biometric_checkbox),
+//						style = MaterialTheme.typography.bodyLarge,
+//						modifier = Modifier.Companion.padding(bottom = 8.dp),
+//					)
+//				}
+			}
+		}
+	}
 }

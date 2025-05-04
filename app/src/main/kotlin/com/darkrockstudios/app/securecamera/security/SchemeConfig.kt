@@ -12,5 +12,6 @@ data object SoftwareSchemeConfig : SchemeConfig()
 @Serializable
 data class HardwareSchemeConfig(
 	val requireBiometricAttestation: Boolean,
-	val authTimeout: Duration
+	val authTimeout: Duration,
+	val ephemeralKey: Boolean
 ) : SchemeConfig()

@@ -2,7 +2,7 @@ package com.darkrockstudios.app.securecamera.auth
 
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import com.darkrockstudios.app.securecamera.security.EncryptionScheme
+import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -105,8 +105,8 @@ class AuthorizationRepository(
 	/**
 	 * Initial key creation
 	 */
-	suspend fun createKey(): Boolean {
-		encryptionScheme.createKey()
+	suspend fun createKey(pin: String, hashedPin: HashedPin): Boolean {
+		encryptionScheme.createKey(pin, hashedPin)
 		return true
 	}
 

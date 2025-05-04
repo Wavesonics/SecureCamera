@@ -5,29 +5,9 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -42,7 +22,7 @@ import timber.log.Timber
 
 @Composable
 fun ImportPhotosContent(
-	photosToImport: MutableState<List<Uri>>,
+	photosToImport: List<Uri>,
 	navController: NavHostController
 ) {
 	val viewModel: ImportPhotosViewModel = koinViewModel()
@@ -89,12 +69,14 @@ fun ImportPhotosContent(
 
 	fun loadBitmapFromUri(uri: Uri): Bitmap {
 		val source = ImageDecoder.createSource(context.contentResolver, uri)
-		return ImageDecoder.decodeBitmap(source)
+		return ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+			decoder.setTargetSampleSize(2)
+		}
 	}
 
 	LaunchedEffect(Unit) {
 		viewModel.beginImport(
-			photos = photosToImport.value,
+			photos = photosToImport,
 			progress = { curPhoto ->
 				currentBitmap = try {
 					loadBitmapFromUri(curPhoto)
@@ -140,10 +122,20 @@ fun ImportPhotosContent(
 					stringResource(
 						R.string.import_photos_progress_label,
 						(uiState.totalPhotos - uiState.remainingPhotos),
-						uiState.totalPhotos
+						uiState.totalPhotos,
 					),
 					style = MaterialTheme.typography.headlineSmall
 				)
+				if (uiState.failedPhotos > 0) {
+					Text(
+						stringResource(
+							R.string.import_photos_failed_label,
+							uiState.failedPhotos
+						),
+						style = MaterialTheme.typography.bodyLarge,
+						color = MaterialTheme.colorScheme.error
+					)
+				}
 				Spacer(modifier = Modifier.height(16.dp))
 				Box(
 					modifier = Modifier
@@ -163,6 +155,14 @@ fun ImportPhotosContent(
 				Text(
 					stringResource(R.string.import_photos_done_label),
 					style = MaterialTheme.typography.displaySmall
+				)
+				Text(
+					stringResource(
+						R.string.import_photos_done_summary,
+						uiState.successfulPhotos,
+						uiState.failedPhotos
+					),
+					style = MaterialTheme.typography.bodyLarge
 				)
 
 				Button(

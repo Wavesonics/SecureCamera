@@ -190,6 +190,7 @@ fun SettingsContent(
 			Row(
 				modifier = Modifier
 					.fillMaxWidth()
+					.padding(top = 8.dp, bottom = 8.dp)
 					.clickable { viewModel.showLocationDialog() },
 				verticalAlignment = Alignment.CenterVertically
 			) {
@@ -227,7 +228,9 @@ fun SettingsContent(
 
 			// Security status row
 			Row(
-				modifier = Modifier.fillMaxWidth(),
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(top = 8.dp, bottom = 8.dp),
 				verticalAlignment = Alignment.CenterVertically
 			) {
 				Column(modifier = Modifier.weight(1f)) {
@@ -261,7 +264,9 @@ fun SettingsContent(
 
 			// Session timeout dropdown
 			Row(
-				modifier = Modifier.fillMaxWidth(),
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(top = 8.dp, bottom = 8.dp),
 				verticalAlignment = Alignment.CenterVertically
 			) {
 				Column(modifier = Modifier.weight(1f)) {
@@ -326,6 +331,7 @@ fun SettingsContent(
 			Row(
 				modifier = Modifier
 					.fillMaxWidth()
+					.padding(top = 8.dp, bottom = 8.dp)
 					.clickable {
 						if (uiState.hasPoisonPillPin) {
 							viewModel.showRemovePoisonPillDialog()
@@ -367,6 +373,7 @@ fun SettingsContent(
 			Row(
 				modifier = Modifier
 					.fillMaxWidth()
+					.padding(top = 8.dp, bottom = 8.dp)
 					.clickable { viewModel.showSecurityResetDialog() },
 				verticalAlignment = Alignment.CenterVertically,
 				horizontalArrangement = Arrangement.SpaceBetween
