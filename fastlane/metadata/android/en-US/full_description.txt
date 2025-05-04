@@ -1,21 +1,24 @@
-SnapSafe is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on YOUR device.
+SnapSafe is a camera app that keeps every pixel—and every byte of data—exactly where it belongs: on YOUR device.
+
+Why SnapSafe?
+We capture photos locally, encrypt everything in private storage, let YOU decide if GPS tags are added, and strip out tell‑tale metadata automatically.
+
+Free and Open Source, forever.
+
+We NEVER phone home or talk to servers, slurp analytics or usage stats, sprinkle ads or trackers in the code, or read files outside our sandbox.
 
 Key Features:
 • Zero‑Leak Design – The manifest skips android.permission.INTERNET; nothing leaves your device.
-• Fully Encrypted – Shots are written to encrypted, app‑private storage.
+• Fully Encrypted – Shots are written to app‑private storage using strong encryption.
 • Metadata Scrub‑A‑Dub – EXIF and other identifiers are wiped the instant you hit Share.
-• PIN‑Locked Gallery – A separate PIN stands between curious thumbs and your photos.
 • Secure Sharing – When you do share, we hand the file off via Android's native share sheet—no detours.
+• Anti-Doxing – Automatically Blur faces before sharing photos
+• PIN‑Locked Gallery – A separate PIN stands between curious thumbs and your photos.
 • Granular Location – Add coarse, fine, or zero location data—your call.
 • 100% Open Source – Auditable code in plain sight.
 • Poison Pill – Set a special PIN, that when entered, appears to work normally but actually deletes your existing
   photos.
 • Decoy Photos – Select innocuous decoy photos, these will be preserved when your Poison Pill is activated. That way
   your Gallery is not suspiciously empty.
-
-Why SnapSafe?
-We capture photos locally, encrypt everything in private storage, let YOU decide if GPS tags are added (precision optional), and strip out tell‑tale metadata automatically.
-
-We NEVER phone home or talk to servers, slurp analytics or usage stats, sprinkle ads or trackers in the code, or read files outside our sandbox.
 
 Privacy Policy: We collect nothing.
