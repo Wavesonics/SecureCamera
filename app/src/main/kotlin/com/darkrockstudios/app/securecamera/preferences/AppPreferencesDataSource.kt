@@ -84,7 +84,7 @@ class AppPreferencesDataSource(
 
 	// DELETE ME after beta migration is over
 	suspend fun markProdReady() {
-		context.dataStore.edit { preferences ->
+		dataStore.edit { preferences ->
 			preferences[IS_PROD_READY] = true
 		}
 	}

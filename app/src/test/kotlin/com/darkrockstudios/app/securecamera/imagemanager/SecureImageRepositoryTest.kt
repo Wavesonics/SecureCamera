@@ -123,6 +123,7 @@ class SecureImageRepositoryTest {
 	fun `getDecoyDirectory should return correct directory and create it if needed`() {
 		// When
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Then
 		assertEquals(File(context.filesDir, SecureImageRepository.Companion.DECOYS_DIR), decoyDir)
@@ -273,6 +274,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		photoFile.createNewFile()
@@ -319,6 +321,7 @@ class SecureImageRepositoryTest {
 	fun `numDecoys should return correct count`() {
 		// Given
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Create some test decoy files
 		val decoy1 = File(decoyDir, "photo_20230101_120000_00.jpg")
@@ -468,6 +471,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Create some test photo files
 		val photo1 = File(galleryDir, "photo_20230101_120000_00.jpg")
@@ -575,6 +579,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		val photoFile = File(galleryDir, "photo_20230101_120000_00.jpg")
 		photoFile.createNewFile()
@@ -753,6 +758,7 @@ class SecureImageRepositoryTest {
 		galleryDir.mkdirs()
 
 		val decoyDir = secureImageRepository.getDecoyDirectory()
+		decoyDir.mkdirs()
 
 		// Create some test photo files
 		val photo1 = File(galleryDir, "photo_20230101_120000_00.jpg")
