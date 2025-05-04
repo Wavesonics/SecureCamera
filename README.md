@@ -2,7 +2,7 @@
 
 *The camera that minds its own business.*
 
-[![codebeat badge](https://codebeat.co/badges/ca9cc888-4897-46a2-ba22-809a778ab57d)](https://codebeat.co/projects/github-com-wavesonics-securecamera-main)
+[![codebeat badge](https://codebeat.co/badges/1d47f0fa-2155-4e63-85ba-aafd01812d8c)](https://codebeat.co/projects/github-com-securecamera-securecameraandroid-main)
 
 _Available on:_
 
