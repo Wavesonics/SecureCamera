@@ -67,8 +67,8 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            app/build/outputs/apk/fullRelease/app-full-release.apk
-            app/build/outputs/apk/ossRelease/app-oss-release.apk
+            app/build/outputs/apk/full/release/app-full-release.apk
+            app/build/outputs/apk/oss/release/app-oss-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-publish-play-store:

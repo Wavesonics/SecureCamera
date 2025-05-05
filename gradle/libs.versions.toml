@@ -2,8 +2,8 @@
 bcrypt = "0.10.2"
 faceDetection = "16.1.7"
 kotlinxCoroutinesTest = "1.10.2"
-versionCode = "12"
-versionName = "2.0.0"
+versionCode = "13"
+versionName = "2.0.1"
 workManager = "2.10.1"
 
 javaVersion = "11"
