@@ -37,13 +37,21 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew test
 
-      - name: Build Signed Release APK
+      - name: Build Signed Full Release APK
         env:
           KEYSTORE_FILE: gh-release-keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.GH_RELEASE_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.GH_RELEASE_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.GH_RELEASE_KEY_PASSWORD }}
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleFullRelease
+
+      - name: Build Signed OSS Release APK
+        env:
+          KEYSTORE_FILE: gh-release-keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.GH_RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.GH_RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.GH_RELEASE_KEY_PASSWORD }}
+        run: ./gradlew assembleOssRelease
 
       - name: Get version name
         id: get_version
@@ -58,7 +66,9 @@ jobs:
           name: Release ${{ env.VERSION_NAME }}
           draft: false
           prerelease: false
-          files: app/build/outputs/apk/release/app-release.apk
+          files: |
+            app/build/outputs/apk/fullRelease/app-full-release.apk
+            app/build/outputs/apk/ossRelease/app-oss-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-publish-play-store:
@@ -94,13 +104,13 @@ jobs:
         run: |
           echo $ENCODED_KEYSTORE | base64 -d > app/keystore.jks
 
-      - name: Build Release AAB
+      - name: Build Full Release AAB
         env:
           KEYSTORE_FILE: keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease
+        run: ./gradlew bundleFullRelease
 
       - name: Setup Fastlane
         run: |

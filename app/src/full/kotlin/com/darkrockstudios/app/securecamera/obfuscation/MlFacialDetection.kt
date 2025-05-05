@@ -25,8 +25,10 @@ class MlFacialDetection : FacialDetection {
 			detector.process(inputImage)
 				.addOnSuccessListener { foundFaces ->
 					val newRegions = foundFaces.map { face ->
-						val leftEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.LEFT_EYE }
-						val rightEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.RIGHT_EYE }
+						val leftEye =
+							face.allLandmarks.find { it.landmarkType == FaceLandmark.LEFT_EYE }
+						val rightEye =
+							face.allLandmarks.find { it.landmarkType == FaceLandmark.RIGHT_EYE }
 						val eyes = if (leftEye != null && rightEye != null) {
 							FacialDetection.FoundFace.Eyes(
 								left = leftEye.position,
@@ -42,7 +44,7 @@ class MlFacialDetection : FacialDetection {
 					}
 					continuation.resume(newRegions)
 				}.addOnFailureListener { e ->
-					Timber.e(e, "Failed face detection in Image")
+					Timber.Forest.e(e, "Failed face detection in Image")
 					continuation.resume(emptyList())
 				}
 		}

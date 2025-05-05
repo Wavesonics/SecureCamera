@@ -36,6 +36,15 @@ android {
 		}
 	}
 
+	flavorDimensions += "version"
+	productFlavors {
+		create("oss") {
+			dimension = "version"
+		}
+		create("full") {
+			dimension = "version"
+		}
+	}
 	buildTypes {
 		release {
 			isMinifyEnabled = true
@@ -103,9 +112,10 @@ dependencies {
 	implementation(libs.androidx.lifecycle.runtime.compose)
 	implementation(libs.zoomable)
 	implementation(libs.androidx.runtime.livedata)
-	implementation(libs.face.detection)
 	implementation(libs.bcrypt)
 	implementation(libs.androidx.work.runtime.ktx)
+
+	"fullImplementation"(libs.face.detection)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)

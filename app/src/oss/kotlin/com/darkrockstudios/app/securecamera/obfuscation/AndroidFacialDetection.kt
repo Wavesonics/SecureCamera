@@ -1,6 +1,7 @@
 package com.darkrockstudios.app.securecamera.obfuscation
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.Rect
 import android.media.FaceDetector
@@ -16,11 +17,11 @@ class AndroidFacialDetection : FacialDetection {
 			val bitmapForDetection = if (bitmap.config != Bitmap.Config.RGB_565) {
 				try {
 					createBitmap(bitmap.width, bitmap.height, Bitmap.Config.RGB_565).also { targetBitmap ->
-						val canvas = android.graphics.Canvas(targetBitmap)
+						val canvas = Canvas(targetBitmap)
 						canvas.drawBitmap(bitmap, 0f, 0f, null)
 					}
 				} catch (e: Exception) {
-					Timber.e(e, "Failed to convert bitmap to RGB_565")
+					Timber.Forest.e(e, "Failed to convert bitmap to RGB_565")
 					return@withContext emptyList<FacialDetection.FoundFace>()
 				}
 			} else {
@@ -36,7 +37,7 @@ class AndroidFacialDetection : FacialDetection {
 
 				// Find faces in the bitmap
 				val facesFound = detector.findFaces(bitmapForDetection, faces)
-				Timber.d("Found $facesFound faces using Android FaceDetector")
+				Timber.Forest.d("Found $facesFound faces using Android FaceDetector")
 
 				// Convert the detected faces to our FoundFace format
 				val foundFaces = mutableListOf<FacialDetection.FoundFace>()
@@ -88,7 +89,7 @@ class AndroidFacialDetection : FacialDetection {
 
 				foundFaces
 			} catch (e: Exception) {
-				Timber.e(e, "Error detecting faces with Android FaceDetector")
+				Timber.Forest.e(e, "Error detecting faces with Android FaceDetector")
 				emptyList()
 			}
 		}
