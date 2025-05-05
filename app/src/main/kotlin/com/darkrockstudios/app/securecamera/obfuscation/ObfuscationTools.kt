@@ -7,7 +7,6 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import androidx.core.graphics.scale
-import com.google.mlkit.vision.face.FaceLandmark
 import java.security.SecureRandom
 
 enum class MaskMode {
@@ -88,19 +87,15 @@ private fun pixelate(bitmap: Bitmap, rect: Rect, region: Region, targetBlockSize
 
 	if (region is FaceRegion) {
 		val face = region.face
-		val leftEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.LEFT_EYE }
-		val rightEye = face.allLandmarks.find { it.landmarkType == FaceLandmark.RIGHT_EYE }
-		if (leftEye != null && rightEye != null) {
-			val leftEyePosition = leftEye.position
-			val rightEyePosition = rightEye.position
 
+		if (face.eyes != null) {
 			val leftEyeInFace = PointF(
-				leftEyePosition.x - rect.left,
-				leftEyePosition.y - rect.top
+				face.eyes.left.x - rect.left,
+				face.eyes.left.y - rect.top
 			)
 			val rightEyeInFace = PointF(
-				rightEyePosition.x - rect.left,
-				rightEyePosition.y - rect.top
+				face.eyes.right.x - rect.left,
+				face.eyes.right.y - rect.top
 			)
 
 			val leftEyeInSmall = PointF(
