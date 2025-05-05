@@ -253,4 +253,9 @@ Questo generalmente non è richiesto per la maggior parte degli utenti, ma è un
 		Questo non è generalmente necessario per la maggior parte degli utenti, ma rappresenta un livello di sicurezza
 		opzionale se il tuo modello di minaccia lo richiede.
 	</string>
+	<string name="notification_permission_button">Consenti</string>
+	<string name="notification_permission_dialog_title">Consenti le notifiche</string>
+	<string name="notification_permission_dialog_message">SnapSafe ha bisogno del permesso di notifica per mostrare il
+		progresso durante l\'importazione delle foto in background.
+	</string>
 </resources>

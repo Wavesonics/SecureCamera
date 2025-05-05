@@ -2,7 +2,7 @@
 bcrypt = "0.10.2"
 faceDetection = "16.1.7"
 kotlinxCoroutinesTest = "1.10.2"
-versionCode = "11"
+versionCode = "12"
 versionName = "2.0.0"
 workManager = "2.10.1"
 

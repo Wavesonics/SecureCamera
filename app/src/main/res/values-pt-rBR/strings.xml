@@ -253,4 +253,9 @@
 		Isso geralmente não é necessário para a maioria dos usuários, mas é uma camada opcional de segurança se o seu
 		modelo de ameaça exigir.
 	</string>
+	<string name="notification_permission_dialog_title">Permitir Notificações</string>
+	<string name="notification_permission_dialog_message">O SnapSafe precisa de permissão de notificação para mostrar o
+		progresso ao importar fotos em segundo plano.
+	</string>
+	<string name="notification_permission_button">Permitir</string>
 </resources>

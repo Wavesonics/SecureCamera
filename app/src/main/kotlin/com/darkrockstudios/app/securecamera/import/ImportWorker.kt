@@ -2,14 +2,14 @@ package com.darkrockstudios.app.securecamera.import
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
-import android.content.pm.ServiceInfo
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.ashampoo.kim.Kim
@@ -45,7 +45,7 @@ class ImportWorker(
 		const val KEY_CURRENT_PHOTO_URI = "KEY_CURRENT_PHOTO_URI"
 
 		private const val NOTIFICATION_CHANNEL_ID = "import_photos_channel"
-		private const val NOTIFICATION_ID = 1
+		const val NOTIFICATION_ID = 1
 	}
 
 	@OptIn(ExperimentalTime::class)
@@ -57,14 +57,12 @@ class ImportWorker(
 			return Result.success()
 		}
 
-		// Set up as foreground service with notification
-		setForeground(createForegroundInfo(0, photoUris.size))
+		showProgressNotification(0, photoUris.size)
 
 		var successfulPhotos = 0
 		var failedPhotos = 0
 
 		photoUris.forEachIndexed { index, photoUri ->
-			// Update progress data
 			val progressData = workDataOf(
 				KEY_TOTAL_PHOTOS to photoUris.size,
 				KEY_REMAINING_PHOTOS to (photoUris.size - index - 1),
@@ -74,7 +72,7 @@ class ImportWorker(
 			)
 			setProgress(progressData)
 
-			setForeground(createForegroundInfo(index + 1, photoUris.size))
+			showProgressNotification(index + 1, photoUris.size)
 
 			val jpgBytes = readPhotoBytes(photoUri)
 			if (jpgBytes != null) {
@@ -115,7 +113,8 @@ class ImportWorker(
 			}
 		}
 
-		// Return success with the final count of successful and failed imports
+		dismissNotification()
+
 		return Result.success(
 			workDataOf(
 				KEY_SUCCESSFUL_PHOTOS to successfulPhotos,
@@ -133,11 +132,26 @@ class ImportWorker(
 		}
 	}
 
-	private fun createForegroundInfo(progress: Int, total: Int): ForegroundInfo {
+	private fun showProgressNotification(progress: Int, total: Int) {
 		createNotificationChannel()
 
 		val title = applicationContext.getString(R.string.import_worker_notification_title)
 		val contentText = applicationContext.getString(R.string.import_worker_notification_content, progress, total)
+
+		// Create cancel intent
+		val cancelIntent = Intent(applicationContext, ImportCancelReceiver::class.java).apply {
+			action = ImportCancelReceiver.ACTION_CANCEL_IMPORT
+			putExtra(ImportCancelReceiver.EXTRA_WORKER_ID, id.toString())
+		}
+
+		// Create pending intent for cancel action
+		val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+		val cancelPendingIntent = PendingIntent.getBroadcast(
+			applicationContext,
+			0,
+			cancelIntent,
+			flags
+		)
 
 		val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
 			.setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -146,13 +160,16 @@ class ImportWorker(
 			.setSmallIcon(android.R.drawable.ic_menu_gallery)
 			.setOngoing(true)
 			.setProgress(total, progress, false)
+			.addAction(
+				android.R.drawable.ic_menu_close_clear_cancel,
+				applicationContext.getString(R.string.cancel_button),
+				cancelPendingIntent
+			)
 			.build()
 
-		return ForegroundInfo(
-			NOTIFICATION_ID,
-			notification,
-			ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-		)
+		val notificationManager =
+			applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+		notificationManager.notify(NOTIFICATION_ID, notification)
 	}
 
 	private fun createNotificationChannel() {
@@ -166,5 +183,11 @@ class ImportWorker(
 		val notificationManager =
 			applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 		notificationManager.createNotificationChannel(channel)
+	}
+
+	private fun dismissNotification() {
+		val notificationManager =
+			applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+		notificationManager.cancel(NOTIFICATION_ID)
 	}
 }

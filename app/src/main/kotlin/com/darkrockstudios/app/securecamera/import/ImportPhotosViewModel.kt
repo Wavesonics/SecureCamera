@@ -16,6 +16,7 @@ class ImportPhotosViewModel(
 ) : BaseViewModel<ImportPhotosState>() {
 
 	val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
+	private var currentImportWorkName: String? = null
 
 	companion object {
 		private const val IMPORT_WORK_NAME = "photo_import_work_"
@@ -50,9 +51,11 @@ class ImportPhotosViewModel(
 			.build()
 
 		val uniqueWorkId = hasher.hashBlocking(photos.joinToString { it.toString() }.toByteArray())
+		val workerName = IMPORT_WORK_NAME + uniqueWorkId
+		currentImportWorkName = workerName
 
 		workManager.enqueueUniqueWork(
-			IMPORT_WORK_NAME + uniqueWorkId,
+			workerName,
 			ExistingWorkPolicy.KEEP,
 			importWorkRequest
 		)
@@ -118,6 +121,13 @@ class ImportPhotosViewModel(
 					}
 				}
 			}
+		}
+	}
+
+	fun cancelImport() {
+		currentImportWorkName?.let { workName ->
+			Timber.d("Cancelling import work: $workName")
+			workManager.cancelUniqueWork(workName)
 		}
 	}
 }

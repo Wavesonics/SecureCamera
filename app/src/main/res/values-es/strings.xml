@@ -251,4 +251,9 @@
 		Esto generalmente no es necesario para la mayoría de los usuarios, pero es una capa de seguridad opcional si su
 		modelo de amenazas lo exige.
 	</string>
+	<string name="notification_permission_button">Permitir</string>
+	<string name="notification_permission_dialog_message">SnapSafe necesita permiso de notificaciones para mostrar el
+		progreso al importar fotos en segundo plano.
+	</string>
+	<string name="notification_permission_dialog_title">Permitir notificaciones</string>
 </resources>

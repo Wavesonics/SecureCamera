@@ -254,4 +254,9 @@
 		meisten Benutzer im Allgemeinen nicht erforderlich, bietet jedoch eine optionale Sicherheitsebene, wenn Ihr
 		Bedrohungsmodell dies verlangt.
 	</string>
+	<string name="notification_permission_dialog_title">Benachrichtigungen erlauben</string>
+	<string name="notification_permission_button">Zulassen</string>
+	<string name="notification_permission_dialog_message">SnapSafe benötigt die Benachrichtigungsberechtigung, um den
+		Fortschritt beim Importieren von Fotos im Hintergrund anzuzeigen.
+	</string>
 </resources>

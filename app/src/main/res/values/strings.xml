@@ -72,6 +72,13 @@
     <string name="import_chooser_intent_title">Select Photos to Import</string>
     <string name="import_error_no_photos">Error: no photos to import</string>
 
+    <!-- Notification Permission -->
+    <string name="notification_permission_dialog_title">Allow Notifications</string>
+    <string name="notification_permission_dialog_message">SnapSafe needs notification permission to show progress when
+        importing photos in the background.
+    </string>
+    <string name="notification_permission_button">Allow</string>
+
     <!-- Import Worker -->
     <string name="import_worker_notification_title">Importing Photos</string>
     <string name="import_worker_notification_content">Importing photo %1$d of %2$d</string>

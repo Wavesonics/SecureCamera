@@ -255,4 +255,9 @@
 		n\'est généralement pas nécessaire pour la plupart des utilisateurs, mais constitue une couche de sécurité
 		optionnelle si votre modèle de menace l\'exige.
 	</string>
+	<string name="notification_permission_button">Autoriser</string>
+	<string name="notification_permission_dialog_title">Autoriser les notifications</string>
+	<string name="notification_permission_dialog_message">SnapSafe a besoin de la permission de notification pour
+		afficher la progression lors de l\'importation de photos en arrière-plan.
+	</string>
 </resources>

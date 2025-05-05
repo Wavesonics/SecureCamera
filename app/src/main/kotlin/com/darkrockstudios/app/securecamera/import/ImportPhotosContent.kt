@@ -1,9 +1,14 @@
 package com.darkrockstudios.app.securecamera.import
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -14,6 +19,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
@@ -29,40 +35,18 @@ fun ImportPhotosContent(
 	val context = LocalContext.current
 	val uiState by viewModel.uiState.collectAsState()
 
-	// State for cancel confirmation dialog
-	val showCancelDialog = remember { mutableStateOf(false) }
+	var showCancelDialog by remember { mutableStateOf(false) }
 
-	// Handle system back button
 	BackHandler(enabled = !uiState.complete) {
-		showCancelDialog.value = true
+		showCancelDialog = true
 	}
 
-	// Cancel confirmation dialog
-	if (showCancelDialog.value) {
-		AlertDialog(
-			onDismissRequest = { showCancelDialog.value = false },
-			title = { Text(stringResource(id = R.string.discard_changes_dialog_title)) },
-			text = { Text(stringResource(id = R.string.discard_changes_dialog_message)) },
-			confirmButton = {
-				TextButton(
-					onClick = {
-						showCancelDialog.value = false
-						navController.navigate(AppDestinations.GALLERY_ROUTE) {
-							popUpTo(0) { inclusive = true }
-						}
-					}
-				) {
-					Text(stringResource(id = R.string.discard_button))
-				}
-			},
-			dismissButton = {
-				TextButton(
-					onClick = { showCancelDialog.value = false }
-				) {
-					Text(stringResource(id = R.string.cancel_button))
-				}
-			}
-		)
+	NotificationPermissionRationale()
+
+	if (showCancelDialog) {
+		CancelImportDialog(navController) {
+			showCancelDialog = false
+		}
 	}
 
 	var currentBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -177,5 +161,91 @@ fun ImportPhotosContent(
 				}
 			}
 		}
+	}
+}
+
+@Composable
+private fun CancelImportDialog(navController: NavHostController, dismiss: () -> Unit) {
+	val viewModel: ImportPhotosViewModel = koinViewModel()
+
+	AlertDialog(
+		onDismissRequest = { dismiss() },
+		title = { Text(stringResource(id = R.string.discard_changes_dialog_title)) },
+		text = { Text(stringResource(id = R.string.discard_changes_dialog_message)) },
+		confirmButton = {
+			TextButton(
+				onClick = {
+					viewModel.cancelImport()
+					dismiss()
+					navController.navigate(AppDestinations.GALLERY_ROUTE) {
+						popUpTo(0) { inclusive = true }
+					}
+				}
+			) {
+				Text(stringResource(id = R.string.discard_button))
+			}
+		},
+		dismissButton = {
+			TextButton(
+				onClick = { dismiss() }
+			) {
+				Text(stringResource(id = R.string.cancel_button))
+			}
+		}
+	)
+}
+
+@Composable
+private fun NotificationPermissionRationale() {
+	val context = LocalContext.current
+
+	val showNotificationPermissionDialog = remember { mutableStateOf(false) }
+
+	val notificationPermissionLauncher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.RequestPermission()
+	) { _ ->
+		// Noop
+	}
+
+	// Check if we need to request notification permission (API 33+)
+	LaunchedEffect(Unit) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			val notificationPermission = Manifest.permission.POST_NOTIFICATIONS
+			if (ContextCompat.checkSelfPermission(
+					context,
+					notificationPermission
+				) != PackageManager.PERMISSION_GRANTED
+			) {
+				showNotificationPermissionDialog.value = true
+			}
+		}
+	}
+
+	// Notification permission dialog (API 33+)
+	if (showNotificationPermissionDialog.value) {
+		AlertDialog(
+			onDismissRequest = { showNotificationPermissionDialog.value = false },
+			title = { Text(stringResource(id = R.string.notification_permission_dialog_title)) },
+			text = { Text(stringResource(id = R.string.notification_permission_dialog_message)) },
+			confirmButton = {
+				TextButton(
+					onClick = {
+						showNotificationPermissionDialog.value = false
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+							notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+						}
+					}
+				) {
+					Text(stringResource(id = R.string.notification_permission_button))
+				}
+			},
+			dismissButton = {
+				TextButton(
+					onClick = { showNotificationPermissionDialog.value = false }
+				) {
+					Text(stringResource(id = R.string.cancel_button))
+				}
+			}
+		)
 	}
 }

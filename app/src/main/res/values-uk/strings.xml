@@ -252,4 +252,9 @@
 		Це зазвичай не потрібно для більшості користувачів, але є необов\'язковим шаром безпеки, якщо ваша модель
 		загрози це вимагає.
 	</string>
+	<string name="notification_permission_button">Дозволити</string>
+	<string name="notification_permission_dialog_title">Дозволити сповіщення</string>
+	<string name="notification_permission_dialog_message">SnapSafe потребує дозволу на сповіщення, аби показувати
+		прогрес при імпорті фотографій у фоновому режимі.
+	</string>
 </resources>

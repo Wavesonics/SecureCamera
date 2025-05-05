@@ -235,4 +235,7 @@
 		\n\n
 		这对于大多数用户来说通常不是必需的，但如果您的威胁模型要求，这是一层可选的安全措施。
 	</string>
+	<string name="notification_permission_button">允许</string>
+	<string name="notification_permission_dialog_title">允许通知</string>
+	<string name="notification_permission_dialog_message">SnapSafe 需要通知权限，以便在后台导入照片时显示进度。</string>
 </resources>
