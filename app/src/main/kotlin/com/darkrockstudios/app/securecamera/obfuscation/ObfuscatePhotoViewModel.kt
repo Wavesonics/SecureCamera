@@ -18,10 +18,9 @@ import timber.log.Timber
 
 class ObfuscatePhotoViewModel(
 	private val appContext: Context,
-	private val imageManager: SecureImageRepository
+	private val imageManager: SecureImageRepository,
+	private val facialDetection: FacialDetection,
 ) : BaseViewModel<ObfuscatePhotoUiState>() {
-
-	private val facialDetection = MlFacialDetection()
 
 	override fun createState() = ObfuscatePhotoUiState()
 

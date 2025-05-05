@@ -8,6 +8,8 @@ import com.darkrockstudios.app.securecamera.camera.ThumbnailCache
 import com.darkrockstudios.app.securecamera.gallery.GalleryViewModel
 import com.darkrockstudios.app.securecamera.import.ImportPhotosViewModel
 import com.darkrockstudios.app.securecamera.introduction.IntroductionViewModel
+import com.darkrockstudios.app.securecamera.obfuscation.FacialDetection
+import com.darkrockstudios.app.securecamera.obfuscation.MlFacialDetection
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoViewModel
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.security.DeviceInfo
@@ -52,6 +54,7 @@ val appModule = module {
 	factoryOf(::VerifyPinUseCase)
 	factoryOf(::CreatePinUseCase)
 	factoryOf(::PinSizeUseCase)
+	factoryOf(::MlFacialDetection) bind FacialDetection::class
 
 	viewModelOf(::ObfuscatePhotoViewModel)
 	viewModelOf(::ViewPhotoViewModel)
