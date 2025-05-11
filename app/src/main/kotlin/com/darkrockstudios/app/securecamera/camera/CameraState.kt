@@ -28,15 +28,15 @@ class CameraState internal constructor(
 ) {
 	private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
-	var lensFacing by mutableStateOf(initialLensFacing)
+	var lensFacing by mutableIntStateOf(initialLensFacing)
 		private set
 
 	var camera: Camera? by mutableStateOf(null)
 		private set
 
-	var minZoom by mutableStateOf(1f)
+	var minZoom by mutableFloatStateOf(1f)
 		private set
-	var maxZoom by mutableStateOf(1f)
+	var maxZoom by mutableFloatStateOf(1f)
 		private set
 
 	var focusOffset by mutableStateOf<Offset?>(null)
