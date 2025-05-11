@@ -12,6 +12,7 @@ import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.TiffOrientation
 import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -272,7 +273,7 @@ class SecureImageRepository(
 		return File(dir, photoDef.photoName)
 	}
 
-	suspend fun readThumbnail(photo: PhotoDef): Bitmap {
+	suspend fun readThumbnail(photo: PhotoDef): Bitmap? {
 		thumbnailCache.getThumbnail(photo)?.let { return it }
 
 		val thumbFile = getThumbnail(photo)
@@ -283,6 +284,9 @@ class SecureImageRepository(
 				encryptedFile = thumbFile,
 			)
 			BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size)
+		} else if (photo.photoFile.exists().not()) {
+			Timber.w("Photo no longer exists! ${photo.photoName}")
+			null
 		} else {
 			// Create thumbnail from the full image
 			val plainBytes = decryptFile(
@@ -308,7 +312,9 @@ class SecureImageRepository(
 			thumbnailBitmap
 		}
 
-		thumbnailCache.putThumbnail(photo, thumbnailBitmap)
+		if (thumbnailBitmap != null) {
+			thumbnailCache.putThumbnail(photo, thumbnailBitmap)
+		}
 
 		return thumbnailBitmap
 	}

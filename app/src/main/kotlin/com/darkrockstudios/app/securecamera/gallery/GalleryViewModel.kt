@@ -20,11 +20,10 @@ class GalleryViewModel(
 	override fun createState() = GalleryUiState()
 
 	init {
-		loadPhotos()
 		observePreferences()
 	}
 
-	private fun loadPhotos() {
+	fun loadPhotos() {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
 			val photos = imageManager.getPhotos().sortedByDescending { it.dateTaken() }
