@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.ExecutorService
@@ -51,7 +48,7 @@ class CameraState internal constructor(
 
 	private var imageCapture: ImageCapture? = null
 
-	private var _flashMode by mutableStateOf(initialFlashMode)
+	private var _flashMode by mutableIntStateOf(initialFlashMode)
 	var flashMode: Int
 		get() = _flashMode
 		set(value) {
