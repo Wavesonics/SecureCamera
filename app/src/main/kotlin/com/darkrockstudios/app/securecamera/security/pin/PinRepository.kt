@@ -12,8 +12,8 @@ interface PinRepository {
 		return verifyPin(pin, storedHashedPin)
 	}
 
-	fun hashPin(pin: String): HashedPin
-	fun verifyPin(inputPin: String, storedHash: HashedPin): Boolean
+	suspend fun hashPin(pin: String): HashedPin
+	suspend fun verifyPin(inputPin: String, storedHash: HashedPin): Boolean
 	suspend fun setPoisonPillPin(pin: String)
 	suspend fun getPlainPoisonPillPin(): String?
 	suspend fun getHashedPoisonPillPin(): HashedPin?
@@ -33,5 +33,10 @@ interface PinRepository {
 	suspend fun verifyPoisonPillPin(pin: String): Boolean {
 		val storedHashedPin = getHashedPoisonPillPin() ?: return false
 		return verifyPin(pin, storedHashedPin)
+	}
+
+	companion object {
+		const val ARGON_ITERATIONS = 5
+		const val ARGON_COST = 65536
 	}
 }

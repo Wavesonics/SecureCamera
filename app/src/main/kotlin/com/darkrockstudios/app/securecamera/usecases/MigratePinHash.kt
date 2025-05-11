@@ -2,10 +2,11 @@ package com.darkrockstudios.app.securecamera.usecases
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.darkrockstudios.app.securecamera.preferences.*
+import com.darkrockstudios.app.securecamera.security.DeviceInfo
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
-import com.darkrockstudios.app.securecamera.security.pin.PinRepositoryHardware.Companion.ARGON_COST
-import com.darkrockstudios.app.securecamera.security.pin.PinRepositoryHardware.Companion.ARGON_ITTERATIONS
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository.Companion.ARGON_COST
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository.Companion.ARGON_ITERATIONS
 import com.darkrockstudios.app.securecamera.security.pin.PinRepositoryHardware.Companion.PIN_KEY_ALIAS
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.HardwareBackedEncryptionScheme
@@ -21,6 +22,7 @@ class MigratePinHash(
 	private val dataSource: AppPreferencesDataSource,
 	private val encryptionScheme: EncryptionScheme,
 	private val removePoisonPillIUseCase: RemovePoisonPillIUseCase,
+	private val deviceInfo: DeviceInfo,
 ) {
 	private val argon2Kt = Argon2Kt()
 
@@ -64,22 +66,20 @@ class MigratePinHash(
 		// Migrate the encryption key, just need to rename it
 		encryptionScheme as HardwareBackedEncryptionScheme
 		// There should only be 1 key because we removed the Poison Pill
-		val oldKeyFile =
-			encryptionScheme.keyDir().listFiles()?.first() ?: error("No key file found! Migration will fail")
-		val newKeyFile = encryptionScheme.dekFile(newPin)
-		oldKeyFile.renameTo(newKeyFile)
+		encryptionScheme.keyDir().listFiles()?.first()?.let { oldKeyFile ->
+			val newKeyFile = encryptionScheme.dekFile(newPin)
+			oldKeyFile.renameTo(newKeyFile)
+		}
 	}
 
 	private suspend fun argonHashPin(pin: String, salt: String): HashedPin {
 		val hashResult: Argon2KtResult = argon2Kt.hash(
 			mode = Argon2Mode.ARGON2_I,
-			password = pin.toByteArray(Charsets.UTF_8),
+			password = pin.toByteArray() + deviceInfo.getDeviceIdentifier(),
 			salt = salt.toByteArray(),
-			tCostInIterations = ARGON_ITTERATIONS,
+			tCostInIterations = ARGON_ITERATIONS,
 			mCostInKibibyte = ARGON_COST,
 		)
-
-		Timber.i("argonHashPin done")
 
 		return HashedPin(
 			hashResult.encodedOutputAsString().toByteArray().base64EncodeUrlSafe(),

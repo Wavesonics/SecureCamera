@@ -1,7 +1,10 @@
 package com.darkrockstudios.app.securecamera.security.pin
 
 import com.darkrockstudios.app.securecamera.preferences.*
+import com.darkrockstudios.app.securecamera.security.DeviceInfo
 import com.darkrockstudios.app.securecamera.security.SchemeConfig
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository.Companion.ARGON_COST
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository.Companion.ARGON_ITERATIONS
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
@@ -13,6 +16,7 @@ import kotlinx.serialization.json.Json
 class PinRepositoryHardware(
 	private val dataSource: AppPreferencesDataSource,
 	private val encryptionScheme: EncryptionScheme,
+	private val deviceInfo: DeviceInfo,
 ) : PinRepository {
 	private val argon2Kt = Argon2Kt()
 
@@ -36,13 +40,14 @@ class PinRepositoryHardware(
 		return Json.decodeFromString(HashedPin.serializer(), hashedPinJson)
 	}
 
-	override fun hashPin(pin: String): HashedPin {
+	override suspend fun hashPin(pin: String): HashedPin {
 		val salt = CryptographyRandom.nextBytes(16)
+		val password = pin.toByteArray() + deviceInfo.getDeviceIdentifier()
 		val hashResult: Argon2KtResult = argon2Kt.hash(
 			mode = Argon2Mode.ARGON2_I,
-			password = pin.toByteArray(Charsets.UTF_8),
+			password = password,
 			salt = salt,
-			tCostInIterations = ARGON_ITTERATIONS,
+			tCostInIterations = ARGON_ITERATIONS,
 			mCostInKibibyte = ARGON_COST,
 		)
 
@@ -52,14 +57,15 @@ class PinRepositoryHardware(
 		)
 	}
 
-	override fun verifyPin(
+	override suspend fun verifyPin(
 		inputPin: String,
 		storedHash: HashedPin
 	): Boolean {
+		val password = inputPin.toByteArray() + deviceInfo.getDeviceIdentifier()
 		return argon2Kt.verify(
 			mode = Argon2Mode.ARGON2_I,
 			encoded = String(storedHash.hash.base64DecodeUrlSafe()),
-			password = inputPin.toByteArray(),
+			password = password,
 		)
 	}
 
@@ -107,7 +113,5 @@ class PinRepositoryHardware(
 
 	companion object {
 		const val PIN_KEY_ALIAS = "pin_key"
-		const val ARGON_ITTERATIONS = 5
-		const val ARGON_COST = 65536
 	}
 }

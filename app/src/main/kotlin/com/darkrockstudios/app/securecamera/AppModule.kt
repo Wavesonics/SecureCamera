@@ -47,10 +47,10 @@ val appModule = module {
 		val detector = get<SecurityLevelDetector>()
 		when (detector.detectSecurityLevel()) {
 			SecurityLevel.SOFTWARE ->
-				PinRepositorySoftware(get())
+				PinRepositorySoftware(get(), get())
 
 			SecurityLevel.TEE, SecurityLevel.STRONGBOX -> {
-				PinRepositoryHardware(get(), get())
+				PinRepositoryHardware(get(), get(), get())
 			}
 		}
 	} bind PinRepository::class

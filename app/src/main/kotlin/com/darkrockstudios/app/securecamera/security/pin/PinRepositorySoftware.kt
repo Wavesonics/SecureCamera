@@ -1,7 +1,10 @@
 package com.darkrockstudios.app.securecamera.security.pin
 
 import com.darkrockstudios.app.securecamera.preferences.*
+import com.darkrockstudios.app.securecamera.security.DeviceInfo
 import com.darkrockstudios.app.securecamera.security.SchemeConfig
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository.Companion.ARGON_COST
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository.Companion.ARGON_ITERATIONS
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
 import com.lambdapioneer.argon2kt.Argon2Mode
@@ -12,6 +15,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 class PinRepositorySoftware(
 	private val dataSource: AppPreferencesDataSource,
+	private val deviceInfo: DeviceInfo,
 ) : PinRepository {
 	private val argon2Kt = Argon2Kt()
 
@@ -31,13 +35,14 @@ class PinRepositorySoftware(
 	}
 
 	@OptIn(ExperimentalStdlibApi::class)
-	override fun hashPin(pin: String): HashedPin {
+	override suspend fun hashPin(pin: String): HashedPin {
 		val salt = CryptographyRandom.nextBytes(16)
+		val password = pin.toByteArray() + deviceInfo.getDeviceIdentifier()
 		val hashResult: Argon2KtResult = argon2Kt.hash(
 			mode = Argon2Mode.ARGON2_I,
-			password = pin.toByteArray(Charsets.UTF_8),
+			password = password,
 			salt = salt,
-			tCostInIterations = ARGON_ITTERATIONS,
+			tCostInIterations = ARGON_ITERATIONS,
 			mCostInKibibyte = ARGON_COST,
 		)
 
@@ -48,11 +53,12 @@ class PinRepositorySoftware(
 	}
 
 	@OptIn(ExperimentalStdlibApi::class)
-	override fun verifyPin(inputPin: String, storedHash: HashedPin): Boolean {
+	override suspend fun verifyPin(inputPin: String, storedHash: HashedPin): Boolean {
+		val password = inputPin.toByteArray() + deviceInfo.getDeviceIdentifier()
 		return argon2Kt.verify(
 			mode = Argon2Mode.ARGON2_I,
 			encoded = String(storedHash.hash.base64DecodeUrlSafe()),
-			password = inputPin.toByteArray(),
+			password = password,
 		)
 	}
 
@@ -103,10 +109,5 @@ class PinRepositorySoftware(
 	 */
 	override suspend fun removePoisonPillPin() {
 		dataSource.removePoisonPillPin()
-	}
-
-	companion object {
-		private const val ARGON_ITTERATIONS = 5
-		private const val ARGON_COST = 65536
 	}
 }
