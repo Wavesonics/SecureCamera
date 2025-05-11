@@ -10,7 +10,7 @@ import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.TiffOrientation
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -22,7 +22,7 @@ import kotlin.time.toJavaInstant
 
 class SecureImageRepository(
 	private val appContext: Context,
-	private val preferencesManager: AppPreferencesDataSource,
+	private val pinRepository: PinRepository,
 	internal val thumbnailCache: ThumbnailCache,
 	private val encryptionScheme: EncryptionScheme,
 ) {
@@ -441,8 +441,8 @@ class SecureImageRepository(
 			getDecoyDirectory().mkdirs()
 			val decoyFile = getDecoyFile(photoDef)
 
-			val ppp = preferencesManager.getHashedPoisonPillPin() ?: return false
-			val pin = preferencesManager.getPlainPoisonPillPin() ?: return false
+			val ppp = pinRepository.getHashedPoisonPillPin() ?: return false
+			val pin = pinRepository.getPlainPoisonPillPin() ?: return false
 			val ppk = encryptionScheme.deriveKey(plainPin = pin, hashedPin = ppp)
 			encryptionScheme.encryptToFile(
 				plain = jpgBytes,

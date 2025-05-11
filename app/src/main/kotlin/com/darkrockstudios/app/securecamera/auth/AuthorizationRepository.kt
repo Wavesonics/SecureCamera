@@ -2,6 +2,7 @@ package com.darkrockstudios.app.securecamera.auth
 
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import kotlin.math.pow
  * Manages user authorization state, including PIN verification and session expiration.
  */
 class AuthorizationRepository(
-	private val preferencesManager: AppPreferencesDataSource,
+	private val preferences: AppPreferencesDataSource,
+	private val pinRepository: PinRepository,
 	private val encryptionScheme: EncryptionScheme,
 ) {
 	companion object {
@@ -26,11 +28,11 @@ class AuthorizationRepository(
 	private var lastAuthTimeMs: Long = 0
 
 	suspend fun securityFailureReset() {
-		preferencesManager.securityFailureReset()
+		preferences.securityFailureReset()
 	}
 
 	suspend fun activatePoisonPill() {
-		preferencesManager.activatePoisonPill()
+		pinRepository.activatePoisonPill()
 	}
 
 	/**
@@ -38,7 +40,7 @@ class AuthorizationRepository(
 	 * @return The number of failed attempts
 	 */
 	suspend fun getFailedAttempts(): Int {
-		return preferencesManager.getFailedPinAttempts()
+		return preferences.getFailedPinAttempts()
 	}
 
 	/**
@@ -46,7 +48,7 @@ class AuthorizationRepository(
 	 * @param count The number of failed attempts to set
 	 */
 	suspend fun setFailedAttempts(count: Int) {
-		preferencesManager.setFailedPinAttempts(count)
+		preferences.setFailedPinAttempts(count)
 	}
 
 	/**
@@ -59,7 +61,7 @@ class AuthorizationRepository(
 		setFailedAttempts(newCount)
 
 		// Store the current timestamp as the last failed attempt time
-		preferencesManager.setLastFailedAttemptTimestamp(System.currentTimeMillis())
+		preferences.setLastFailedAttemptTimestamp(System.currentTimeMillis())
 
 		return newCount
 	}
@@ -69,7 +71,7 @@ class AuthorizationRepository(
 	 * @return The timestamp of the last failed attempt
 	 */
 	suspend fun getLastFailedAttemptTimestamp(): Long {
-		return preferencesManager.getLastFailedAttemptTimestamp()
+		return preferences.getLastFailedAttemptTimestamp()
 	}
 
 	/**
@@ -99,7 +101,7 @@ class AuthorizationRepository(
 	 */
 	suspend fun resetFailedAttempts() {
 		setFailedAttempts(0)
-		preferencesManager.setLastFailedAttemptTimestamp(0)
+		preferences.setLastFailedAttemptTimestamp(0)
 	}
 
 	/**
@@ -116,8 +118,8 @@ class AuthorizationRepository(
 	 * @return True if the PIN is correct, false otherwise
 	 */
 	suspend fun verifyPin(pin: String): HashedPin? {
-		val hashedPin = preferencesManager.getHashedPin()
-		val isValid = preferencesManager.verifySecurityPin(pin)
+		val hashedPin = pinRepository.getHashedPin()
+		val isValid = pinRepository.verifySecurityPin(pin)
 		return if (isValid && hashedPin != null) {
 			authorizeSession()
 			// Reset failed attempts counter on successful verification
@@ -145,7 +147,7 @@ class AuthorizationRepository(
 			return@runBlocking false
 		}
 
-		val sessionTimeoutMs = preferencesManager.getSessionTimeout()
+		val sessionTimeoutMs = preferences.getSessionTimeout()
 		val currentTime = System.currentTimeMillis()
 		val sessionValid = (currentTime - lastAuthTimeMs) < sessionTimeoutMs
 

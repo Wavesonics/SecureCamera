@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import at.favre.lib.crypto.bcrypt.BCrypt
 import com.darkrockstudios.app.securecamera.security.SchemeConfig
 import dev.whyoleg.cryptography.random.CryptographyRandom
 import kotlinx.coroutines.flow.Flow
@@ -15,9 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.minutes
@@ -34,6 +31,7 @@ class AppPreferencesDataSource(
 	companion object {
 		private val HAS_COMPLETED_INTRO = booleanPreferencesKey("has_completed_intro")
 		private val APP_PIN = stringPreferencesKey("app_pin")
+		private val APP_PIN_CIPHERED = booleanPreferencesKey("app_pin_ciphered")
 		private val POISON_PILL_PIN = stringPreferencesKey("poison_pill_pin")
 		private val POISON_PILL_PIN_PLAIN = stringPreferencesKey("poison_pill_pin_plain")
 		private val SANITIZE_FILE_NAME = booleanPreferencesKey("sanitize_file_name")
@@ -49,14 +47,10 @@ class AppPreferencesDataSource(
 		val SESSION_TIMEOUT_5_MIN = 5.minutes.inWholeMilliseconds
 		val SESSION_TIMEOUT_10_MIN = 10.minutes.inWholeMilliseconds
 		val SESSION_TIMEOUT_DEFAULT = SESSION_TIMEOUT_5_MIN
-
-		private const val BCRYPT_COST = 12
 	}
 
-	private val bcrypt = BCrypt.withDefaults()
-
 	@OptIn(ExperimentalStdlibApi::class)
-	private suspend fun getCipherKey(): String {
+	suspend fun getCipherKey(): String {
 		val preferences = dataStore.data.first()
 
 		return preferences[SYMMETRIC_CIPHER_KEY] ?: run {
@@ -66,6 +60,11 @@ class AppPreferencesDataSource(
 			}
 			newKey
 		}
+	}
+
+	suspend fun getCipheredPin(): String? {
+		val preferences = dataStore.data.first()
+		return preferences[APP_PIN]
 	}
 
 	/**
@@ -90,7 +89,7 @@ class AppPreferencesDataSource(
 	}
 
 	/**
-	 * Get the sanitize file name preference
+	 * Get the sanitized file name preference
 	 */
 	val sanitizeFileName: Flow<Boolean> = dataStore.data
 		.map { preferences ->
@@ -99,7 +98,7 @@ class AppPreferencesDataSource(
 	val sanitizeFileNameDefault = true
 
 	/**
-	 * Get the sanitize metadata preference
+	 * Get the sanitized metadata preference
 	 */
 	val sanitizeMetadata: Flow<Boolean> = dataStore.data
 		.map { preferences ->
@@ -127,43 +126,12 @@ class AppPreferencesDataSource(
 	/**
 	 * Set the app PIN
 	 */
-	suspend fun setAppPin(pin: String, schemeConfig: SchemeConfig) {
-		val hashedPin: HashedPin = hashPin(pin)
-		val key = getCipherKey()
+	suspend fun setAppPin(cipheredPin: String, schemeConfigJson: String) {
 		dataStore.edit { preferences ->
-			preferences[APP_PIN] = XorCipher.encrypt(Json.encodeToString(hashedPin), key)
-			preferences[SCHEME_CONFIG_KEY] = Json.encodeToString(schemeConfig)
+			preferences[APP_PIN] = cipheredPin
+			preferences[SCHEME_CONFIG_KEY] = schemeConfigJson
+			preferences[APP_PIN_CIPHERED] = true
 		}
-	}
-
-	suspend fun getHashedPin(): HashedPin? {
-		val key = getCipherKey()
-		val preferences = dataStore.data.firstOrNull() ?: return null
-		val storedPinJson = preferences[APP_PIN]?.let { XorCipher.decrypt(it, key) } ?: return null
-		return try {
-			Json.decodeFromString(HashedPin.serializer(), storedPinJson)
-		} catch (e: Exception) {
-			Timber.w(e, "verifySecurityPin failed to get hashed PIN")
-			null
-		}
-	}
-
-	suspend fun verifySecurityPin(pin: String): Boolean {
-		val storedHashedPin = getHashedPin() ?: return false
-		return verifyPin(pin, storedHashedPin)
-	}
-
-	@OptIn(ExperimentalStdlibApi::class)
-	fun hashPin(pin: String): HashedPin {
-		val salt = CryptographyRandom.nextBytes(16)
-		val hash = bcrypt.hash(BCRYPT_COST, salt, pin.toByteArray(Charsets.UTF_8))
-		return HashedPin(hash.base64Encode(), salt.base64Encode())
-	}
-
-	@OptIn(ExperimentalStdlibApi::class)
-	fun verifyPin(inputPin: String, storedHash: HashedPin): Boolean {
-		val result = BCrypt.verifyer().verify(inputPin.toCharArray(), storedHash.hash.base64Decode())
-		return result.verified
 	}
 
 	/**
@@ -254,60 +222,33 @@ class AppPreferencesDataSource(
 	 * Set the Poison Pill PIN
 	 */
 	@OptIn(ExperimentalEncodingApi::class)
-	suspend fun setPoisonPillPin(pin: String) {
-		val hashedPin: HashedPin = hashPin(pin)
-		val cipherKey = getCipherKey()
+	suspend fun setPoisonPillPin(cipheredHashedPin: String, cipheredPlainPin: String) {
 		dataStore.edit { preferences ->
-			preferences[POISON_PILL_PIN] = XorCipher.encrypt(Json.encodeToString(hashedPin), cipherKey)
-			preferences[POISON_PILL_PIN_PLAIN] = XorCipher.encrypt(pin, cipherKey)
+			preferences[POISON_PILL_PIN] = cipheredHashedPin
+			preferences[POISON_PILL_PIN_PLAIN] = cipheredPlainPin
 		}
 	}
 
 	@OptIn(ExperimentalEncodingApi::class)
 	suspend fun getPlainPoisonPillPin(): String? {
 		val preferences = dataStore.data.firstOrNull() ?: return null
-		val encryptedStoredPin = preferences[POISON_PILL_PIN_PLAIN] ?: return null
-		return XorCipher.decrypt(encryptedStoredPin, getCipherKey())
+		return preferences[POISON_PILL_PIN_PLAIN] ?: return null
 	}
 
 	/**
 	 * Get the hashed Poison Pill PIN
 	 */
-	suspend fun getHashedPoisonPillPin(): HashedPin? {
+	suspend fun getHashedPoisonPillPin(): String? {
 		val preferences = dataStore.data.firstOrNull() ?: return null
-		val cipherKey = getCipherKey()
-		val storedPinJson = preferences[POISON_PILL_PIN]?.let { XorCipher.decrypt(it, cipherKey) } ?: return null
-		return try {
-			Json.decodeFromString(storedPinJson)
-		} catch (e: Exception) {
-			Timber.w(e, "getHashedPoisonPillPin failed to get hashed PIN")
-			null
-		}
-	}
-
-	/**
-	 * Check if a Poison Pill PIN is set
-	 */
-	suspend fun hasPoisonPillPin(): Boolean {
-		return getHashedPoisonPillPin() != null
-	}
-
-	/**
-	 * Verify if the input PIN matches the Poison Pill PIN
-	 */
-	suspend fun verifyPoisonPillPin(pin: String): Boolean {
-		val storedHashedPin = getHashedPoisonPillPin() ?: return false
-		return verifyPin(pin, storedHashedPin)
+		return preferences[POISON_PILL_PIN]
 	}
 
 	/**
 	 * Activate the Poison Pill - replaces the regular PIN with the Poison Pill PIN
 	 */
-	suspend fun activatePoisonPill() {
-		val poisonPillPin = getHashedPoisonPillPin() ?: error("No PPP")
-		val key = getCipherKey()
+	suspend fun activatePoisonPill(ciphered: String) {
 		dataStore.edit { preferences ->
-			preferences[APP_PIN] = XorCipher.encrypt(Json.encodeToString(poisonPillPin), key)
+			preferences[APP_PIN] = ciphered
 		}
 		removePoisonPillPin()
 	}
@@ -321,13 +262,24 @@ class AppPreferencesDataSource(
 			preferences.remove(POISON_PILL_PIN_PLAIN)
 		}
 	}
+
+	suspend fun isPinCiphered(): Boolean {
+		val preferences = dataStore.data.firstOrNull() ?: return false
+		return preferences[APP_PIN_CIPHERED] == true
+	}
 }
 
 @Serializable
 data class HashedPin(val hash: String, val salt: String)
 
 @OptIn(ExperimentalEncodingApi::class)
-private fun ByteArray.base64Encode(): String = Base64.Default.encode(this)
+fun ByteArray.base64Encode(): String = Base64.Default.encode(this)
 
 @OptIn(ExperimentalEncodingApi::class)
-private fun String.base64Decode(): ByteArray = Base64.Default.decode(this)
+fun String.base64Decode(): ByteArray = Base64.Default.decode(this)
+
+@OptIn(ExperimentalEncodingApi::class)
+fun ByteArray.base64EncodeUrlSafe(): String = Base64.UrlSafe.encode(this)
+
+@OptIn(ExperimentalEncodingApi::class)
+fun String.base64DecodeUrlSafe(): ByteArray = Base64.UrlSafe.decode(this)

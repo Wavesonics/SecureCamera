@@ -114,6 +114,7 @@ dependencies {
 	implementation(libs.androidx.runtime.livedata)
 	implementation(libs.bcrypt)
 	implementation(libs.androidx.work.runtime.ktx)
+	implementation(libs.argon2kt)
 
 	"fullImplementation"(libs.face.detection)
 

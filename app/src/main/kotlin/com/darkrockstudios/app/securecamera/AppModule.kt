@@ -13,6 +13,9 @@ import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.security.DeviceInfo
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
+import com.darkrockstudios.app.securecamera.security.pin.PinRepositoryHardware
+import com.darkrockstudios.app.securecamera.security.pin.PinRepositorySoftware
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.HardwareBackedEncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.SoftwareEncryptionScheme
@@ -40,6 +43,17 @@ val appModule = module {
 			}
 		}
 	} bind EncryptionScheme::class
+	single<PinRepository> {
+		val detector = get<SecurityLevelDetector>()
+		when (detector.detectSecurityLevel()) {
+			SecurityLevel.SOFTWARE ->
+				PinRepositorySoftware(get())
+
+			SecurityLevel.TEE, SecurityLevel.STRONGBOX -> {
+				PinRepositoryHardware(get(), get())
+			}
+		}
+	} bind PinRepository::class
 	singleOf(::SecurityLevelDetector)
 
 	single { WorkManager.getInstance(get()) }
@@ -52,6 +66,8 @@ val appModule = module {
 	factoryOf(::VerifyPinUseCase)
 	factoryOf(::CreatePinUseCase)
 	factoryOf(::PinSizeUseCase)
+	factoryOf(::RemovePoisonPillIUseCase)
+	factoryOf(::MigratePinHash)
 
 	viewModelOf(::ObfuscatePhotoViewModel)
 	viewModelOf(::ViewPhotoViewModel)

@@ -2,18 +2,21 @@ package com.darkrockstudios.app.securecamera.usecases
 
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 
 class VerifyPinUseCase(
 	private val authManager: AuthorizationRepository,
 	private val imageManager: SecureImageRepository,
-	private val preferencesManager: AppPreferencesDataSource,
+	private val pinRepository: PinRepository,
 	private val encryptionScheme: EncryptionScheme,
+	private val migratePinHash: MigratePinHash,
 ) {
 	suspend fun verifyPin(pin: String): Boolean {
-		if (preferencesManager.hasPoisonPillPin() && preferencesManager.verifyPoisonPillPin(pin)) {
-			encryptionScheme.activatePoisonPill(oldPin = preferencesManager.getHashedPin())
+		migratePinHash.runMigration(pin)
+
+		if (pinRepository.hasPoisonPillPin() && pinRepository.verifyPoisonPillPin(pin)) {
+			encryptionScheme.activatePoisonPill(oldPin = pinRepository.getHashedPin())
 			imageManager.activatePoisonPill()
 			authManager.activatePoisonPill()
 		}

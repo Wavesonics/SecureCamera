@@ -13,7 +13,6 @@ import dev.whyoleg.cryptography.algorithms.PBKDF2
 import dev.whyoleg.cryptography.algorithms.SHA256
 import dev.whyoleg.cryptography.algorithms.SHA512
 import dev.whyoleg.cryptography.operations.Hasher
-import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.security.KeyStore
 import java.security.SecureRandom
@@ -23,6 +22,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.time.Duration.Companion.minutes
 
 
 class HardwareBackedEncryptionScheme(
@@ -167,10 +167,10 @@ class HardwareBackedEncryptionScheme(
 		oldPin?.let { dekFile(oldPin).delete() }
 	}
 
-	private fun generateHardwareBackedKey(config: HardwareSchemeConfig) {
+	private fun generateHardwareBackedKey(config: HardwareSchemeConfig, keyAlias: String = KEY_ALIAS) {
 		// 1. Build the key-generation parameters
 		val spec = KeyGenParameterSpec.Builder(
-			KEY_ALIAS,
+			keyAlias,
 			PURPOSE_ENCRYPT or PURPOSE_DECRYPT
 		).apply {
 			setKeySize(256)
@@ -201,7 +201,7 @@ class HardwareBackedEncryptionScheme(
 		} catch (_: StrongBoxUnavailableException) {
 			// Device lacks StrongBox; retry without StrongBox request
 			val fallbackSpec = KeyGenParameterSpec.Builder(
-				KEY_ALIAS,
+				keyAlias,
 				PURPOSE_ENCRYPT or PURPOSE_DECRYPT
 			).apply {
 				setKeySize(256)
@@ -216,8 +216,19 @@ class HardwareBackedEncryptionScheme(
 		}
 	}
 
-	private fun getKeyEncryptionKey(): SecretKey {
-		return (ks.getEntry(KEY_ALIAS, null) as KeyStore.SecretKeyEntry).secretKey
+	private fun getHardwareEncryptionKey(keyAlias: String): SecretKey {
+		return (ks.getEntry(keyAlias, null) as KeyStore.SecretKeyEntry).secretKey
+	}
+
+	override suspend fun encryptWithKeyAlias(plain: ByteArray, keyAlias: String): ByteArray {
+		if (ks.containsAlias(keyAlias).not()) {
+			generateHardwareBackedKey(HardwareSchemeConfig(false, 5.minutes, false), keyAlias)
+		}
+		return encryptWithHardwareBackedKey(plain, keyAlias)
+	}
+
+	override suspend fun decryptWithKeyAlias(encrypted: ByteArray, keyAlias: String): ByteArray {
+		return decryptWithHardwareBackedKey(encrypted, keyAlias)
 	}
 
 	/**
@@ -226,8 +237,8 @@ class HardwareBackedEncryptionScheme(
 	 * @param plain      The plain text byte array to be encrypted
 	 * @throws SecurityException if authentication is required but missing/expired
 	 */
-	private fun encryptWithHardwareBackedKey(plain: ByteArray): ByteArray {
-		val secretKey = getKeyEncryptionKey()
+	private fun encryptWithHardwareBackedKey(plain: ByteArray, keyAlias: String = KEY_ALIAS): ByteArray {
+		val secretKey = getHardwareEncryptionKey(keyAlias)
 
 		// Prepare cipher
 		val cipher = Cipher.getInstance(AES_GCM_MODE)
@@ -251,10 +262,10 @@ class HardwareBackedEncryptionScheme(
 	 * @throws SecurityException if authentication is required but missing/expired
 	 * @throws javax.crypto.AEADBadTagException on tampering or wrong key
 	 */
-	private fun decryptWithHardwareBackedKey(encrypted: ByteArray): ByteArray {
+	private fun decryptWithHardwareBackedKey(encrypted: ByteArray, keyAlias: String = KEY_ALIAS): ByteArray {
 		require(encrypted.size > IV_LENGTH_BYTES) { "Ciphertext too short" }
 
-		val secretKey = getKeyEncryptionKey()
+		val secretKey = getHardwareEncryptionKey(keyAlias)
 
 		// Split encrypted bytes into parts
 		val iv = encrypted.copyOfRange(0, IV_LENGTH_BYTES)
@@ -271,12 +282,14 @@ class HardwareBackedEncryptionScheme(
 
 	private fun dSaltFile(): File = File(keyDir(), DSALT_FILENAME)
 
-	private fun keyDir(): File {
+	// Only public for MigratePinHash
+	fun keyDir(): File {
 		return File(appContext.filesDir, DEK_DIRECTORY).apply { mkdirs() }
 	}
 
+	// Only public for MigratePinHash
 	@OptIn(ExperimentalEncodingApi::class)
-	private fun dekFile(hashedPin: HashedPin): File {
+	fun dekFile(hashedPin: HashedPin): File {
 		val decoded = String(Base64.decode(hashedPin.hash))
 		val hashed = Base64.UrlSafe.encode(hasher.hashBlocking(decoded.toByteArray()))
 		return File(keyDir(), "${DEK_FILENAME_PREFIX}_${hashed}")
