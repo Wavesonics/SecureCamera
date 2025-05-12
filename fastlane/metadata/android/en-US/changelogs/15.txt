@@ -1,0 +1,4 @@
+- Fixed crash in Gallery after photo delete
+- Added Session Watcher
+Sessions will now be terminated even if the app is backgrounded, evicting all sensitive data from memory.
+- Session Timeout now only starts ticking down when the app is backgrounded
