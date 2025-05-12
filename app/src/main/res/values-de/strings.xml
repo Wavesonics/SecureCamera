@@ -256,7 +256,18 @@
 	</string>
 	<string name="notification_permission_dialog_title">Benachrichtigungen erlauben</string>
 	<string name="notification_permission_button">Zulassen</string>
-	<string name="notification_permission_dialog_message">SnapSafe benötigt die Benachrichtigungsberechtigung, um den
+	<string name="notification_permission_dialog_message">SnapSafe benötigt die Benachrichtigungserlaubnis, um den
 		Fortschritt beim Importieren von Fotos im Hintergrund anzuzeigen.
+	</string>
+	<string name="session_worker_channel_name">Sitzungsstatus</string>
+	<string name="session_worker_notification_content">SnapSafe ist geöffnet.</string>
+	<string name="session_worker_notification_title">SnapSafe Aktiv</string>
+	<string name="session_worker_notification_close">Schließen</string>
+	<string name="session_worker_channel_description">Zeigt an, wenn SnapSafe aktiv ist</string>
+	<string name="pin_create_notification_rationale_title">Benachrichtigungen erlauben</string>
+	<string name="pin_create_notification_rationale_text">SnapSafe verwendet Benachrichtigungen nur, um Sie über die
+		Arbeiten, die möglicherweise im Hintergrund ausgeführt werden, auf dem Laufenden zu halten oder um Sie über den
+		aktuellen Sicherheitsstatus zu informieren. Es wird dringend empfohlen, Benachrichtigungen zuzulassen, ist
+		jedoch nicht erforderlich.
 	</string>
 </resources>

@@ -257,7 +257,17 @@
 	</string>
 	<string name="notification_permission_button">Autoriser</string>
 	<string name="notification_permission_dialog_title">Autoriser les notifications</string>
-	<string name="notification_permission_dialog_message">SnapSafe a besoin de la permission de notification pour
-		afficher la progression lors de l\'importation de photos en arrière-plan.
-	</string>
+    <string name="notification_permission_dialog_message">SnapSafe a besoin de l\'autorisation de notification pour
+        afficher l\'avancement lors de l\'importation de photos en arrière-plan.
+    </string>
+    <string name="session_worker_channel_name">État de la session</string>
+    <string name="session_worker_notification_content">SnapSafe est ouvert.</string>
+    <string name="session_worker_notification_title">SnapSafe Active</string>
+    <string name="session_worker_notification_close">Fermer</string>
+    <string name="session_worker_channel_description">Montre quand SnapSafe est actif</string>
+    <string name="pin_create_notification_rationale_title">Autoriser les notifications</string>
+    <string name="pin_create_notification_rationale_text">SnapSafe utilise uniquement les notifications pour vous
+        maintenir en contrôle des tâches qu\'il pourrait effectuer en arrière-plan, ou pour vous informer de l\'état de
+        sécurité actuel. Il est fortement recommandé de permettre les notifications, mais ce n\'est pas obligatoire.
+    </string>
 </resources>

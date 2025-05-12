@@ -254,7 +254,17 @@
 	</string>
 	<string name="notification_permission_button">Дозволити</string>
 	<string name="notification_permission_dialog_title">Дозволити сповіщення</string>
-	<string name="notification_permission_dialog_message">SnapSafe потребує дозволу на сповіщення, аби показувати
-		прогрес при імпорті фотографій у фоновому режимі.
-	</string>
+    <string name="notification_permission_dialog_message">SnapSafe потребує дозволу на сповіщення, щоб показати прогрес
+        під час імпортування фотографій у фоновому режимі.
+    </string>
+    <string name="session_worker_notification_title">SnapSafe Active</string>
+    <string name="session_worker_notification_content">SnapSafe відкрите</string>
+    <string name="session_worker_channel_name">Статус сеансу</string>
+    <string name="session_worker_notification_close">Закрити</string>
+    <string name="session_worker_channel_description">Показує, коли SnapSafe активний</string>
+    <string name="pin_create_notification_rationale_title">Дозволити сповіщення</string>
+    <string name="pin_create_notification_rationale_text">SnapSafe лише використовує сповіщення, щоб тримати вас під
+        контролем над роботою, яку вона може виконувати у фоновому режимі, або щоб повідомити вас про поточний статус
+        безпеки. Настійно рекомендовано дозволити сповіщення, але це не обов\'язково.
+    </string>
 </resources>

@@ -254,8 +254,18 @@
 		modelo de ameaça exigir.
 	</string>
 	<string name="notification_permission_dialog_title">Permitir Notificações</string>
-	<string name="notification_permission_dialog_message">O SnapSafe precisa de permissão de notificação para mostrar o
-		progresso ao importar fotos em segundo plano.
-	</string>
+    <string name="notification_permission_dialog_message">O SnapSafe precisa de permissão de notificação para mostrar o
+        progresso ao importar fotos em segundo plano.
+    </string>
 	<string name="notification_permission_button">Permitir</string>
+    <string name="session_worker_channel_name">Status da Sessão</string>
+    <string name="session_worker_notification_title">SnapSafe Ativo</string>
+    <string name="session_worker_notification_content">SnapSafe está aberto</string>
+    <string name="session_worker_channel_description">Mostra quando o SnapSafe está ativo.</string>
+    <string name="session_worker_notification_close">Fechar</string>
+    <string name="pin_create_notification_rationale_title">Permitir Notificações</string>
+    <string name="pin_create_notification_rationale_text">O SnapSafe usa notificações apenas para mantê-lo no controle
+        do trabalho que pode estar realizando em segundo plano ou para informá-lo sobre o status de segurança atual. É
+        altamente recomendável que você permita notificações, mas não é obrigatório.
+    </string>
 </resources>

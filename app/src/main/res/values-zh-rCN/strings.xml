@@ -238,4 +238,13 @@
 	<string name="notification_permission_button">允许</string>
 	<string name="notification_permission_dialog_title">允许通知</string>
 	<string name="notification_permission_dialog_message">SnapSafe 需要通知权限，以便在后台导入照片时显示进度。</string>
+    <string name="session_worker_channel_name">会话状态</string>
+    <string name="session_worker_notification_title">SnapSafe 活动</string>
+    <string name="session_worker_notification_content">SnapSafe 现在开放了。</string>
+    <string name="session_worker_notification_close">关闭</string>
+    <string name="session_worker_channel_description">显示 SnapSafe 何时处于活动状态</string>
+    <string name="pin_create_notification_rationale_title">允许通知</string>
+    <string name="pin_create_notification_rationale_text">SnapSafe
+        仅通过通知帮助您控制其可能在后台进行的工作，或告知您当前的安全状态。强烈建议您允许通知，但这并不是必须的。
+    </string>
 </resources>

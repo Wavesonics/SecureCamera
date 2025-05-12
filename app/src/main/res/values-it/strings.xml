@@ -255,7 +255,17 @@ Questo generalmente non è richiesto per la maggior parte degli utenti, ma è un
 	</string>
 	<string name="notification_permission_button">Consenti</string>
 	<string name="notification_permission_dialog_title">Consenti le notifiche</string>
-	<string name="notification_permission_dialog_message">SnapSafe ha bisogno del permesso di notifica per mostrare il
-		progresso durante l\'importazione delle foto in background.
-	</string>
+    <string name="notification_permission_dialog_message">SnapSafe ha bisogno dell\'autorizzazione per le notifiche per
+        mostrare il progresso durante l\'importazione delle foto in background.
+    </string>
+    <string name="session_worker_notification_title">SnapSafe Active</string>
+    <string name="session_worker_channel_name">Stato della sessione</string>
+    <string name="session_worker_notification_content">SnapSafe è aperto</string>
+    <string name="session_worker_channel_description">Mostra quando SnapSafe è attivo</string>
+    <string name="session_worker_notification_close">Chiudi</string>
+    <string name="pin_create_notification_rationale_title">Consenti notifiche</string>
+    <string name="pin_create_notification_rationale_text">SnapSafe utilizza le notifiche solo per tenerti in controllo
+        del lavoro che potrebbe fare in background o per informarti sullo stato di sicurezza attuale. Si consiglia
+        vivamente di consentire le notifiche, ma non è obbligatorio.
+    </string>
 </resources>
