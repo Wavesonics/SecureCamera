@@ -34,11 +34,11 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew test
     
-#      - name: Run Instrumentation Tests
-#        uses: reactivecircus/android-emulator-runner@v2
-#        with:
-#          api-level: 35
-#          target: default
-#          arch: x86_64
-#          profile: Nexus 6
-#          script: ./gradlew connectedCheck
+      - name: Run Instrumentation Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: default
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew connectedCheck

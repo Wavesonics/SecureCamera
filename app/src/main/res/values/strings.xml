@@ -117,6 +117,7 @@
     <string name="camera_settings_content_description">Settings</string>
     <string name="camera_permissions_required">Camera permissions are required.</string>
     <string name="camera_open_settings">Open Settings</string>
+    <string name="camera_shutter_button_desc">Take Photo</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
