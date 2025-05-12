@@ -64,6 +64,7 @@ android {
 	}
 	kotlinOptions {
 		jvmTarget = libs.versions.javaVersion.get()
+		freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.time.ExperimentalTime"
 	}
 	buildFeatures {
 		compose = true

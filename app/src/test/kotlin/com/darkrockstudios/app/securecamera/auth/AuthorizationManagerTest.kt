@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import com.darkrockstudios.app.securecamera.TestClock
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
@@ -25,6 +26,8 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 @ExperimentalCoroutinesApi
 class AuthorizationManagerTest {
@@ -35,6 +38,7 @@ class AuthorizationManagerTest {
 	private lateinit var dataStore: DataStore<Preferences>
 	private lateinit var encryptionManager: EncryptionScheme
 	private lateinit var pinRepository: PinRepository
+	private lateinit var clock: TestClock
 
 	private val configJson = Json.encodeToString(SoftwareSchemeConfig)
 
@@ -51,6 +55,7 @@ class AuthorizationManagerTest {
 		preferencesManager = spyk(AppPreferencesDataSource(context, dataStore))
 		encryptionManager = mockk(relaxed = true)
 		pinRepository = mockk()
+		clock = TestClock(Instant.fromEpochSeconds(1))
 
 		// Default mocks for PinRepository methods
 		coEvery { pinRepository.getHashedPin() } returns HashedPin("hashed_pin", "salt")
@@ -59,7 +64,7 @@ class AuthorizationManagerTest {
 		coEvery { pinRepository.verifyPoisonPillPin(any()) } returns true
 		coEvery { pinRepository.hasPoisonPillPin() } returns true
 
-		authManager = AuthorizationRepository(preferencesManager, pinRepository, encryptionManager)
+		authManager = AuthorizationRepository(preferencesManager, pinRepository, encryptionManager, context, clock)
 	}
 
 	@Test
@@ -317,7 +322,8 @@ class AuthorizationManagerTest {
 
 		// Create a new spy for preferencesManager for this test
 		val spyPreferencesManager = spyk(AppPreferencesDataSource(context, dataStore))
-		val testAuthManager = AuthorizationRepository(spyPreferencesManager, pinRepository, encryptionManager)
+		val testAuthManager =
+			AuthorizationRepository(spyPreferencesManager, pinRepository, encryptionManager, context, clock)
 
 		// Set up initial state
 		spyPreferencesManager.setAppPin(pin, configJson)
@@ -397,5 +403,44 @@ class AuthorizationManagerTest {
 
 		// Then
 		assertEquals(0, result)
+	}
+
+	@Test
+	fun `keepAliveSession should extend session validity`() = runTest {
+		// Given
+		val pin = "1234"
+		preferencesManager.setAppPin(pin, configJson)
+
+		// Set a session timeout
+		val sessionTimeout = 1000L // 1 second
+		preferencesManager.setSessionTimeout(sessionTimeout)
+
+		// Set initial time in the test clock
+		val initialTime = Instant.fromEpochMilliseconds(1000)
+		clock.fixedInstant = initialTime
+
+		// Authorize the session
+		authManager.verifyPin(pin)
+		assertTrue(authManager.isAuthorized.first())
+
+		// Advance time by half the session timeout
+		clock.fixedInstant = initialTime.plus((sessionTimeout / 2).milliseconds)
+
+		// Verify session is still valid
+		assertTrue(authManager.checkSessionValidity())
+
+		// Keep the session alive
+		authManager.keepAliveSession()
+
+		// Advance time beyond the original session timeout
+		// but within the timeout of the keep-alive
+		clock.fixedInstant = initialTime.plus((sessionTimeout + 100).milliseconds)
+
+		// When
+		val result = authManager.checkSessionValidity()
+
+		// Then
+		assertTrue(result)
+		assertTrue(authManager.isAuthorized.first())
 	}
 }

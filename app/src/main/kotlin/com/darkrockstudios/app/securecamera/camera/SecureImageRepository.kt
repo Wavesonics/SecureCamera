@@ -17,7 +17,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.time.ExperimentalTime
 import kotlin.time.toJavaInstant
 
 
@@ -170,7 +169,6 @@ class SecureImageRepository(
 		return updatedBytes
 	}
 
-	@OptIn(ExperimentalTime::class)
 	suspend fun saveImage(
 		image: CapturedImage,
 		latLng: GpsCoordinates?,

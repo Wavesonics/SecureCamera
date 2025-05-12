@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * Holds the mutable state and low‑level camera plumbing so that the UI composable is lightweight.
@@ -107,7 +106,6 @@ class CameraState internal constructor(
 	 * Suspend version of capturePhoto that returns a Result containing the JPEG bytes on success
 	 * or an exception on failure.
 	 */
-	@OptIn(ExperimentalTime::class)
 	@SuppressLint("MissingPermission")
 	suspend fun capturePhoto(): Result<CapturedImage> = suspendCoroutine { continuation ->
 		val capture = imageCapture ?: run {

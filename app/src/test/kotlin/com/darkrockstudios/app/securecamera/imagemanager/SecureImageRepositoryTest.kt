@@ -20,7 +20,6 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.ByteArrayOutputStream
 import java.io.File
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @ExperimentalCoroutinesApi
@@ -336,7 +335,6 @@ class SecureImageRepositoryTest {
 		assertEquals(2, count)
 	}
 
-	@OptIn(ExperimentalTime::class)
 	@Test
 	fun `saveImage should encrypt and save the image`() = runTest {
 		// Given

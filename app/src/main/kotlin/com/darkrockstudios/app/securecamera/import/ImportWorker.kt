@@ -26,7 +26,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 class ImportWorker(
@@ -48,7 +47,6 @@ class ImportWorker(
 		const val NOTIFICATION_ID = 1
 	}
 
-	@OptIn(ExperimentalTime::class)
 	override suspend fun doWork(): Result {
 		val photoUrisString = inputData.getStringArray(KEY_PHOTO_URIS) ?: return Result.failure()
 		val photoUris = photoUrisString.map { it.toUri() }

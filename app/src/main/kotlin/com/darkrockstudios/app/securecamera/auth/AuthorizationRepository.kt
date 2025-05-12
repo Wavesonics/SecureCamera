@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlin.math.pow
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 /**
  * Manages user authorization state, including PIN verification and session expiration.
@@ -19,6 +22,7 @@ class AuthorizationRepository(
 	private val pinRepository: PinRepository,
 	private val encryptionScheme: EncryptionScheme,
 	private val context: Context,
+	private val clock: Clock,
 ) {
 	companion object {
 		const val MAX_FAILED_ATTEMPTS = 10
@@ -27,7 +31,8 @@ class AuthorizationRepository(
 	private val _isAuthorized = MutableStateFlow(false)
 	val isAuthorized: StateFlow<Boolean> = _isAuthorized.asStateFlow()
 
-	private var lastAuthTimeMs: Long = 0
+	private var lastAuthTimeMs: Instant = Instant.DISTANT_PAST
+	private var lastKeepAliveMs: Instant = Instant.DISTANT_PAST
 
 	suspend fun securityFailureReset() {
 		preferences.securityFailureReset()
@@ -137,7 +142,7 @@ class AuthorizationRepository(
 	 * Also starts the SessionService to monitor session validity.
 	 */
 	private fun authorizeSession() {
-		lastAuthTimeMs = System.currentTimeMillis()
+		lastAuthTimeMs = clock.now()
 		_isAuthorized.value = true
 		startSessionService()
 	}
@@ -151,6 +156,16 @@ class AuthorizationRepository(
 	}
 
 	/**
+	 * Updates the keep-alive timestamp to extend the session validity
+	 * without requiring re-authentication.
+	 */
+	fun keepAliveSession() {
+		if (_isAuthorized.value) {
+			lastKeepAliveMs = clock.now()
+		}
+	}
+
+	/**
 	 * Checks if the current session is still valid or has expired.
 	 * @return True if the session is valid, false if it has expired
 	 */
@@ -159,9 +174,12 @@ class AuthorizationRepository(
 			return@runBlocking false
 		}
 
-		val sessionTimeoutMs = preferences.getSessionTimeout()
-		val currentTime = System.currentTimeMillis()
-		val sessionValid = (currentTime - lastAuthTimeMs) < sessionTimeoutMs
+		val sessionTimeoutMs = preferences.getSessionTimeout().milliseconds
+		val currentTime = clock.now()
+
+		// Use lastKeepAliveMs instead of lastAuthTimeMs if it's set
+		val timeToCheck = if (lastKeepAliveMs > Instant.DISTANT_PAST) lastKeepAliveMs else lastAuthTimeMs
+		val sessionValid = (currentTime - timeToCheck) < sessionTimeoutMs
 
 		if (!sessionValid) {
 			_isAuthorized.value = false
@@ -176,7 +194,8 @@ class AuthorizationRepository(
 	 */
 	fun revokeAuthorization() {
 		_isAuthorized.value = false
-		lastAuthTimeMs = 0
+		lastAuthTimeMs = Instant.DISTANT_PAST
+		lastKeepAliveMs = Instant.DISTANT_PAST
 		stopSessionService()
 	}
 }

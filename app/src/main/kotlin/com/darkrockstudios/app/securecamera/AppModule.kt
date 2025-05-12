@@ -27,11 +27,22 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import kotlin.time.Clock
 
 val appModule = module {
+
+	single { Clock.System } bind Clock::class
 	singleOf(::SecureImageRepository)
 	single<AppPreferencesDataSource> { AppPreferencesDataSource(context = get()) }
-	single { AuthorizationRepository(get(), get(), get(), get(), get()) }
+	single {
+		AuthorizationRepository(
+			preferences = get(),
+			pinRepository = get(),
+			encryptionScheme = get(),
+			context = get(),
+			clock = get()
+		)
+	}
 	singleOf(::LocationRepository)
 	single<EncryptionScheme> {
 		val detector = get<SecurityLevelDetector>()
