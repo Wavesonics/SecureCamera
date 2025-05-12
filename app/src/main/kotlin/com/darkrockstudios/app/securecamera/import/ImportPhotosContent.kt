@@ -1,14 +1,9 @@
 package com.darkrockstudios.app.securecamera.import
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -19,10 +14,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.ui.NotificationPermissionRationale
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
 
@@ -41,7 +36,10 @@ fun ImportPhotosContent(
 		showCancelDialog = true
 	}
 
-	NotificationPermissionRationale()
+	NotificationPermissionRationale(
+		title = R.string.notification_permission_dialog_title,
+		text = R.string.notification_permission_dialog_message,
+	)
 
 	if (showCancelDialog) {
 		CancelImportDialog(navController) {
@@ -193,59 +191,4 @@ private fun CancelImportDialog(navController: NavHostController, dismiss: () -> 
 			}
 		}
 	)
-}
-
-@Composable
-private fun NotificationPermissionRationale() {
-	val context = LocalContext.current
-
-	val showNotificationPermissionDialog = remember { mutableStateOf(false) }
-
-	val notificationPermissionLauncher = rememberLauncherForActivityResult(
-		contract = ActivityResultContracts.RequestPermission()
-	) { _ ->
-		// Noop
-	}
-
-	// Check if we need to request notification permission (API 33+)
-	LaunchedEffect(Unit) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			val notificationPermission = Manifest.permission.POST_NOTIFICATIONS
-			if (ContextCompat.checkSelfPermission(
-					context,
-					notificationPermission
-				) != PackageManager.PERMISSION_GRANTED
-			) {
-				showNotificationPermissionDialog.value = true
-			}
-		}
-	}
-
-	// Notification permission dialog (API 33+)
-	if (showNotificationPermissionDialog.value) {
-		AlertDialog(
-			onDismissRequest = { showNotificationPermissionDialog.value = false },
-			title = { Text(stringResource(id = R.string.notification_permission_dialog_title)) },
-			text = { Text(stringResource(id = R.string.notification_permission_dialog_message)) },
-			confirmButton = {
-				TextButton(
-					onClick = {
-						showNotificationPermissionDialog.value = false
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-							notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-						}
-					}
-				) {
-					Text(stringResource(id = R.string.notification_permission_button))
-				}
-			},
-			dismissButton = {
-				TextButton(
-					onClick = { showNotificationPermissionDialog.value = false }
-				) {
-					Text(stringResource(id = R.string.cancel_button))
-				}
-			}
-		)
-	}
 }

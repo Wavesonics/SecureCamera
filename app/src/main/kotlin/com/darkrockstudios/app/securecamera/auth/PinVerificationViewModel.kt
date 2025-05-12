@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.usecases.InvalidateSessionUseCase
 import com.darkrockstudios.app.securecamera.usecases.PinSizeUseCase
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 class PinVerificationViewModel(
 	private val appContext: Context,
 	private val authManager: AuthorizationRepository,
-	private val imageManager: SecureImageRepository,
+	private val invalidateSessionUseCase: InvalidateSessionUseCase,
 	private val securityResetUseCase: SecurityResetUseCase,
 	private val verifyPinUseCase: VerifyPinUseCase,
 	private val pinSizeUseCase: PinSizeUseCase,
@@ -155,11 +155,7 @@ class PinVerificationViewModel(
 		}
 	}
 
-	fun invalidateSession() {
-		imageManager.evictKey()
-		imageManager.thumbnailCache.clear()
-		authManager.revokeAuthorization()
-	}
+	fun invalidateSession() = invalidateSessionUseCase.invalidateSession()
 }
 
 enum class PinVerificationError {

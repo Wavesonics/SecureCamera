@@ -31,7 +31,7 @@ import org.koin.dsl.module
 val appModule = module {
 	singleOf(::SecureImageRepository)
 	single<AppPreferencesDataSource> { AppPreferencesDataSource(context = get()) }
-	singleOf(::AuthorizationRepository)
+	single { AuthorizationRepository(get(), get(), get(), get(), get()) }
 	singleOf(::LocationRepository)
 	single<EncryptionScheme> {
 		val detector = get<SecurityLevelDetector>()
@@ -68,6 +68,7 @@ val appModule = module {
 	factoryOf(::PinSizeUseCase)
 	factoryOf(::RemovePoisonPillIUseCase)
 	factoryOf(::MigratePinHash)
+	factoryOf(::InvalidateSessionUseCase)
 
 	viewModelOf(::ObfuscatePhotoViewModel)
 	viewModelOf(::ViewPhotoViewModel)

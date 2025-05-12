@@ -1,5 +1,6 @@
 package com.darkrockstudios.app.securecamera.auth
 
+import android.content.Context
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import com.darkrockstudios.app.securecamera.security.pin.PinRepository
@@ -17,6 +18,7 @@ class AuthorizationRepository(
 	private val preferences: AppPreferencesDataSource,
 	private val pinRepository: PinRepository,
 	private val encryptionScheme: EncryptionScheme,
+	private val context: Context,
 ) {
 	companion object {
 		const val MAX_FAILED_ATTEMPTS = 10
@@ -132,10 +134,20 @@ class AuthorizationRepository(
 
 	/**
 	 * Marks the current session as authorized and updates the last authentication time.
+	 * Also starts the SessionService to monitor session validity.
 	 */
 	private fun authorizeSession() {
 		lastAuthTimeMs = System.currentTimeMillis()
 		_isAuthorized.value = true
+		startSessionService()
+	}
+
+	private fun startSessionService() {
+		SessionService.startService(context)
+	}
+
+	private fun stopSessionService() {
+		SessionService.stopService(context)
 	}
 
 	/**
@@ -160,9 +172,11 @@ class AuthorizationRepository(
 
 	/**
 	 * Explicitly revokes the current authorization session.
+	 * Also stops the SessionService.
 	 */
 	fun revokeAuthorization() {
 		_isAuthorized.value = false
 		lastAuthTimeMs = 0
+		stopSessionService()
 	}
 }

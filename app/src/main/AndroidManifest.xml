@@ -66,8 +66,8 @@
                 android:grantUriPermissions="true"/>
 
         <service
-                android:name="androidx.work.impl.foreground.SystemForegroundService"
-                android:foregroundServiceType="dataSync"/>
+                android:name=".auth.SessionService"
+                android:exported="false"/>
 
         <receiver
                 android:name=".import.ImportCancelReceiver"

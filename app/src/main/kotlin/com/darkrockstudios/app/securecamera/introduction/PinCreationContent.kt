@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.ui.NotificationPermissionRationale
 
 /**
  * Content for PIN creation
@@ -175,4 +176,9 @@ fun PinCreationContent(
 			}
 		}
 	}
+
+	NotificationPermissionRationale(
+		title = R.string.pin_create_notification_rationale_title,
+		text = R.string.pin_create_notification_rationale_text,
+	)
 }
