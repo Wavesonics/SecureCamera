@@ -266,4 +266,5 @@
         control del trabajo que puede estar realizando en segundo plano, o para informarte sobre el estado de seguridad
         actual. Se recomienda encarecidamente que permitas las notificaciones, pero no es obligatorio.
     </string>
+    <string name="camera_shutter_button_desc">Tomar foto</string>
 </resources>

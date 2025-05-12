@@ -268,4 +268,5 @@
         do trabalho que pode estar realizando em segundo plano ou para informá-lo sobre o status de segurança atual. É
         altamente recomendável que você permita notificações, mas não é obrigatório.
     </string>
+    <string name="camera_shutter_button_desc">Tirar Foto</string>
 </resources>

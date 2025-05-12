@@ -270,4 +270,5 @@
 		aktuellen Sicherheitsstatus zu informieren. Es wird dringend empfohlen, Benachrichtigungen zuzulassen, ist
 		jedoch nicht erforderlich.
 	</string>
+	<string name="camera_shutter_button_desc">Foto aufnehmen</string>
 </resources>

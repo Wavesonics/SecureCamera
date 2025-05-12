@@ -270,4 +270,5 @@
         maintenir en contrôle des tâches qu\'il pourrait effectuer en arrière-plan, ou pour vous informer de l\'état de
         sécurité actuel. Il est fortement recommandé de permettre les notifications, mais ce n\'est pas obligatoire.
     </string>
+    <string name="camera_shutter_button_desc">Prendre une photo</string>
 </resources>

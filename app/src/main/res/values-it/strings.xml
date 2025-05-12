@@ -268,4 +268,5 @@ Questo generalmente non è richiesto per la maggior parte degli utenti, ma è un
         del lavoro che potrebbe fare in background o per informarti sullo stato di sicurezza attuale. Si consiglia
         vivamente di consentire le notifiche, ma non è obbligatorio.
     </string>
+    <string name="camera_shutter_button_desc">Scatta foto</string>
 </resources>
