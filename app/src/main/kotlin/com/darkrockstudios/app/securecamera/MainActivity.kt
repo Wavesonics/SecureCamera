@@ -9,14 +9,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
+import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : ComponentActivity() {
 	private var capturePhoto = mutableStateOf<Boolean?>(null)
@@ -42,6 +50,8 @@ class MainActivity : ComponentActivity() {
 			navController = rememberNavController()
 			App(capturePhoto, startDestination, navController)
 		}
+
+		startKeepAliveWatcher()
 	}
 
 	private fun determineStartRoute(): String {
@@ -83,6 +93,24 @@ class MainActivity : ComponentActivity() {
 	override fun onResume() {
 		super.onResume()
 		locationRepository.refreshPermissionStatus()
+	}
+
+	private fun startKeepAliveWatcher() {
+		lifecycleScope.launch {
+			repeatOnLifecycle(Lifecycle.State.RESUMED) {
+				Timber.d("Starting session keep-alive watcher")
+				while (isActive) {
+					if (authorizationRepository.checkSessionValidity()) {
+						authorizationRepository.keepAliveSession()
+						Timber.d("Session keep-alive ping sent")
+					} else {
+						Timber.d("No valid session, do not send keep-alive")
+					}
+					delay(30.seconds)
+				}
+				Timber.d("Stopping session keep-alive watcher")
+			}
+		}
 	}
 
 	private fun receiveFiles(): List<Uri> {
