@@ -75,7 +75,7 @@ jobs:
           script: |
             adb wait-for-device
             adb shell input keyevent 82
-            ./gradlew connectedDebugAndroidTest --continue
+            ./gradlew connectedOssDebugAndroidTest --continue
 
       - name: Upload Test Reports
         if: failure()
