@@ -3,6 +3,7 @@ plugins {
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
 	alias(libs.plugins.kotlin.serialization)
+	alias(libs.plugins.screenshot)
 	id("kotlin-parcelize")
 }
 
@@ -74,6 +75,12 @@ android {
 		includeInApk = false
 		includeInBundle = false
 	}
+	experimentalProperties["android.experimental.enableScreenshotTest"] = true
+	testOptions {
+		screenshotTests {
+			imageDifferenceThreshold = 0.0001f // 0.01%
+		}
+	}
 }
 
 dependencies {
@@ -135,4 +142,5 @@ dependencies {
 	debugImplementation(libs.ui.test.manifest)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
+	screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }
