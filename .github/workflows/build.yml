@@ -52,14 +52,12 @@ jobs:
             ~/.android/adb*
           key: avd-${{ matrix.api-level }}
 
-
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-front emulated -camera-back emulated
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
@@ -73,7 +71,7 @@ jobs:
           script: |
             adb wait-for-device
             adb shell input keyevent 82
-            ./gradlew connectedAndroidTest --continue
+            ./gradlew connectedDebugAndroidTest --continue
 
       - name: Upload Test Reports
         if: failure()
