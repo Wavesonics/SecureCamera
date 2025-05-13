@@ -36,6 +36,15 @@ android {
 		}
 	}
 
+	flavorDimensions += "version"
+	productFlavors {
+		create("oss") {
+			dimension = "version"
+		}
+		create("full") {
+			dimension = "version"
+		}
+	}
 	buildTypes {
 		release {
 			isMinifyEnabled = true
@@ -55,6 +64,7 @@ android {
 	}
 	kotlinOptions {
 		jvmTarget = libs.versions.javaVersion.get()
+		freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.time.ExperimentalTime"
 	}
 	buildFeatures {
 		compose = true
@@ -103,9 +113,11 @@ dependencies {
 	implementation(libs.androidx.lifecycle.runtime.compose)
 	implementation(libs.zoomable)
 	implementation(libs.androidx.runtime.livedata)
-	implementation(libs.face.detection)
 	implementation(libs.bcrypt)
 	implementation(libs.androidx.work.runtime.ktx)
+	implementation(libs.argon2kt)
+
+	"fullImplementation"(libs.face.detection)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.koin.test.junit4)
@@ -114,11 +126,13 @@ dependencies {
 	testImplementation(libs.kotlinx.coroutines.test)
 	testImplementation(kotlin("test"))
 	androidTestImplementation(libs.androidx.junit)
-	androidTestImplementation(libs.androidx.espresso.core)
+	androidTestImplementation(libs.androidx.rules)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
 	androidTestImplementation(libs.androidx.ui.test.junit4)
 	androidTestImplementation(libs.mockk.android)
 	androidTestImplementation(libs.mockk.agent)
+	androidTestImplementation(libs.ui.test.junit4)
+	debugImplementation(libs.ui.test.manifest)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 }

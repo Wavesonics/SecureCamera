@@ -72,11 +72,25 @@
     <string name="import_chooser_intent_title">Select Photos to Import</string>
     <string name="import_error_no_photos">Error: no photos to import</string>
 
+    <!-- Notification Permission -->
+    <string name="notification_permission_dialog_title">Allow Notifications</string>
+    <string name="notification_permission_dialog_message">SnapSafe needs notification permission to show progress when
+        importing photos in the background.
+    </string>
+    <string name="notification_permission_button">Allow</string>
+
     <!-- Import Worker -->
     <string name="import_worker_notification_title">Importing Photos</string>
     <string name="import_worker_notification_content">Importing photo %1$d of %2$d</string>
     <string name="import_worker_channel_name">Photo Import</string>
     <string name="import_worker_channel_description">Shows progress of photo import</string>
+
+    <!-- Session Worker -->
+    <string name="session_worker_notification_title">SnapSafe Active</string>
+    <string name="session_worker_notification_content">SnapSafe is open</string>
+    <string name="session_worker_channel_name">Session Status</string>
+    <string name="session_worker_channel_description">Shows when SnapSafe is active</string>
+    <string name="session_worker_notification_close">Close</string>
 
     <!-- Gallery Screen -->
     <string name="gallery_title">Gallery</string>
@@ -103,6 +117,7 @@
     <string name="camera_settings_content_description">Settings</string>
     <string name="camera_permissions_required">Camera permissions are required.</string>
     <string name="camera_open_settings">Open Settings</string>
+    <string name="camera_shutter_button_desc">Take Photo</string>
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
@@ -192,13 +207,19 @@
     <string name="about_open_source">Open Source</string>
     <string name="about_open_source_description">SnapSafe is an open source project. View the source code on GitHub:
     </string>
-    <string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+    <string translatable="false" name="about_promo_url">https://snapsafe.org</string>
+    <string translatable="false" name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid
+    </string>
     <string name="about_privacy_policy">Privacy Policy</string>
     <string name="about_privacy_policy_description">Read our privacy policy:</string>
-    <string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
+    <string translatable="false" name="about_privacy_policy_url">
+        https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
+    </string>
     <string name="about_report_bugs">Report Bugs</string>
     <string name="about_report_bugs_description">Found a bug? Report it on GitHub:</string>
-    <string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
+    <string translatable="false" name="about_report_bugs_url">
+        https://github.com/SecureCamera/SecureCameraAndroid/issues
+    </string>
 
     <!-- Location Dialog -->
     <string name="location_dialog_title_denied">Request Location Permission</string>
@@ -274,6 +295,12 @@
     <string name="pin_show_description">Show PIN</string>
     <string name="pin_hide_description">Hide PIN</string>
 
+    <string name="pin_create_notification_rationale_title">Allow Notifications</string>
+    <string name="pin_create_notification_rationale_text">SnapSafe only uses notifications to keep you in control of
+        work it may be doing in the background, or to inform you of the current security status. It is strongly
+        recommended that you allow notifications, but it is not required.
+    </string>
+
     <!-- Security Introduction -->
     <string name="security_intro_icon">Security Selection</string>
     <string name="security_intro_supported_security_label">Your Security Is:</string>
@@ -341,4 +368,5 @@
     <string name="pin_verification_wipe_warning">%1$d failed attempts will result in a full data wipe.\nALL PHOTOS WILL
         BE LOST!
     </string>
+
 </resources>

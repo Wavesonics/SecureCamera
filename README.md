@@ -2,12 +2,12 @@
 
 *The camera that minds its own business.*
 
-[![codebeat badge](https://codebeat.co/badges/ca9cc888-4897-46a2-ba22-809a778ab57d)](https://codebeat.co/projects/github-com-wavesonics-securecamera-main)
+[![codebeat badge](https://codebeat.co/badges/1d47f0fa-2155-4e63-85ba-aafd01812d8c)](https://codebeat.co/projects/github-com-securecamera-securecameraandroid-main)
 
 _Available on:_
 
 [![Google Play](https://img.shields.io/endpoint?color=green&logo=google-play&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.darkrockstudios.app.securecamera%26l%3DGoogle%2520Play%26m%3D%24version)](https://play.google.com/store/apps/details?id=com.darkrockstudios.app.securecamera)
-[![GitHub](https://img.shields.io/github/v/release/Wavesonics/SecureCamera?include_prereleases&logo=github)](https://github.com/Wavesonics/SecureCamera/releases/latest)
+[![GitHub](https://img.shields.io/github/v/release/SecureCamera/SecureCameraAndroid?include_prereleases&logo=github)](https://github.com/SecureCamera/SecureCameraAndroid/releases/latest)
 
 **SnapSafe** is an Android camera app that keeps every pixel—and every byte of data—exactly where it belongs: on **your
 **

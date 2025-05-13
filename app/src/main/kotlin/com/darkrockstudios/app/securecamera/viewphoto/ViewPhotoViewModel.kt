@@ -9,6 +9,7 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.share.sharePhotoWithProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
@@ -19,6 +20,7 @@ class ViewPhotoViewModel(
 	private val appContext: Context,
 	private val imageManager: SecureImageRepository,
 	private val preferencesManager: AppPreferencesDataSource,
+	private val pinRepository: PinRepository,
 ) : BaseViewModel<ViewPhotoUiState>() {
 
 	var currentIndex: Int = 0
@@ -33,7 +35,7 @@ class ViewPhotoViewModel(
 		val initialIndex = photos.indexOfFirst { it == initialPhoto }
 
 		viewModelScope.launch {
-			val hasPoisonPill = preferencesManager.hasPoisonPillPin()
+			val hasPoisonPill = pinRepository.hasPoisonPillPin()
 			val isDecoy = imageManager.isDecoyPhoto(initialPhoto)
 
 			_uiState.update {

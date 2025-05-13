@@ -11,9 +11,6 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,7 +18,8 @@ import timber.log.Timber
 
 class ObfuscatePhotoViewModel(
 	private val appContext: Context,
-	private val imageManager: SecureImageRepository
+	private val imageManager: SecureImageRepository,
+	private val facialDetection: FacialDetection,
 ) : BaseViewModel<ObfuscatePhotoUiState>() {
 
 	override fun createState() = ObfuscatePhotoUiState()
@@ -44,14 +42,6 @@ class ObfuscatePhotoViewModel(
 			state.copy(regions = regions)
 		}
 	}
-
-	private val detector = FaceDetection.getClient(
-		FaceDetectorOptions.Builder()
-			.setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
-			.setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-			.setMinFaceSize(0.02f)
-			.build()
-	)
 
 	fun loadPhoto(photoName: String) {
 		viewModelScope.launch {
@@ -78,24 +68,22 @@ class ObfuscatePhotoViewModel(
 		_uiState.update { it.copy(isFindingFaces = true) }
 		viewModelScope.launch(Dispatchers.IO) {
 			uiState.value.originalBitmap?.let { bitmap ->
-				val inputImage = InputImage.fromBitmap(bitmap, 0)
-				detector.process(inputImage)
-					.addOnSuccessListener { foundFaces ->
-						_uiState.update { state ->
-							val newRegions = foundFaces.map { FaceRegion(it) }
-							val manualRegions = state.regions.filter { it !is FaceRegion }
+				val foundFaces = facialDetection.processForFaces(bitmap)
 
-							state.copy(
-								regions = newRegions + manualRegions,
-								isFindingFaces = false
-							)
-						}
-						Timber.i("Found ${foundFaces.size} faces")
+				if (foundFaces.isNotEmpty()) {
+					val newRegions = foundFaces.map { FaceRegion(it) }
+					val manualRegions = uiState.value.regions.filter { it !is FaceRegion }
+					_uiState.update { state ->
+						state.copy(
+							regions = newRegions + manualRegions,
+							isFindingFaces = false
+						)
 					}
-					.addOnFailureListener { e ->
-						Timber.e(e, "Failed face detection in Image")
-						_uiState.update { it.copy(isFindingFaces = false) }
-					}
+					Timber.i("Found ${foundFaces.size} faces")
+				} else {
+					_uiState.update { it.copy(isFindingFaces = false) }
+					Timber.w("Failed face detection in Image")
+				}
 			} ?: run {
 				Timber.e("findFaces: originalBitmap was null")
 				_uiState.update { it.copy(isFindingFaces = false) }

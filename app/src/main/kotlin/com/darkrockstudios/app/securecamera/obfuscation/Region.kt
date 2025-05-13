@@ -1,7 +1,6 @@
 package com.darkrockstudios.app.securecamera.obfuscation
 
 import android.graphics.Rect
-import com.google.mlkit.vision.face.Face
 
 sealed class Region(
 	val rect: Rect,
@@ -9,7 +8,7 @@ sealed class Region(
 )
 
 class FaceRegion(
-	val face: Face,
+	val face: FacialDetection.FoundFace,
 	obfuscate: Boolean = true,
 ) : Region(face.boundingBox, obfuscate)
 

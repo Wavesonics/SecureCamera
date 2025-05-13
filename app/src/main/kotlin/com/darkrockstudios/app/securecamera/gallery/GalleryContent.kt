@@ -50,6 +50,10 @@ fun GalleryContent(
 	val viewModel: GalleryViewModel = koinViewModel()
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+	LaunchedEffect(Unit) {
+		viewModel.loadPhotos()
+	}
+
 	val startSelectionWithVibration = { photoName: String ->
 		viewModel.startSelectionMode(photoName)
 		vibrateDevice(context)
@@ -172,7 +176,7 @@ private fun PhotoItem(
 	LaunchedEffect(photo.photoName) {
 		if (thumbnailBitmap == null) {
 			scope.launch(limitedDispatcher) {
-				thumbnailBitmap = imageManager.readThumbnail(photo).asImageBitmap()
+				thumbnailBitmap = imageManager.readThumbnail(photo)?.asImageBitmap()
 			}
 		}
 	}

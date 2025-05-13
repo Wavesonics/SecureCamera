@@ -1,6 +1,6 @@
 package com.darkrockstudios.app.securecamera.camera
 
-import androidx.camera.core.*
+import androidx.camera.core.CameraSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.core.animateFloatAsState
@@ -29,7 +29,7 @@ fun rememberCameraState(initialLensFacing: Int = CameraSelector.LENS_FACING_BACK
 
 	val provider = remember { ProcessCameraProvider.getInstance(context).get() }
 	val previewView = remember {
-		PreviewView(context).apply { scaleType = PreviewView.ScaleType.FILL_CENTER }
+		PreviewView(context).apply { scaleType = PreviewView.ScaleType.FIT_CENTER }
 	}
 
 	val state = remember {

@@ -1,5 +1,6 @@
 package com.darkrockstudios.app.securecamera.security.schemes
 
+import com.darkrockstudios.app.securecamera.ReentrantMutex
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import com.darkrockstudios.app.securecamera.security.DeviceInfo
 import com.darkrockstudios.app.securecamera.security.KeyParams
@@ -8,8 +9,6 @@ import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.AES
 import dev.whyoleg.cryptography.algorithms.PBKDF2
 import dev.whyoleg.cryptography.algorithms.SHA256
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import java.io.File
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -22,7 +21,7 @@ open class SoftwareEncryptionScheme(
 ) : EncryptionScheme {
 	private val provider = CryptographyProvider.Default
 	protected var key: ShardedKey? = null
-	protected val keyMutex = Mutex()
+	protected val keyMutex = ReentrantMutex()
 	protected val defaultKeyParams = KeyParams()
 
 	override fun evictKey() {
@@ -45,13 +44,25 @@ open class SoftwareEncryptionScheme(
 		encryptToFile(plain = plain, keyBytes = keyBytes, targetFile = targetFile)
 	}
 
-	override suspend fun encryptToFile(plain: ByteArray, keyBytes: ByteArray, targetFile: File) {
+	override suspend fun encrypt(plain: ByteArray, keyBytes: ByteArray): ByteArray {
 		val aesKey = provider
 			.get(AES.GCM)
 			.keyDecoder()
 			.decodeFromByteArray(AES.Key.Format.RAW, keyBytes)
-		val encryptedBytes = aesKey.cipher().encrypt(plain)
+		return aesKey.cipher().encrypt(plain)
+	}
+
+	override suspend fun encryptToFile(plain: ByteArray, keyBytes: ByteArray, targetFile: File) {
+		val encryptedBytes = encrypt(plain, keyBytes)
 		targetFile.writeBytes(encryptedBytes)
+	}
+
+	override suspend fun encryptWithKeyAlias(plain: ByteArray, keyAlias: String): ByteArray {
+		throw NotImplementedError("SoftwareEncryptionScheme can not implement Key Aliases")
+	}
+
+	override suspend fun decryptWithKeyAlias(encrypted: ByteArray, keyAlias: String): ByteArray {
+		throw NotImplementedError("SoftwareEncryptionScheme can not implement Key Aliases")
 	}
 
 	/**

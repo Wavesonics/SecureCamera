@@ -9,12 +9,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
@@ -22,11 +29,13 @@ import com.darkrockstudios.app.securecamera.navigation.AppDestinations
 
 @Composable
 fun BottomCameraControls(
-	modifier: Modifier = Modifier.Companion,
+	modifier: Modifier = Modifier,
 	onCapture: (() -> Unit)?,
 	isLoading: Boolean,
 	navController: NavHostController,
 ) {
+	val context = LocalContext.current
+
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
@@ -35,22 +44,25 @@ fun BottomCameraControls(
 		ElevatedButton(
 			onClick = { navController.navigate(AppDestinations.SETTINGS_ROUTE) },
 			enabled = isLoading.not(),
-			modifier = Modifier.Companion.align(Alignment.Companion.BottomStart),
+			modifier = Modifier.align(Alignment.BottomStart),
 		) {
 			Icon(
 				imageVector = Icons.Filled.Settings,
 				contentDescription = stringResource(R.string.camera_settings_button),
-				modifier = Modifier.Companion.size(32.dp),
+				modifier = Modifier.size(32.dp),
 			)
 		}
 
 		if (onCapture != null) {
 			FilledTonalButton(
 				onClick = onCapture,
-				modifier = Modifier.Companion
+				modifier = Modifier
 					.size(80.dp)
 					.clip(CircleShape)
-					.align(Alignment.Companion.BottomCenter),
+					.align(Alignment.BottomCenter)
+					.semantics {
+						contentDescription = context.getString(R.string.camera_shutter_button_desc)
+					},
 				colors = ButtonDefaults.filledTonalButtonColors(
 					containerColor = MaterialTheme.colorScheme.primary,
 				),
@@ -59,7 +71,7 @@ fun BottomCameraControls(
 					imageVector = Icons.Filled.Camera,
 					contentDescription = stringResource(id = R.string.camera_capture_content_description),
 					tint = MaterialTheme.colorScheme.onPrimary,
-					modifier = Modifier.Companion.size(32.dp),
+					modifier = Modifier.size(32.dp),
 				)
 			}
 		}
@@ -67,12 +79,12 @@ fun BottomCameraControls(
 		ElevatedButton(
 			onClick = { navController.navigate(AppDestinations.GALLERY_ROUTE) },
 			enabled = isLoading.not(),
-			modifier = Modifier.Companion.align(Alignment.Companion.BottomEnd),
+			modifier = Modifier.align(Alignment.BottomEnd),
 		) {
 			Icon(
 				imageVector = Icons.Filled.PhotoLibrary,
 				contentDescription = stringResource(id = R.string.camera_gallery_content_description),
-				modifier = Modifier.Companion.size(32.dp),
+				modifier = Modifier.size(32.dp),
 			)
 		}
 	}

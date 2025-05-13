@@ -1,0 +1,22 @@
+SnapSafe es una aplicación de cámara que mantiene cada píxel—y cada byte de datos—exactamente donde pertenece: en TU dispositivo.
+
+¿Por qué SnapSafe?
+Capturamos fotos localmente, ciframos todo en almacenamiento privado, dejamos que TÚ decidas si se añaden etiquetas GPS y eliminamos automáticamente los metadatos reveladores.
+
+Gratis y de código abierto, para siempre.
+
+NUNCA llamamos a casa ni nos conectamos a servidores, no recopilamos analíticas ni estadísticas de uso, no incluimos anuncios ni rastreadores en el código, ni leemos archivos fuera de nuestro sandbox.
+
+Funciones clave:
+• Diseño sin fugas – El manifiesto omite android.permission.INTERNET; nada sale de tu dispositivo.
+• Totalmente cifrado – Las capturas se guardan en el almacenamiento privado de la app usando cifrado robusto.
+• Limpieza de metadatos – El EXIF y otros identificadores se eliminan en cuanto pulsas Compartir.
+• Compartir seguro – Cuando compartes, entregamos el archivo mediante la hoja de compartir nativa de Android—sin desvíos.
+• Anti-doxing – Difumina automáticamente las caras antes de compartir fotos.
+• Galería protegida con PIN – Un PIN independiente se interpone entre pulgares curiosos y tus fotos.
+• Ubicación granular – Añade datos de ubicación gruesa, precisa o ninguno—tú eliges.
+• 100 % de código abierto – Código auditable a la vista de todos.
+• Píldora venenosa – Configura un PIN especial que, al introducirse, parece funcionar con normalidad pero borra tus fotos existentes.
+• Fotos señuelo – Selecciona fotos inocuas como señuelo; se conservarán cuando se active la Píldora venenosa, para que tu galería no quede sospechosamente vacía.
+
+Política de privacidad: No recogemos nada.

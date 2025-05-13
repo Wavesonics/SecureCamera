@@ -11,9 +11,11 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
+import org.koin.dsl.module
 import timber.log.Timber
 
-class SnapSafeApplication : Application(), KoinComponent {
+open class SnapSafeApplication : Application(), KoinComponent {
 	private val imageManager by inject<SecureImageRepository>()
 	private val preferences by inject<AppPreferencesDataSource>()
 	private val securityReset by inject<SecurityResetUseCase>()
@@ -30,11 +32,13 @@ class SnapSafeApplication : Application(), KoinComponent {
 		startKoin {
 			androidLogger()
 			androidContext(this@SnapSafeApplication)
-			modules(appModule)
+			modules(appModule, flavorModule())
 		}
 
 		handleMigrationFromBeta()
 	}
+
+	open fun flavorModule(): Module = module { }
 
 	override fun onTrimMemory(level: Int) {
 		super.onTrimMemory(level)

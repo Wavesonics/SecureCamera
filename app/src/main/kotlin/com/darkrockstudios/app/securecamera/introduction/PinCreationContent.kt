@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.pinSize
+import com.darkrockstudios.app.securecamera.ui.NotificationPermissionRationale
 
 /**
  * Content for PIN creation
@@ -88,7 +88,7 @@ fun PinCreationContent(
 			OutlinedTextField(
 				value = pin,
 				onValueChange = { newPin ->
-					if (newPin.length <= pinSize.max() && newPin.all { char -> char.isDigit() }) {
+					if (newPin.length <= uiState.pinSize.max() && newPin.all { char -> char.isDigit() }) {
 						pin = newPin
 					}
 				},
@@ -119,7 +119,7 @@ fun PinCreationContent(
 			OutlinedTextField(
 				value = confirmPin,
 				onValueChange = { newConfirmPin ->
-					if (newConfirmPin.length <= pinSize.max() && newConfirmPin.all { char -> char.isDigit() }) {
+					if (newConfirmPin.length <= uiState.pinSize.max() && newConfirmPin.all { char -> char.isDigit() }) {
 						confirmPin = newConfirmPin
 					}
 				},
@@ -148,7 +148,7 @@ fun PinCreationContent(
 			// Create PIN button
 			Button(
 				onClick = { viewModel.createPin(pin, confirmPin) },
-				enabled = (pin.length in pinSize && confirmPin.length in pinSize) && !uiState.isCreatingPin,
+				enabled = (pin.length in uiState.pinSize && confirmPin.length in uiState.pinSize) && !uiState.isCreatingPin,
 				modifier = Modifier.fillMaxWidth()
 			) {
 				Text(stringResource(R.string.pin_creation_button))
@@ -176,4 +176,9 @@ fun PinCreationContent(
 			}
 		}
 	}
+
+	NotificationPermissionRationale(
+		title = R.string.pin_create_notification_rationale_title,
+		text = R.string.pin_create_notification_rationale_text,
+	)
 }

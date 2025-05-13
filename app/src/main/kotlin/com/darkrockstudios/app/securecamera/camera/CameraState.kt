@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.ExecutorService
@@ -16,7 +13,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * Holds the mutable state and low‑level camera plumbing so that the UI composable is lightweight.
@@ -31,15 +27,15 @@ class CameraState internal constructor(
 ) {
 	private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
-	var lensFacing by mutableStateOf(initialLensFacing)
+	var lensFacing by mutableIntStateOf(initialLensFacing)
 		private set
 
 	var camera: Camera? by mutableStateOf(null)
 		private set
 
-	var minZoom by mutableStateOf(1f)
+	var minZoom by mutableFloatStateOf(1f)
 		private set
-	var maxZoom by mutableStateOf(1f)
+	var maxZoom by mutableFloatStateOf(1f)
 		private set
 
 	var focusOffset by mutableStateOf<Offset?>(null)
@@ -51,7 +47,7 @@ class CameraState internal constructor(
 
 	private var imageCapture: ImageCapture? = null
 
-	private var _flashMode by mutableStateOf(initialFlashMode)
+	private var _flashMode by mutableIntStateOf(initialFlashMode)
 	var flashMode: Int
 		get() = _flashMode
 		set(value) {
@@ -110,7 +106,6 @@ class CameraState internal constructor(
 	 * Suspend version of capturePhoto that returns a Result containing the JPEG bytes on success
 	 * or an exception on failure.
 	 */
-	@OptIn(ExperimentalTime::class)
 	@SuppressLint("MissingPermission")
 	suspend fun capturePhoto(): Result<CapturedImage> = suspendCoroutine { continuation ->
 		val capture = imageCapture ?: run {

@@ -1,0 +1,2 @@
+- Improved PIN hashing security
+- Camera Preview no longer crops the frame

@@ -3,7 +3,7 @@
 	<string name="delete_photo_title_plural">Fotos löschen</string>
 	<string name="delete_photo_message_singular">Sind Sie sicher, dass Sie dieses Foto löschen möchten?</string>
 	<string name="delete_photo_title_singular">Foto löschen</string>
-	<string name="app_name">SnapSafe</string>
+	<string name="app_name">SnapTresor</string>
 	<string name="delete_photo_message_plural">Sind Sie sicher, dass Sie diese %1$d Fotos löschen möchten?</string>
 	<string name="delete_button">Löschen</string>
 	<string name="cancel_button">Abbrechen</string>
@@ -95,21 +95,22 @@
 	<string name="remove_poison_pill_complete">Giftpille entfernt</string>
 	<string name="decoy_explanation_dialog_title">Decoy-Fotos-System</string>
 	<string name="decoy_explanation_dialog_ok_button">In Ordnung</string>
-	<string name="settings_about_button">Über SnapSafe</string>
-	<string name="about_title">Über SnapSafe</string>
+	<string name="settings_about_button">Über SnapTresor</string>
+	<string name="about_title">Über SnapTresor</string>
 	<string name="about_version">Version</string>
 	<string name="about_back_description">Zurück</string>
-	<string name="about_description">SnapSafe ist eine datenschutzorientierte Kamera-App, die entwickelt wurde, um Ihre sensiblen Fotos mit starker Verschlüsselung und sicherem Speicher zu schützen.</string>
+	<string name="about_description">SnapTresor ist eine datenschutzorientierte Kamera-App, die entwickelt wurde, um
+		Ihre sensiblen Fotos mit starker Verschlüsselung und sicherem Speicher zu schützen.
+	</string>
 	<string name="about_open_source">Open Source</string>
-	<string name="about_open_source_description">SnapSafe ist ein Open-Source-Projekt. Sehen Sie sich den Quellcode auf GitHub an:</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
+	<string name="about_open_source_description">SnapTresor ist ein Open-Source-Projekt. Sehen Sie sich den Quellcode
+		auf GitHub an:
+	</string>
 	<string name="about_privacy_policy">Datenschutzrichtlinie</string>
 	<string name="decoy_explanation_dialog_message">Im Falle, dass Sie gezwungen werden, Ihre PIN preiszugeben, und Sie stattdessen Ihre Poison Pill PIN angeben, könnte es verdächtig erscheinen, dass es überhaupt keine Fotos in der Galerie gibt.\n\nUm dies zu lösen, wird empfohlen, mehrere Fotos von verschiedenen harmlosen Dingen zu machen und diese dann in der Galerie als „Decoy“-Fotos zu kennzeichnen.\n\nWenn Ihre Poison Pill aktiviert wird, werden alle Fotos, MIT AUSNAHME Ihrer Decoy-Fotos, gelöscht, was eine weniger verdächtige Situation schafft.</string>
 	<string name="about_privacy_policy_description">Lesen Sie unsere Datenschutzrichtlinie:</string>
 	<string name="about_report_bugs">Fehler melden</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
 	<string name="about_report_bugs_description">Hast du einen Fehler gefunden? Melde ihn auf GitHub:</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
 	<string name="location_dialog_title_coarse">Präzise Standort anfordern</string>
 	<string name="location_dialog_message_denied">Darf die App auf Ihren Standort zugreifen?</string>
 	<string name="location_dialog_title_fine">Standortberechtigung entfernen</string>
@@ -118,14 +119,15 @@
 	<string name="location_dialog_title_denied">Standortberechtigungen anfordern</string>
 	<string name="location_dialog_message_fine">Möchten Sie die Standortberechtigung für diese App entfernen? Sie müssen zu den Systemeinstellungen gehen.</string>
 	<string name="intro_finish">Fertig</string>
-	<string name="intro_title">Willkommen bei SnapSafe!</string>
+	<string name="intro_title">Willkommen bei SnapTresor!</string>
 	<string name="intro_next">Weiter</string>
 	<string name="intro_skip">Überspringen</string>
-	<string name="intro_slide0_title">SnapSafe</string>
+	<string name="intro_slide0_title">SnapTresor</string>
 	<string name="intro_slide1_title">Datenschutzfokussiert</string>
 	<string name="intro_slide_icon">Folie Symbol</string>
 	<string name="intro_slide2_title">Sichere Speicherung</string>
-	<string name="intro_slide0_description">Willkommen bei SnapSafe! Eine kostenlose und Open-Source-App, die entwickelt
+	<string name="intro_slide0_description">Willkommen bei SnapTresor! Eine kostenlose und Open-Source-App, die
+		entwickelt
         wurde, um Ihre Privatsphäre zu schützen.\n\nNeben starker Verschlüsselung werden alle Maßnahmen ergriffen, um
         Ihre Fotos vor neugierigen Blicken zu schützen, selbst wenn Ihr Telefon beschlagnahmt und durchsucht wird.
     </string>
@@ -137,8 +139,8 @@
 	<string name="intro_slide4_description">Sie entscheiden, was Sie mit den Metadaten Ihrer Fotos in Abhängigkeit von Ihrem Bedrohungsmodell tun möchten.\n\nIntern werden Ihre Fotos mit einigen grundlegenden Metadaten gespeichert. Je nach Ihren Einstellungen können wir diese Daten automatisch entfernen, wenn Sie ein Foto außerhalb der App teilen.</string>
 	<string name="pin_creation_title">Erstellen Sie Ihre PIN</string>
 	<string name="intro_slide3_description">Die meisten Zeiten müssen wir immer noch in der Lage sein, unsere sensiblen
-        Fotos zu verschieben und sie mit einer anderen App oder Person zu teilen. SnapSafe ermöglicht es Ihnen
-        weiterhin, dies sicher zu tun.\n\nSobald das Foto SnapSafe verlässt, liegt die Privatsphäre bei Ihnen.
+		Fotos zu verschieben und sie mit einer anderen App oder Person zu teilen. SnapTresor ermöglicht es Ihnen
+		weiterhin, dies sicher zu tun.\n\nSobald das Foto SnapTresor verlässt, liegt die Privatsphäre bei Ihnen.
     </string>
 	<string name="pin_creation_hint">PIN eingeben</string>
 	<string name="pin_creation_confirm_hint">PIN bestätigen</string>
@@ -241,12 +243,28 @@
 	<string name="import_chooser_intent_title">Fotos zum Importieren auswählen</string>
 	<string name="security_intro_string_ephemeral_label">Ephemeral Verschlüsselungsschlüssel</string>
 	<string name="security_intro_string_ephemeral_explainer">Als optionale Sicherheitsebene können wir Ihnen einen
-		ephemeral Key anbieten.
-		Mit dieser Option wird Ihr Data Encryption Key niemals auf der Festplatte gespeichert, selbst nicht in der stark
-		verschlüsselten Form, die wir normalerweise verwenden. Stattdessen wird er jedes Mal rein im Speicher
-		abgeleitet, wenn Sie sich mit der App authentifizieren.
-		Der Nachteil ist, dass die Authentifizierung mit der App jedes Mal viel langsamer sein wird.
-		Dies ist für die meisten Benutzer im Allgemeinen nicht erforderlich, bietet jedoch eine optionale
-		Sicherheitsebene, wenn Ihr Bedrohungsmodell dies erfordert.
+		temporären Schlüssel anbieten. \n\n Mit dieser Option wird Ihr Datenverschlüsselungsschlüssel niemals auf der
+		Festplatte gespeichert, selbst nicht in der stark verschlüsselten Form, die wir normalerweise verwenden.
+		Stattdessen wird er jedes Mal, wenn Sie sich bei der App authentifizieren, rein im Speicher abgeleitet. \n\n Der
+		Nachteil ist, dass die Authentifizierung bei der App jedes Mal viel langsamer sein wird. \n\n Dies ist für die
+		meisten Benutzer im Allgemeinen nicht erforderlich, bietet jedoch eine optionale Sicherheitsebene, wenn Ihr
+		Bedrohungsmodell dies verlangt.
 	</string>
+	<string name="notification_permission_dialog_title">Benachrichtigungen erlauben</string>
+	<string name="notification_permission_button">Zulassen</string>
+	<string name="notification_permission_dialog_message">SnapSafe benötigt die Benachrichtigungserlaubnis, um den
+		Fortschritt beim Importieren von Fotos im Hintergrund anzuzeigen.
+	</string>
+	<string name="session_worker_channel_name">Sitzungsstatus</string>
+	<string name="session_worker_notification_content">SnapSafe ist geöffnet.</string>
+	<string name="session_worker_notification_title">SnapSafe Aktiv</string>
+	<string name="session_worker_notification_close">Schließen</string>
+	<string name="session_worker_channel_description">Zeigt an, wenn SnapSafe aktiv ist</string>
+	<string name="pin_create_notification_rationale_title">Benachrichtigungen erlauben</string>
+	<string name="pin_create_notification_rationale_text">SnapSafe verwendet Benachrichtigungen nur, um Sie über die
+		Arbeiten, die möglicherweise im Hintergrund ausgeführt werden, auf dem Laufenden zu halten oder um Sie über den
+		aktuellen Sicherheitsstatus zu informieren. Es wird dringend empfohlen, Benachrichtigungen zuzulassen, ist
+		jedoch nicht erforderlich.
+	</string>
+	<string name="camera_shutter_button_desc">Foto aufnehmen</string>
 </resources>

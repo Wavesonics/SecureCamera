@@ -13,25 +13,36 @@ import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.security.DeviceInfo
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
+import com.darkrockstudios.app.securecamera.security.pin.PinRepositoryHardware
+import com.darkrockstudios.app.securecamera.security.pin.PinRepositorySoftware
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.HardwareBackedEncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.SoftwareEncryptionScheme
 import com.darkrockstudios.app.securecamera.settings.SettingsViewModel
-import com.darkrockstudios.app.securecamera.usecases.CreatePinUseCase
-import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
-import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
-import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
+import com.darkrockstudios.app.securecamera.usecases.*
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import kotlin.time.Clock
 
 val appModule = module {
+
+	single { Clock.System } bind Clock::class
 	singleOf(::SecureImageRepository)
 	single<AppPreferencesDataSource> { AppPreferencesDataSource(context = get()) }
-	singleOf(::AuthorizationRepository)
+	single {
+		AuthorizationRepository(
+			preferences = get(),
+			pinRepository = get(),
+			encryptionScheme = get(),
+			context = get(),
+			clock = get()
+		)
+	}
 	singleOf(::LocationRepository)
 	single<EncryptionScheme> {
 		val detector = get<SecurityLevelDetector>()
@@ -43,6 +54,17 @@ val appModule = module {
 			}
 		}
 	} bind EncryptionScheme::class
+	single<PinRepository> {
+		val detector = get<SecurityLevelDetector>()
+		when (detector.detectSecurityLevel()) {
+			SecurityLevel.SOFTWARE ->
+				PinRepositorySoftware(get(), get())
+
+			SecurityLevel.TEE, SecurityLevel.STRONGBOX -> {
+				PinRepositoryHardware(get(), get(), get())
+			}
+		}
+	} bind PinRepository::class
 	singleOf(::SecurityLevelDetector)
 
 	single { WorkManager.getInstance(get()) }
@@ -54,6 +76,10 @@ val appModule = module {
 	factoryOf(::PinStrengthCheckUseCase)
 	factoryOf(::VerifyPinUseCase)
 	factoryOf(::CreatePinUseCase)
+	factoryOf(::PinSizeUseCase)
+	factoryOf(::RemovePoisonPillIUseCase)
+	factoryOf(::MigratePinHash)
+	factoryOf(::InvalidateSessionUseCase)
 
 	viewModelOf(::ObfuscatePhotoViewModel)
 	viewModelOf(::ViewPhotoViewModel)

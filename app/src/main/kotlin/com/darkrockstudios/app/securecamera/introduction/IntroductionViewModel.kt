@@ -7,13 +7,13 @@ import androidx.compose.material.icons.filled.*
 import androidx.lifecycle.viewModelScope
 import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.pinSize
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.security.HardwareSchemeConfig
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
 import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
 import com.darkrockstudios.app.securecamera.usecases.CreatePinUseCase
+import com.darkrockstudios.app.securecamera.usecases.PinSizeUseCase
 import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,11 +28,13 @@ class IntroductionViewModel(
 	private val securityLevelDetector: SecurityLevelDetector,
 	private val pinStrengthCheck: PinStrengthCheckUseCase,
 	private val createPinUseCase: CreatePinUseCase,
+	private val pinSizeUseCase: PinSizeUseCase,
 ) : BaseViewModel<IntroductionUiState>() {
 
 	override fun createState() = IntroductionUiState(
 		securityLevel = securityLevelDetector.detectSecurityLevel(),
 		slides = createSlides(),
+		pinSize = pinSizeUseCase.getPinSizeRange()
 	)
 
 	private val _skipToPage = MutableSharedFlow<Int>()
@@ -100,6 +102,7 @@ class IntroductionViewModel(
 			SecurityLevel.SOFTWARE -> SoftwareSchemeConfig
 		}
 
+		val pinSize = pinSizeUseCase.getPinSizeRange()
 		if (pin != confirmPin || (pin.length in pinSize).not()) {
 			_uiState.update { it.copy(errorMessage = appContext.getString(R.string.pin_creation_error)) }
 			return
@@ -142,4 +145,5 @@ data class IntroductionUiState(
 	val ephemeralKey: Boolean = false,
 	val currentPage: Int = 0,
 	val isCreatingPin: Boolean = false,
+	val pinSize: IntRange,
 )

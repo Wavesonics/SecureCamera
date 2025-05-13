@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.ui.NotificationPermissionRationale
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
 
@@ -29,40 +30,21 @@ fun ImportPhotosContent(
 	val context = LocalContext.current
 	val uiState by viewModel.uiState.collectAsState()
 
-	// State for cancel confirmation dialog
-	val showCancelDialog = remember { mutableStateOf(false) }
+	var showCancelDialog by remember { mutableStateOf(false) }
 
-	// Handle system back button
 	BackHandler(enabled = !uiState.complete) {
-		showCancelDialog.value = true
+		showCancelDialog = true
 	}
 
-	// Cancel confirmation dialog
-	if (showCancelDialog.value) {
-		AlertDialog(
-			onDismissRequest = { showCancelDialog.value = false },
-			title = { Text(stringResource(id = R.string.discard_changes_dialog_title)) },
-			text = { Text(stringResource(id = R.string.discard_changes_dialog_message)) },
-			confirmButton = {
-				TextButton(
-					onClick = {
-						showCancelDialog.value = false
-						navController.navigate(AppDestinations.GALLERY_ROUTE) {
-							popUpTo(0) { inclusive = true }
-						}
-					}
-				) {
-					Text(stringResource(id = R.string.discard_button))
-				}
-			},
-			dismissButton = {
-				TextButton(
-					onClick = { showCancelDialog.value = false }
-				) {
-					Text(stringResource(id = R.string.cancel_button))
-				}
-			}
-		)
+	NotificationPermissionRationale(
+		title = R.string.notification_permission_dialog_title,
+		text = R.string.notification_permission_dialog_message,
+	)
+
+	if (showCancelDialog) {
+		CancelImportDialog(navController) {
+			showCancelDialog = false
+		}
 	}
 
 	var currentBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -178,4 +160,35 @@ fun ImportPhotosContent(
 			}
 		}
 	}
+}
+
+@Composable
+private fun CancelImportDialog(navController: NavHostController, dismiss: () -> Unit) {
+	val viewModel: ImportPhotosViewModel = koinViewModel()
+
+	AlertDialog(
+		onDismissRequest = { dismiss() },
+		title = { Text(stringResource(id = R.string.discard_changes_dialog_title)) },
+		text = { Text(stringResource(id = R.string.discard_changes_dialog_message)) },
+		confirmButton = {
+			TextButton(
+				onClick = {
+					viewModel.cancelImport()
+					dismiss()
+					navController.navigate(AppDestinations.GALLERY_ROUTE) {
+						popUpTo(0) { inclusive = true }
+					}
+				}
+			) {
+				Text(stringResource(id = R.string.discard_button))
+			}
+		},
+		dismissButton = {
+			TextButton(
+				onClick = { dismiss() }
+			) {
+				Text(stringResource(id = R.string.cancel_button))
+			}
+		}
+	)
 }

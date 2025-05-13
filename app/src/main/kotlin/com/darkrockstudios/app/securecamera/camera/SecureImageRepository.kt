@@ -10,19 +10,19 @@ import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.TiffOrientation
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.time.ExperimentalTime
 import kotlin.time.toJavaInstant
 
 
 class SecureImageRepository(
 	private val appContext: Context,
-	private val preferencesManager: AppPreferencesDataSource,
+	private val pinRepository: PinRepository,
 	internal val thumbnailCache: ThumbnailCache,
 	private val encryptionScheme: EncryptionScheme,
 ) {
@@ -169,7 +169,6 @@ class SecureImageRepository(
 		return updatedBytes
 	}
 
-	@OptIn(ExperimentalTime::class)
 	suspend fun saveImage(
 		image: CapturedImage,
 		latLng: GpsCoordinates?,
@@ -272,7 +271,7 @@ class SecureImageRepository(
 		return File(dir, photoDef.photoName)
 	}
 
-	suspend fun readThumbnail(photo: PhotoDef): Bitmap {
+	suspend fun readThumbnail(photo: PhotoDef): Bitmap? {
 		thumbnailCache.getThumbnail(photo)?.let { return it }
 
 		val thumbFile = getThumbnail(photo)
@@ -283,6 +282,9 @@ class SecureImageRepository(
 				encryptedFile = thumbFile,
 			)
 			BitmapFactory.decodeByteArray(plainBytes, 0, plainBytes.size)
+		} else if (photo.photoFile.exists().not()) {
+			Timber.w("Photo no longer exists! ${photo.photoName}")
+			null
 		} else {
 			// Create thumbnail from the full image
 			val plainBytes = decryptFile(
@@ -308,7 +310,9 @@ class SecureImageRepository(
 			thumbnailBitmap
 		}
 
-		thumbnailCache.putThumbnail(photo, thumbnailBitmap)
+		if (thumbnailBitmap != null) {
+			thumbnailCache.putThumbnail(photo, thumbnailBitmap)
+		}
 
 		return thumbnailBitmap
 	}
@@ -441,8 +445,8 @@ class SecureImageRepository(
 			getDecoyDirectory().mkdirs()
 			val decoyFile = getDecoyFile(photoDef)
 
-			val ppp = preferencesManager.getHashedPoisonPillPin() ?: return false
-			val pin = preferencesManager.getPlainPoisonPillPin() ?: return false
+			val ppp = pinRepository.getHashedPoisonPillPin() ?: return false
+			val pin = pinRepository.getPlainPoisonPillPin() ?: return false
 			val ppk = encryptionScheme.deriveKey(plainPin = pin, hashedPin = ppp)
 			encryptionScheme.encryptToFile(
 				plain = jpgBytes,

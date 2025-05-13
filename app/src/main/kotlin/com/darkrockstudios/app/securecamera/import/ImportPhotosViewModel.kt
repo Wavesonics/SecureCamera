@@ -1,10 +1,13 @@
 package com.darkrockstudios.app.securecamera.import
 
+import android.app.NotificationManager
+import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.darkrockstudios.app.securecamera.BaseViewModel
+import com.darkrockstudios.app.securecamera.import.ImportWorker.Companion.NOTIFICATION_ID
 import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.SHA512
 import dev.whyoleg.cryptography.operations.Hasher
@@ -12,10 +15,12 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ImportPhotosViewModel(
+	private val appContext: Context,
 	private val workManager: WorkManager,
 ) : BaseViewModel<ImportPhotosState>() {
 
 	val hasher: Hasher = CryptographyProvider.Default.get(SHA512).hasher()
+	private var currentImportWorkName: String? = null
 
 	companion object {
 		private const val IMPORT_WORK_NAME = "photo_import_work_"
@@ -50,9 +55,11 @@ class ImportPhotosViewModel(
 			.build()
 
 		val uniqueWorkId = hasher.hashBlocking(photos.joinToString { it.toString() }.toByteArray())
+		val workerName = IMPORT_WORK_NAME + uniqueWorkId
+		currentImportWorkName = workerName
 
 		workManager.enqueueUniqueWork(
-			IMPORT_WORK_NAME + uniqueWorkId,
+			workerName,
 			ExistingWorkPolicy.KEEP,
 			importWorkRequest
 		)
@@ -118,6 +125,17 @@ class ImportPhotosViewModel(
 					}
 				}
 			}
+		}
+	}
+
+	fun cancelImport() {
+		currentImportWorkName?.let { workName ->
+			Timber.d("Cancelling import work: $workName")
+			workManager.cancelUniqueWork(workName)
+
+			val notificationManager =
+				appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+			notificationManager.cancel(NOTIFICATION_ID)
 		}
 	}
 }

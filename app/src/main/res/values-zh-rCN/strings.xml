@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="delete_photo_title_singular">删除照片</string>
-	<string name="app_name">SnapSafe</string>
+	<string name="app_name">拍安箱</string>
 	<string name="delete_photo_title_plural">删除照片</string>
 	<string name="cancel_button">取消</string>
 	<string name="delete_button">删除</string>
@@ -94,21 +94,20 @@
 	<string name="remove_poison_pill_dialog_message">您确定要移除毒丸吗？这将删除紧急 PIN。</string>
 	<string name="remove_poison_pill_complete">毒药药丸已移除</string>
 	<string name="decoy_explanation_dialog_title">诱饵照片系统</string>
-	<string name="settings_about_button">关于 SnapSafe</string>
+	<string name="settings_about_button">关于 拍安箱</string>
 	<string name="decoy_explanation_dialog_ok_button">好的</string>
-	<string name="about_title">关于 SnapSafe</string>
+	<string name="about_title">关于 拍安箱</string>
 	<string name="about_version">版本</string>
 	<string name="about_back_description">返回</string>
-	<string name="about_description">SnapSafe 是一款以隐私为重点的相机应用程序，旨在通过强大的加密和安全存储来保护您的敏感照片。</string>
+	<string name="about_description">拍安箱
+		是一款以隐私为重点的相机应用程序，旨在通过强大的加密和安全存储来保护您的敏感照片。
+	</string>
 	<string name="about_open_source">开源</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
 	<string name="decoy_explanation_dialog_message">在您被强迫提供 PIN 码的情况下，如果您提供了您的 Poison Pill PIN，而相册中完全没有照片，这可能会显得可疑。\n\n为了解决这个问题，建议您拍摄几张各种无害事物的照片，然后在相册中查看这些照片，并将它们标记为“诱饵”照片。\n\n当您的 Poison Pill 被激活时，除了您的诱饵照片，所有照片都将被删除，从而留下一个较不引人 suspicious 的情况。</string>
 	<string name="about_privacy_policy">隐私政策</string>
-	<string name="about_open_source_description">SnapSafe 是一个开源项目。在 GitHub 上查看源代码：</string>
+	<string name="about_open_source_description">拍安箱 是一个开源项目。在 GitHub 上查看源代码：</string>
 	<string name="about_privacy_policy_description">阅读我们的隐私政策：</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
 	<string name="about_report_bugs_description">发现了一个错误？请在 GitHub 上报告：</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
 	<string name="location_dialog_title_denied">请求位置权限</string>
 	<string name="about_report_bugs">报告错误</string>
 	<string name="location_dialog_title_coarse">请求精确位置</string>
@@ -116,24 +115,24 @@
 	<string name="location_dialog_message_coarse">允许应用访问您的精确位置吗？</string>
 	<string name="location_dialog_message_denied">是否允许该应用访问您的位置？</string>
 	<string name="location_dialog_change_settings">在设置中更改</string>
-	<string name="intro_title">欢迎来到 SnapSafe！</string>
+	<string name="intro_title">欢迎来到 拍安箱！</string>
 	<string name="intro_next">下一步</string>
 	<string name="location_dialog_message_fine">要为此应用程序取消位置权限吗？您需要前往系统设置。</string>
 	<string name="intro_finish">完成</string>
 	<string name="intro_skip">跳过</string>
 	<string name="intro_slide_icon">幻灯片图标</string>
-	<string name="intro_slide0_title">SnapSafe</string>
+	<string name="intro_slide0_title">拍安箱</string>
 	<string name="intro_slide1_title">隐私专注</string>
 	<string name="intro_slide2_title">安全存储</string>
 	<string name="intro_slide3_title">仍然可分享</string>
 	<string name="intro_slide1_description">您的 PIN 码是拍摄和查看照片所必需的，即使您的设备其余部分已解锁，也能确保它们免受未授权访问。\n\n几分钟后，您需要再次输入 PIN 码以验证仍然是您。</string>
 	<string name="intro_slide0_description">欢迎使用
-        SnapSafe！这是一个免费且开源的应用程序，旨在保护您的隐私。\n\n除了强大的加密技术，我们采取了一切措施来保护您的照片不被偷窥，即使您的手机被没收并进行搜查。
+		拍安箱！这是一个免费且开源的应用程序，旨在保护您的隐私。\n\n除了强大的加密技术，我们采取了一切措施来保护您的照片不被偷窥，即使您的手机被没收并进行搜查。
     </string>
 	<string name="intro_slide2_description">您的照片存储在应用私有的加密存储中。加密密钥来自您的 PIN，并且从未存储在磁盘上。\n\n没有数据，包括照片，永远不会上传或备份到任何地方。</string>
 	<string name="intro_slide4_title">元数据</string>
-	<string name="intro_slide3_description">大多数时候，我们仍然需要能够将敏感照片转移并分享给其他应用或人。SnapSafe
-        仍然允许您安全地进行此操作。\n\n一旦照片离开 SnapSafe，其隐私就取决于您。
+	<string name="intro_slide3_description">大多数时候，我们仍然需要能够将敏感照片转移并分享给其他应用或人。拍安箱
+		仍然允许您安全地进行此操作。\n\n一旦照片离开 拍安箱，其隐私就取决于您。
     </string>
 	<string name="intro_slide5_title">位置数据</string>
 	<string name="intro_slide4_description">您可以根据您的威胁模型选择如何处理照片的元数据。\n\n您照片的元数据会在内部以一些基本信息存储。根据您的设置，我们可以在应用外共享照片时自动去除这些数据。</string>
@@ -224,9 +223,25 @@
 	<string name="import_error_no_photos">错误：没有要导入的照片</string>
 	<string name="import_chooser_intent_title">选择要导入的照片</string>
 	<string name="security_intro_string_ephemeral_label">短期加密密钥</string>
-	<string name="security_intro_string_ephemeral_explainer">作为一种可选的安全层，我们可以为您提供一个临时密钥。
-		选择此选项后，您的数据加密密钥将不会以任何形式保存在磁盘上，即使是我们通常使用的高度加密形式。相反，每次您通过应用程序进行身份验证时，它都是在内存中纯粹生成的。
-		代价是每次使用应用程序进行身份验证的速度会慢得多。
-		对于大多数用户来说，这通常不是必需的，但如果您的威胁模型要求，可以作为一种可选的安全层。
+	<string name="security_intro_string_ephemeral_explainer">作为一层可选的安全措施，我们可以为您提供一个临时密钥。
+		\n\n
+		使用此选项，您的数据加密密钥将永远不会保存到磁盘，即使是我们通常使用的高度加密形式。相反，它会在每次您使用该应用进行身份验证时，纯粹在内存中派生。
+		\n\n
+		缺点是每次使用该应用进行身份验证时将会慢得多。
+		\n\n
+		这对于大多数用户来说通常不是必需的，但如果您的威胁模型要求，这是一层可选的安全措施。
 	</string>
+	<string name="notification_permission_button">允许</string>
+	<string name="notification_permission_dialog_title">允许通知</string>
+	<string name="notification_permission_dialog_message">SnapSafe 需要通知权限，以便在后台导入照片时显示进度。</string>
+    <string name="session_worker_channel_name">会话状态</string>
+    <string name="session_worker_notification_title">SnapSafe 活动</string>
+    <string name="session_worker_notification_content">SnapSafe 现在开放了。</string>
+    <string name="session_worker_notification_close">关闭</string>
+    <string name="session_worker_channel_description">显示 SnapSafe 何时处于活动状态</string>
+    <string name="pin_create_notification_rationale_title">允许通知</string>
+    <string name="pin_create_notification_rationale_text">SnapSafe
+        仅通过通知帮助您控制其可能在后台进行的工作，或告知您当前的安全状态。强烈建议您允许通知，但这并不是必须的。
+    </string>
+    <string name="camera_shutter_button_desc">拍照</string>
 </resources>

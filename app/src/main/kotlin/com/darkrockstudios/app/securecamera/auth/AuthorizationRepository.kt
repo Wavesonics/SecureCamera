@@ -1,20 +1,28 @@
 package com.darkrockstudios.app.securecamera.auth
 
+import android.content.Context
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlin.math.pow
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 /**
  * Manages user authorization state, including PIN verification and session expiration.
  */
 class AuthorizationRepository(
-	private val preferencesManager: AppPreferencesDataSource,
+	private val preferences: AppPreferencesDataSource,
+	private val pinRepository: PinRepository,
 	private val encryptionScheme: EncryptionScheme,
+	private val context: Context,
+	private val clock: Clock,
 ) {
 	companion object {
 		const val MAX_FAILED_ATTEMPTS = 10
@@ -23,14 +31,15 @@ class AuthorizationRepository(
 	private val _isAuthorized = MutableStateFlow(false)
 	val isAuthorized: StateFlow<Boolean> = _isAuthorized.asStateFlow()
 
-	private var lastAuthTimeMs: Long = 0
+	private var lastAuthTimeMs: Instant = Instant.DISTANT_PAST
+	private var lastKeepAliveMs: Instant = Instant.DISTANT_PAST
 
 	suspend fun securityFailureReset() {
-		preferencesManager.securityFailureReset()
+		preferences.securityFailureReset()
 	}
 
 	suspend fun activatePoisonPill() {
-		preferencesManager.activatePoisonPill()
+		pinRepository.activatePoisonPill()
 	}
 
 	/**
@@ -38,7 +47,7 @@ class AuthorizationRepository(
 	 * @return The number of failed attempts
 	 */
 	suspend fun getFailedAttempts(): Int {
-		return preferencesManager.getFailedPinAttempts()
+		return preferences.getFailedPinAttempts()
 	}
 
 	/**
@@ -46,7 +55,7 @@ class AuthorizationRepository(
 	 * @param count The number of failed attempts to set
 	 */
 	suspend fun setFailedAttempts(count: Int) {
-		preferencesManager.setFailedPinAttempts(count)
+		preferences.setFailedPinAttempts(count)
 	}
 
 	/**
@@ -59,7 +68,7 @@ class AuthorizationRepository(
 		setFailedAttempts(newCount)
 
 		// Store the current timestamp as the last failed attempt time
-		preferencesManager.setLastFailedAttemptTimestamp(System.currentTimeMillis())
+		preferences.setLastFailedAttemptTimestamp(System.currentTimeMillis())
 
 		return newCount
 	}
@@ -69,7 +78,7 @@ class AuthorizationRepository(
 	 * @return The timestamp of the last failed attempt
 	 */
 	suspend fun getLastFailedAttemptTimestamp(): Long {
-		return preferencesManager.getLastFailedAttemptTimestamp()
+		return preferences.getLastFailedAttemptTimestamp()
 	}
 
 	/**
@@ -99,7 +108,7 @@ class AuthorizationRepository(
 	 */
 	suspend fun resetFailedAttempts() {
 		setFailedAttempts(0)
-		preferencesManager.setLastFailedAttemptTimestamp(0)
+		preferences.setLastFailedAttemptTimestamp(0)
 	}
 
 	/**
@@ -116,8 +125,8 @@ class AuthorizationRepository(
 	 * @return True if the PIN is correct, false otherwise
 	 */
 	suspend fun verifyPin(pin: String): HashedPin? {
-		val hashedPin = preferencesManager.getHashedPin()
-		val isValid = preferencesManager.verifySecurityPin(pin)
+		val hashedPin = pinRepository.getHashedPin()
+		val isValid = pinRepository.verifySecurityPin(pin)
 		return if (isValid && hashedPin != null) {
 			authorizeSession()
 			// Reset failed attempts counter on successful verification
@@ -130,10 +139,30 @@ class AuthorizationRepository(
 
 	/**
 	 * Marks the current session as authorized and updates the last authentication time.
+	 * Also starts the SessionService to monitor session validity.
 	 */
 	private fun authorizeSession() {
-		lastAuthTimeMs = System.currentTimeMillis()
+		lastAuthTimeMs = clock.now()
 		_isAuthorized.value = true
+		startSessionService()
+	}
+
+	private fun startSessionService() {
+		SessionService.startService(context)
+	}
+
+	private fun stopSessionService() {
+		SessionService.stopService(context)
+	}
+
+	/**
+	 * Updates the keep-alive timestamp to extend the session validity
+	 * without requiring re-authentication.
+	 */
+	fun keepAliveSession() {
+		if (_isAuthorized.value) {
+			lastKeepAliveMs = clock.now()
+		}
 	}
 
 	/**
@@ -145,9 +174,12 @@ class AuthorizationRepository(
 			return@runBlocking false
 		}
 
-		val sessionTimeoutMs = preferencesManager.getSessionTimeout()
-		val currentTime = System.currentTimeMillis()
-		val sessionValid = (currentTime - lastAuthTimeMs) < sessionTimeoutMs
+		val sessionTimeoutMs = preferences.getSessionTimeout().milliseconds
+		val currentTime = clock.now()
+
+		// Use lastKeepAliveMs instead of lastAuthTimeMs if it's set
+		val timeToCheck = if (lastKeepAliveMs > Instant.DISTANT_PAST) lastKeepAliveMs else lastAuthTimeMs
+		val sessionValid = (currentTime - timeToCheck) < sessionTimeoutMs
 
 		if (!sessionValid) {
 			_isAuthorized.value = false
@@ -158,9 +190,12 @@ class AuthorizationRepository(
 
 	/**
 	 * Explicitly revokes the current authorization session.
+	 * Also stops the SessionService.
 	 */
 	fun revokeAuthorization() {
 		_isAuthorized.value = false
-		lastAuthTimeMs = 0
+		lastAuthTimeMs = Instant.DISTANT_PAST
+		lastKeepAliveMs = Instant.DISTANT_PAST
+		stopSessionService()
 	}
 }

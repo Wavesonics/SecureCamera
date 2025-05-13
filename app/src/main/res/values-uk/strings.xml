@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">SnapSafe</string>
+	<string name="app_name">СнапСейф</string>
 	<string name="delete_photo_title_plural">Видалити фотографії</string>
 	<string name="delete_photo_message_singular">Ви впевнені, що хочете видалити це фото?</string>
 	<string name="delete_photo_title_singular">Видалити фото</string>
@@ -95,20 +95,21 @@
 	<string name="remove_poison_pill_complete">Отруйна таблетка видалена</string>
 	<string name="decoy_explanation_dialog_title">Система декой-фото</string>
 	<string name="decoy_explanation_dialog_ok_button">Гаразд</string>
-	<string name="settings_about_button">Про SnapSafe</string>
-	<string name="about_title">Про SnapSafe</string>
+	<string name="settings_about_button">Про СнапСейф</string>
+	<string name="about_title">Про СнапСейф</string>
 	<string name="poison_pill_dialog_message">Poison Pill створить другий PIN-код, який, якщо ввести, знищить всі ваші дані і замінить ваш нинішній реальний PIN-код на PIN-код Poison Pill. Це виглядатиме так, ніби ви просто ввели свій звичайний PIN-код, і ви увійдете в систему, але всі фотографії та налаштування зникнуть.\n\nПісля використання PIN-коду Poison Pill, зараз це ваш реальний PIN-код. Рекомендується виконати Скидання безпеки додатку, як тільки ситуація, яка змусила вас використовувати Pill, закінчиться.</string>
 	<string name="about_version">Версія</string>
 	<string name="about_back_description">Назад</string>
 	<string name="about_open_source">Відкритий код</string>
-	<string name="about_repository_url">https://github.com/Wavesonics/SecureCamera</string>
-	<string name="about_open_source_description">SnapSafe — це проект з відкритим вихідним кодом. Перегляньте вихідний код на GitHub:</string>
-	<string name="about_description">SnapSafe - це камера-додаток, орієнтований на конфіденційність, призначений для захисту ваших чутливих фотографій за допомогою потужного шифрування та захищеного зберігання.</string>
+	<string name="about_open_source_description">СнапСейф — це проект з відкритим вихідним кодом. Перегляньте вихідний
+		код на GitHub:
+	</string>
+	<string name="about_description">СнапСейф - це камера-додаток, орієнтований на конфіденційність, призначений для
+		захисту ваших чутливих фотографій за допомогою потужного шифрування та захищеного зберігання.
+	</string>
 	<string name="about_privacy_policy">Політика конфіденційності</string>
-	<string name="about_privacy_policy_url">https://github.com/Wavesonics/SecureCamera/blob/main/PRIVACY.md</string>
 	<string name="about_privacy_policy_description">Прочитайте нашу політику конфіденційності:</string>
 	<string name="about_report_bugs">Повідомити про помилки</string>
-	<string name="about_report_bugs_url">https://github.com/Wavesonics/SecureCamera/issues</string>
 	<string name="about_report_bugs_description">Знайшли помилку? Повідомте про неї на GitHub:</string>
 	<string name="location_dialog_title_denied">Запит на дозволи на доступ до місця розташування</string>
 	<string name="location_dialog_title_coarse">Запитати точне місцезнаходження</string>
@@ -118,15 +119,15 @@
 	<string name="decoy_explanation_dialog_message">У разі, якщо вас примушують вказати свій PIN, і ви надаєте свій Poison Pill PIN натомість, це може виглядати підозріло, що в Галереї немає жодних фотографій.\n\nЩоб вирішити цю проблему, рекомендується зробити кілька фотографій різних невинних предметів, а потім зайти в ці фотографії в Галереї та позначити їх як \"Decoy\" фотографії.\n\nКоли ваш Poison Pill буде активовано, всі фотографії, КРІМ ваших Decoys, будуть видалені, залишаючи менш підозрілу ситуацію.</string>
 	<string name="location_dialog_message_fine">Видалити дозвіл на геолокацію для цього додатка? Вам потрібно буде перейти до системних налаштувань.</string>
 	<string name="location_dialog_change_settings">Змінити в налаштуваннях</string>
-	<string name="intro_title">Ласкаво просимо до SnapSafe!</string>
+	<string name="intro_title">Ласкаво просимо до СнапСейф!</string>
 	<string name="intro_finish">Завершити</string>
 	<string name="intro_next">Далі</string>
 	<string name="intro_slide_icon">Слайд-іконка</string>
-	<string name="intro_slide0_title">SnapSafe</string>
+	<string name="intro_slide0_title">СнапСейф</string>
 	<string name="intro_slide1_title">Сфокусоване на конфіденційності</string>
 	<string name="intro_slide2_title">Безпечне зберігання</string>
 	<string name="intro_slide1_description">Ваш PIN-код потрібен для того, щоб робити та переглядати фотографії, зберігаючи їх у безпеці від несанкціонованого доступу, навіть якщо решта вашого пристрою розблокована.\n\nЧерез кілька хвилин вам буде потрібно ще раз ввести свій PIN-код, щоб підтвердити, що це все ще ви.</string>
-	<string name="intro_slide0_description">Ласкаво просимо до SnapSafe! Безкоштовний та з відкритим вихідним кодом
+	<string name="intro_slide0_description">Ласкаво просимо до СнапСейф! Безкоштовний та з відкритим вихідним кодом
         додаток, призначений для захисту вашої конфіденційності.\n\nРазом із високим рівнем шифрування вживаються всі
         заходи для захисту ваших фотографій від сторонніх очей, навіть якщо ваш телефон буде конфіскований та
         перевірений.
@@ -138,8 +139,8 @@
 	<string name="intro_slide5_title">Дані місцезнаходження</string>
 	<string name="pin_creation_title">Створіть свій PIN-код</string>
 	<string name="intro_slide3_description">У більшості випадків нам все ще потрібно мати можливість переміщати наші
-        чутливі фотографії і ділитися ними з іншою програмою або особою. SnapSafe все ще дозволяє вам робити це
-        безпечно.\n\nКоли фотографія покидає SnapSafe, її конфіденційність залежить від вас.
+		чутливі фотографії і ділитися ними з іншою програмою або особою. СнапСейф все ще дозволяє вам робити це
+		безпечно.\n\nКоли фотографія покидає СнапСейф, її конфіденційність залежить від вас.
     </string>
 	<string name="pin_creation_description">Створіть PIN, який складається принаймні з 4 цифр, щоб захистити свої фотографії.</string>
 	<string name="intro_slide4_description">Ви обираєте, що робити з метаданими ваших фотографій залежно від вашої моделі загрози.\n\nВнутрішньо ваші фотографії зберігаються з деякими базовими метаданими. Залежно від ваших налаштувань, ми можемо автоматично видаляти ці дані під час
@@ -235,13 +236,32 @@
 	<string name="import_chooser_intent_title">Виберіть фотографії для імпорту</string>
 	<string name="import_error_no_photos">Помилка: немає фотографій для імпорту</string>
 	<string name="security_intro_string_ephemeral_label">Ефемерний ключ шифрування</string>
-	<string name="security_intro_string_ephemeral_explainer">Як додатковий рівень безпеки, ми можемо запропонувати вам
+	<string name="security_intro_string_ephemeral_explainer">Як необов\'язковий шар безпеки, ми можемо запропонувати вам
 		ефемерний ключ.
+		\n\n
 		З цим варіантом ваш ключ шифрування даних ніколи не буде збережений на диску, навіть у сильно зашифрованій
-		формі, яку ми зазвичай використовуємо. Замість цього він генерується виключно в пам’яті кожного разу, коли ви
-		автентифікуєтеся в додатку.
-		Обмін у тому, що автентифікація в додатку буде значно повільнішою щораз.
-		Це зазвичай не є необхідним для більшості користувачів, але є додатковим рівнем безпеки, якщо ваша модель загроз
-		вимагає цього.
+		формі, яку ми зазвичай використовуємо. Натомість він
+		виводиться виключно в пам\'яті щоразу, коли ви здійснюєте аутентифікацію в додатку.
+		\n\n
+		Компроміс полягає в тому, що аутентифікація в додатку буде значно повільнішою кожного разу.
+		\n\n
+		Це зазвичай не потрібно для більшості користувачів, але є необов\'язковим шаром безпеки, якщо ваша модель
+		загрози це вимагає.
 	</string>
+	<string name="notification_permission_button">Дозволити</string>
+	<string name="notification_permission_dialog_title">Дозволити сповіщення</string>
+    <string name="notification_permission_dialog_message">SnapSafe потребує дозволу на сповіщення, щоб показати прогрес
+        під час імпортування фотографій у фоновому режимі.
+    </string>
+    <string name="session_worker_notification_title">SnapSafe Active</string>
+    <string name="session_worker_notification_content">SnapSafe відкрите</string>
+    <string name="session_worker_channel_name">Статус сеансу</string>
+    <string name="session_worker_notification_close">Закрити</string>
+    <string name="session_worker_channel_description">Показує, коли SnapSafe активний</string>
+    <string name="pin_create_notification_rationale_title">Дозволити сповіщення</string>
+    <string name="pin_create_notification_rationale_text">SnapSafe лише використовує сповіщення, щоб тримати вас під
+        контролем над роботою, яку вона може виконувати у фоновому режимі, або щоб повідомити вас про поточний статус
+        безпеки. Настійно рекомендовано дозволити сповіщення, але це не обов\'язково.
+    </string>
+    <string name="camera_shutter_button_desc">Зробити фото</string>
 </resources>

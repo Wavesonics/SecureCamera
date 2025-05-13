@@ -6,28 +6,34 @@ import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.LocationRepository
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.auth.pinSize
-import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_DEFAULT
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
+import com.darkrockstudios.app.securecamera.usecases.PinSizeUseCase
 import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
+import com.darkrockstudios.app.securecamera.usecases.RemovePoisonPillIUseCase
 import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
 	private val appContext: Context,
-	private val preferencesManager: AppPreferencesDataSource,
+	private val preferences: AppPreferencesDataSource,
+	private val pinRepository: PinRepository,
 	private val locationRepository: LocationRepository,
 	private val securityResetUseCase: SecurityResetUseCase,
 	private val pinStrengthCheck: PinStrengthCheckUseCase,
-	private val imageManager: SecureImageRepository,
+	private val pinSizeUseCase: PinSizeUseCase,
+	private val removePoisonPillIUseCase: RemovePoisonPillIUseCase,
 	private val securityLevelDetector: SecurityLevelDetector
 ) : BaseViewModel<SettingsUiState>() {
 
-	override fun createState() = SettingsUiState(securityLevel = securityLevelDetector.detectSecurityLevel())
+	override fun createState() = SettingsUiState(
+		securityLevel = securityLevelDetector.detectSecurityLevel(),
+		pinSize = pinSizeUseCase.getPinSizeRange(),
+	)
 
 	init {
 		observePreferences()
@@ -37,19 +43,19 @@ class SettingsViewModel(
 
 	private fun observePreferences() {
 		viewModelScope.launch {
-			preferencesManager.sanitizeFileName.collect { sanitizeFileName ->
+			preferences.sanitizeFileName.collect { sanitizeFileName ->
 				_uiState.update { it.copy(sanitizeFileName = sanitizeFileName) }
 			}
 		}
 
 		viewModelScope.launch {
-			preferencesManager.sanitizeMetadata.collect { sanitizeMetadata ->
+			preferences.sanitizeMetadata.collect { sanitizeMetadata ->
 				_uiState.update { it.copy(sanitizeMetadata = sanitizeMetadata) }
 			}
 		}
 
 		viewModelScope.launch {
-			preferencesManager.sessionTimeout.collect { sessionTimeout ->
+			preferences.sessionTimeout.collect { sessionTimeout ->
 				_uiState.update { it.copy(sessionTimeout = sessionTimeout) }
 			}
 		}
@@ -63,7 +69,7 @@ class SettingsViewModel(
 
 	private fun checkPoisonPillStatus() {
 		viewModelScope.launch {
-			val hasPoisonPillPin = preferencesManager.hasPoisonPillPin()
+			val hasPoisonPillPin = pinRepository.hasPoisonPillPin()
 			_uiState.update { it.copy(hasPoisonPillPin = hasPoisonPillPin) }
 		}
 	}
@@ -76,19 +82,19 @@ class SettingsViewModel(
 
 	fun setSanitizeFileName(checked: Boolean) {
 		viewModelScope.launch {
-			preferencesManager.setSanitizeFileName(checked)
+			preferences.setSanitizeFileName(checked)
 		}
 	}
 
 	fun setSanitizeMetadata(checked: Boolean) {
 		viewModelScope.launch {
-			preferencesManager.setSanitizeMetadata(checked)
+			preferences.setSanitizeMetadata(checked)
 		}
 	}
 
 	fun setSessionTimeout(timeout: Long) {
 		viewModelScope.launch {
-			preferencesManager.setSessionTimeout(timeout)
+			preferences.setSessionTimeout(timeout)
 		}
 	}
 
@@ -138,7 +144,7 @@ class SettingsViewModel(
 
 	fun setPoisonPillPin(pin: String) {
 		viewModelScope.launch {
-			preferencesManager.setPoisonPillPin(pin)
+			pinRepository.setPoisonPillPin(pin)
 			_uiState.update {
 				it.copy(
 					showPoisonPillPinCreationDialog = false,
@@ -163,8 +169,7 @@ class SettingsViewModel(
 
 	fun removePoisonPillPin() {
 		viewModelScope.launch {
-			preferencesManager.removePoisonPillPin()
-			imageManager.removeAllDecoyPhotos()
+			removePoisonPillIUseCase.removePoisonPill()
 			_uiState.update {
 				it.copy(
 					showRemovePoisonPillDialog = false,
@@ -176,12 +181,12 @@ class SettingsViewModel(
 	}
 
 	private suspend fun isSameAsAuthPin(pin: String): Boolean {
-		return preferencesManager.verifySecurityPin(pin)
+		return pinRepository.verifySecurityPin(pin)
 	}
 
 	suspend fun validatePoisonPillPin(pin: String, confirmPin: String): String? {
 		val strongPin = pinStrengthCheck.isPinStrongEnough(pin)
-		return if (pin != confirmPin || (pin.length in pinSize).not()) {
+		return if (pin != confirmPin || (pin.length in uiState.value.pinSize).not()) {
 			appContext.getString(R.string.pin_creation_error)
 		} else if (isSameAsAuthPin(pin)) {
 			appContext.getString(R.string.poison_pill_creation_error)
@@ -207,5 +212,6 @@ data class SettingsUiState(
 	val showRemovePoisonPillDialog: Boolean = false,
 	val securityResetComplete: Boolean = false,
 	val poisonPillRemoved: Boolean = false,
-	val securityLevel: SecurityLevel = SecurityLevel.SOFTWARE
+	val securityLevel: SecurityLevel = SecurityLevel.SOFTWARE,
+	val pinSize: IntRange,
 )

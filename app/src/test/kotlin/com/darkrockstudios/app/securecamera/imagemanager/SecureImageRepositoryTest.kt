@@ -6,8 +6,8 @@ import android.graphics.BitmapFactory
 import com.ashampoo.kim.model.GpsCoordinates
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.*
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +20,6 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.ByteArrayOutputStream
 import java.io.File
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @ExperimentalCoroutinesApi
@@ -30,7 +29,7 @@ class SecureImageRepositoryTest {
 	val tempFolder = TemporaryFolder()
 
 	private lateinit var context: Context
-	private lateinit var preferencesManager: AppPreferencesDataSource
+	private lateinit var pinRepository: PinRepository
 	private lateinit var authorizationRepository: AuthorizationRepository
 	private lateinit var secureImageRepository: SecureImageRepository
 	private lateinit var thumbnailCache: ThumbnailCache
@@ -39,7 +38,7 @@ class SecureImageRepositoryTest {
 	@Before
 	fun setup() {
 		context = mockk(relaxed = true)
-		preferencesManager = mockk(relaxed = true)
+		pinRepository = mockk(relaxed = true)
 		authorizationRepository = mockk(relaxed = true)
 		thumbnailCache = mockk(relaxed = true)
 		encryptionScheme = mockk()
@@ -97,7 +96,7 @@ class SecureImageRepositoryTest {
 		// Create the SecureImageManager with real dependencies
 		secureImageRepository = SecureImageRepository(
 			appContext = context,
-			preferencesManager = preferencesManager,
+			pinRepository = pinRepository,
 			thumbnailCache = thumbnailCache,
 			encryptionScheme = encryptionScheme,
 		)
@@ -336,7 +335,6 @@ class SecureImageRepositoryTest {
 		assertEquals(2, count)
 	}
 
-	@OptIn(ExperimentalTime::class)
 	@Test
 	fun `saveImage should encrypt and save the image`() = runTest {
 		// Given
@@ -526,8 +524,8 @@ class SecureImageRepositoryTest {
 
 		// Mock poison pill PIN
 		val hashedPPP = HashedPin("salt", "hash")
-		coEvery { preferencesManager.getHashedPoisonPillPin() } returns hashedPPP
-		coEvery { preferencesManager.getPlainPoisonPillPin() } returns "5678"
+		coEvery { pinRepository.getHashedPoisonPillPin() } returns hashedPPP
+		coEvery { pinRepository.getPlainPoisonPillPin() } returns "5678"
 
 		val ppk = ByteArray(1)
 		coEvery { encryptionScheme.deriveKey(any(), any()) } returns ppk

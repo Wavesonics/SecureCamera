@@ -20,6 +20,21 @@ interface EncryptionScheme {
 	suspend fun encryptToFile(plain: ByteArray, keyBytes: ByteArray, targetFile: File)
 
 	/**
+	 * Encrypts plaintext data using the provided key and returns the ciphered bytes
+	 */
+	suspend fun encrypt(plain: ByteArray, keyBytes: ByteArray): ByteArray
+
+	/**
+	 * Encrypts plaintext data using the provided key alias and returns the ciphered bytes
+	 */
+	suspend fun encryptWithKeyAlias(plain: ByteArray, keyAlias: String): ByteArray
+
+	/**
+	 * Decrypts ciphered data using the provided key alias and returns the plain text bytes
+	 */
+	suspend fun decryptWithKeyAlias(encrypted: ByteArray, keyAlias: String): ByteArray
+
+	/**
 	 * Decrypts an encrypted file and returns the plaintext data
 	 * This will use the pre-derived key in memory.
 	 */
