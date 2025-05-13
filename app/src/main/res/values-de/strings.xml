@@ -106,15 +106,11 @@
 	<string name="about_open_source_description">SnapTresor ist ein Open-Source-Projekt. Sehen Sie sich den Quellcode
 		auf GitHub an:
 	</string>
-	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_privacy_policy">Datenschutzrichtlinie</string>
 	<string name="decoy_explanation_dialog_message">Im Falle, dass Sie gezwungen werden, Ihre PIN preiszugeben, und Sie stattdessen Ihre Poison Pill PIN angeben, könnte es verdächtig erscheinen, dass es überhaupt keine Fotos in der Galerie gibt.\n\nUm dies zu lösen, wird empfohlen, mehrere Fotos von verschiedenen harmlosen Dingen zu machen und diese dann in der Galerie als „Decoy“-Fotos zu kennzeichnen.\n\nWenn Ihre Poison Pill aktiviert wird, werden alle Fotos, MIT AUSNAHME Ihrer Decoy-Fotos, gelöscht, was eine weniger verdächtige Situation schafft.</string>
 	<string name="about_privacy_policy_description">Lesen Sie unsere Datenschutzrichtlinie:</string>
 	<string name="about_report_bugs">Fehler melden</string>
-	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
-	</string>
 	<string name="about_report_bugs_description">Hast du einen Fehler gefunden? Melde ihn auf GitHub:</string>
-	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_coarse">Präzise Standort anfordern</string>
 	<string name="location_dialog_message_denied">Darf die App auf Ihren Standort zugreifen?</string>
 	<string name="location_dialog_title_fine">Standortberechtigung entfernen</string>

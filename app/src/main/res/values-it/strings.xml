@@ -104,17 +104,13 @@
 	</string>
 	<string name="about_open_source">Open Source</string>
 	<string name="decoy_explanation_dialog_message">Nel caso in cui tu venga costretto a fornire il tuo PIN e tu dia invece il tuo PIN della Pillola Velenosa, potrebbe sembrare sospetto che non ci siano foto nella Galleria.\n\nPer risolvere questo problema, è consigliabile scattare diverse foto di cose innocue e poi accedere a quelle foto nella Galleria e contrassegnarle come foto \"Decoy\".\n\nQuando la tua Pillola Velenosa viene attivata, tutte le foto eccetto quelle dei tuoi Decoy verranno eliminate, lasciando una situazione meno sospetta.</string>
-	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_open_source_description">SnapCassaforte è un progetto open source. Visualizza il codice sorgente
 		su GitHub:
 	</string>
 	<string name="about_privacy_policy">Informativa sulla Privacy</string>
 	<string name="about_privacy_policy_description">Leggi la nostra informativa sulla privacy:</string>
-	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
-	</string>
 	<string name="about_report_bugs">Segnala bug</string>
 	<string name="about_report_bugs_description">Hai trovato un bug? Segnalalo su GitHub:</string>
-	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_coarse">Richiedi Posizione Precisa</string>
 	<string name="location_dialog_title_denied">Richiesta di autorizzazione della posizione</string>
 	<string name="location_dialog_title_fine">Rimuovi il permesso della posizione</string>
@@ -255,18 +251,18 @@ Questo generalmente non è richiesto per la maggior parte degli utenti, ma è un
 	</string>
 	<string name="notification_permission_button">Consenti</string>
 	<string name="notification_permission_dialog_title">Consenti le notifiche</string>
-    <string name="notification_permission_dialog_message">SnapSafe ha bisogno dell\'autorizzazione per le notifiche per
+	<string name="notification_permission_dialog_message">SnapSafe ha bisogno dell\'autorizzazione per le notifiche per
         mostrare il progresso durante l\'importazione delle foto in background.
     </string>
-    <string name="session_worker_notification_title">SnapSafe Active</string>
-    <string name="session_worker_channel_name">Stato della sessione</string>
-    <string name="session_worker_notification_content">SnapSafe è aperto</string>
-    <string name="session_worker_channel_description">Mostra quando SnapSafe è attivo</string>
-    <string name="session_worker_notification_close">Chiudi</string>
-    <string name="pin_create_notification_rationale_title">Consenti notifiche</string>
-    <string name="pin_create_notification_rationale_text">SnapSafe utilizza le notifiche solo per tenerti in controllo
+	<string name="session_worker_notification_title">SnapSafe Active</string>
+	<string name="session_worker_channel_name">Stato della sessione</string>
+	<string name="session_worker_notification_content">SnapSafe è aperto</string>
+	<string name="session_worker_channel_description">Mostra quando SnapSafe è attivo</string>
+	<string name="session_worker_notification_close">Chiudi</string>
+	<string name="pin_create_notification_rationale_title">Consenti notifiche</string>
+	<string name="pin_create_notification_rationale_text">SnapSafe utilizza le notifiche solo per tenerti in controllo
         del lavoro che potrebbe fare in background o per informarti sullo stato di sicurezza attuale. Si consiglia
         vivamente di consentire le notifiche, ma non è obbligatorio.
     </string>
-    <string name="camera_shutter_button_desc">Scatta foto</string>
+	<string name="camera_shutter_button_desc">Scatta foto</string>
 </resources>

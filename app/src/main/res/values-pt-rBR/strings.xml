@@ -103,7 +103,6 @@
 	<string name="about_version">Versão</string>
 	<string name="about_back_description">Voltar</string>
 	<string name="about_open_source">Código Aberto</string>
-	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_privacy_policy">Política de Privacidade</string>
 	<string name="about_open_source_description">SnapCofre é um projeto de código aberto. Veja o código-fonte no
 		GitHub:
@@ -112,10 +111,7 @@
 	<string name="about_report_bugs">Relatar Bugs</string>
 	<string name="about_report_bugs_description">Encontrou um bug? Reporte-o no GitHub:</string>
 	<string name="about_privacy_policy_description">Leia nossa política de privacidade:</string>
-	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
-	</string>
 	<string name="location_dialog_title_denied">Solicitar Permissão de Localização</string>
-	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="location_dialog_title_coarse">Solicitar Localização Precisa</string>
 	<string name="location_dialog_title_fine">Remover Permissão de Localização</string>
 	<string name="location_dialog_message_denied">Permitir que o aplicativo acesse sua localização?</string>

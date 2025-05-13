@@ -101,7 +101,6 @@
 	<string name="about_version">Версія</string>
 	<string name="about_back_description">Назад</string>
 	<string name="about_open_source">Відкритий код</string>
-	<string name="about_repository_url">https://github.com/SecureCamera/SecureCameraAndroid</string>
 	<string name="about_open_source_description">СнапСейф — це проект з відкритим вихідним кодом. Перегляньте вихідний
 		код на GitHub:
 	</string>
@@ -109,11 +108,8 @@
 		захисту ваших чутливих фотографій за допомогою потужного шифрування та захищеного зберігання.
 	</string>
 	<string name="about_privacy_policy">Політика конфіденційності</string>
-	<string name="about_privacy_policy_url">https://github.com/SecureCamera/SecureCameraAndroid/blob/main/PRIVACY.md
-	</string>
 	<string name="about_privacy_policy_description">Прочитайте нашу політику конфіденційності:</string>
 	<string name="about_report_bugs">Повідомити про помилки</string>
-	<string name="about_report_bugs_url">https://github.com/SecureCamera/SecureCameraAndroid/issues</string>
 	<string name="about_report_bugs_description">Знайшли помилку? Повідомте про неї на GitHub:</string>
 	<string name="location_dialog_title_denied">Запит на дозволи на доступ до місця розташування</string>
 	<string name="location_dialog_title_coarse">Запитати точне місцезнаходження</string>
