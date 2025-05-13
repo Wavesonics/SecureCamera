@@ -31,8 +31,8 @@ fun AboutContent(
 ) {
 	Column(
 		modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+			.fillMaxSize()
+			.background(MaterialTheme.colorScheme.background)
 	) {
 		TopAppBar(
 			title = {
@@ -56,17 +56,19 @@ fun AboutContent(
 			}
 		)
 
+		val context = LocalContext.current
+
 		// About content
 		Column(
 			modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 0.dp,
-                    top = 8.dp
-                )
-                .verticalScroll(rememberScrollState()),
+				.fillMaxSize()
+				.padding(
+					start = 16.dp,
+					end = 16.dp,
+					bottom = 0.dp,
+					top = 8.dp
+				)
+				.verticalScroll(rememberScrollState()),
 			verticalArrangement = Arrangement.Top,
 			horizontalAlignment = Alignment.Start
 		) {
@@ -76,6 +78,19 @@ fun AboutContent(
 			Text(
 				text = stringResource(id = R.string.about_description),
 				style = MaterialTheme.typography.bodyLarge
+			)
+
+			Spacer(modifier = Modifier.height(24.dp))
+
+			val websiteUrl = stringResource(id = R.string.about_promo_url)
+			Text(
+				text = websiteUrl,
+				style = MaterialTheme.typography.bodyMedium,
+				color = MaterialTheme.colorScheme.primary,
+				textDecoration = TextDecoration.Underline,
+				modifier = Modifier.clickable {
+					openUrl(context, websiteUrl)
+				}
 			)
 
 			Spacer(modifier = Modifier.height(24.dp))
@@ -92,8 +107,6 @@ fun AboutContent(
 				text = stringResource(id = R.string.about_open_source_description),
 				style = MaterialTheme.typography.bodyLarge
 			)
-
-			val context = LocalContext.current
 
 			// Get URL strings
 			val repositoryUrl = stringResource(id = R.string.about_repository_url)
