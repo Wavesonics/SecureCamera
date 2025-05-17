@@ -9,11 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +35,7 @@ fun BottomCameraControls(
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
-			.padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
+			.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
 	) {
 		ElevatedButton(
 			onClick = { navController.navigate(AppDestinations.SETTINGS_ROUTE) },

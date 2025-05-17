@@ -110,13 +110,13 @@ fun CameraControls(
 			cameraController,
 			modifier = Modifier
 				.align(Alignment.TopCenter)
-				.padding(top = 64.dp)
+				.padding(top = paddingValues.calculateTopPadding().plus(64.dp))
 		)
 
 		LevelIndicator(
 			modifier = Modifier
 				.align(Alignment.Center)
-				.padding(top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp)
+				.padding(top = paddingValues.calculateTopPadding().plus(16.dp))
 		)
 
 		if (!isTopControlsVisible) {
@@ -125,7 +125,7 @@ fun CameraControls(
 				modifier = Modifier
 					.align(Alignment.TopEnd)
 					.padding(
-						top = paddingValues.calculateTopPadding().plus(16.dp) ?: 16.dp,
+						top = paddingValues.calculateTopPadding().plus(16.dp),
 						end = 16.dp
 					)
 			) {
@@ -139,7 +139,7 @@ fun CameraControls(
 		if (activeJobs.isNotEmpty()) {
 			CircularProgressIndicator(
 				modifier = Modifier
-					.padding(start = 16.dp, top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp)
+					.padding(start = 16.dp, top = paddingValues.calculateTopPadding().plus(16.dp))
 					.size(40.dp)
 					.align(Alignment.TopStart),
 				color = MaterialTheme.colorScheme.primary
