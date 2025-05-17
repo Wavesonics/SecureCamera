@@ -1,0 +1,2 @@
+- Fixed KeyStore crash on pre-API 31 devices
+- Fixed UI not allowing for 3 button system controls

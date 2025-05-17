@@ -1,19 +1,19 @@
 [versions]
+versionCode = "16"
+versionName = "3.2.0"
+
+targetSdk = "35"
+compileSdk = "35"
+minSdk = "29"
+
+javaVersion = "11"
+agp = "8.9.3"
+workManager = "2.10.1"
 argon2kt = "1.6.0"
 bcrypt = "0.10.2"
 faceDetection = "16.1.7"
 kotlinxCoroutinesTest = "1.10.2"
 rules = "1.6.1"
-versionCode = "15"
-versionName = "3.1.0"
-workManager = "2.10.1"
-
-javaVersion = "11"
-agp = "8.9.3"
-targetSdk = "35"
-compileSdk = "35"
-minSdk = "29"
-
 accompanistPermissions = "0.37.3"
 coreSplashscreen = "1.0.1"
 lifecycleRuntimeCompose = "2.9.0"
