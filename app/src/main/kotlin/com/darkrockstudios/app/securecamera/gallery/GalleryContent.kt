@@ -100,6 +100,7 @@ fun GalleryContent(
 			} else {
 				PhotoGrid(
 					photos = uiState.photos,
+					paddingValues = paddingValues,
 					selectedPhotoNames = uiState.selectedPhotos,
 					onPhotoLongClick = startSelectionWithVibration,
 					onPhotoClick = { photoName ->
@@ -108,7 +109,7 @@ fun GalleryContent(
 						} else {
 							navController.navigate(AppDestinations.createViewPhotoRoute(photoName))
 						}
-					}
+					},
 				)
 			}
 		}
@@ -121,9 +122,10 @@ fun GalleryContent(
 private fun PhotoGrid(
 	photos: List<PhotoDef>,
 	modifier: Modifier = Modifier,
+	paddingValues: PaddingValues,
 	selectedPhotoNames: Set<String> = emptySet(),
 	onPhotoLongClick: (String) -> Unit = {},
-	onPhotoClick: (String) -> Unit = {}
+	onPhotoClick: (String) -> Unit = {},
 ) {
 	val limitedDispatcher = remember {
 		Dispatchers.IO.limitedParallelism(4) // Limit to 4 concurrent thumbnail loads
@@ -133,7 +135,7 @@ private fun PhotoGrid(
 	val scope = rememberCoroutineScope()
 	LazyVerticalGrid(
 		columns = GridCells.Adaptive(minSize = 128.dp),
-		contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 0.dp),
+		contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = paddingValues.calculateBottomPadding(), top = 0.dp),
 		horizontalArrangement = Arrangement.spacedBy(8.dp),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 		modifier = modifier.fillMaxSize()

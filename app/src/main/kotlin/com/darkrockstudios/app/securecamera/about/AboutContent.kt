@@ -28,6 +28,7 @@ import com.darkrockstudios.app.securecamera.R
 fun AboutContent(
 	navController: NavHostController,
 	modifier: Modifier = Modifier,
+	paddingValues: PaddingValues,
 ) {
 	Column(
 		modifier = modifier
@@ -65,7 +66,7 @@ fun AboutContent(
 				.padding(
 					start = 16.dp,
 					end = 16.dp,
-					bottom = 0.dp,
+					bottom = paddingValues.calculateBottomPadding(),
 					top = 8.dp
 				)
 				.verticalScroll(rememberScrollState()),

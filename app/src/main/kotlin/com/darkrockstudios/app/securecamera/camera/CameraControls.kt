@@ -39,7 +39,7 @@ fun CameraControls(
 	cameraController: CameraState,
 	capturePhoto: MutableState<Boolean?>,
 	navController: NavHostController,
-	paddingValues: PaddingValues? = null,
+	paddingValues: PaddingValues,
 ) {
 	val scope = rememberCoroutineScope()
 	var isFlashOn by rememberSaveable(cameraController.flashMode) { mutableStateOf(cameraController.flashMode == ImageCapture.FLASH_MODE_ON) }
@@ -125,7 +125,7 @@ fun CameraControls(
 				modifier = Modifier
 					.align(Alignment.TopEnd)
 					.padding(
-						top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
+						top = paddingValues.calculateTopPadding().plus(16.dp) ?: 16.dp,
 						end = 16.dp
 					)
 			) {
@@ -158,7 +158,9 @@ fun CameraControls(
 		)
 
 		BottomCameraControls(
-			modifier = Modifier.align(Alignment.BottomCenter),
+			modifier = Modifier
+				.align(Alignment.BottomCenter)
+				.padding(bottom = paddingValues.calculateBottomPadding()),
 			isLoading = isLoading,
 			navController = navController,
 			onCapture = { doCapturePhoto() }

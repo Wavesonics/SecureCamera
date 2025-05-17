@@ -30,7 +30,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun IntroductionContent(
 	navController: NavHostController,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	paddingValues: PaddingValues
 ) {
 	val viewModel: IntroductionViewModel = koinViewModel()
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -63,7 +64,7 @@ fun IntroductionContent(
 	}
 
 	Box(
-		modifier = modifier.fillMaxSize(),
+		modifier = modifier.fillMaxSize().padding(paddingValues),
 	) {
 		HorizontalPager(
 			state = pagerState,

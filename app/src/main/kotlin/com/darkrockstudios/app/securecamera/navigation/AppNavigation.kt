@@ -76,7 +76,8 @@ fun AppNavHost(
 		) {
 			IntroductionContent(
 				navController = navController,
-				modifier = Modifier.fillMaxSize()
+				modifier = Modifier.fillMaxSize(),
+				paddingValues = paddingValues,
 			)
 		}
 
@@ -177,6 +178,7 @@ fun AppNavHost(
 			AboutContent(
 				navController = navController,
 				modifier = Modifier.fillMaxSize(),
+				paddingValues = paddingValues,
 			)
 		}
 
@@ -192,6 +194,7 @@ fun AppNavHost(
 					navController = navController,
 					snackbarHostState = snackbarHostState,
 					outerScope = scope,
+					paddingValues = paddingValues,
 				)
 			} else {
 				Box(modifier = Modifier.fillMaxSize()) {
@@ -224,7 +227,8 @@ fun AppNavHost(
 				} else {
 					ImportPhotosContent(
 						photosToImport = importJob.photos,
-						navController = navController
+						navController = navController,
+						paddingValues = paddingValues,
 					)
 				}
 			} else {

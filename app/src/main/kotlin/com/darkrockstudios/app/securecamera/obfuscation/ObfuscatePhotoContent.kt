@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,7 +65,8 @@ fun ObfuscatePhotoContent(
 	photoName: String,
 	navController: NavController,
 	snackbarHostState: SnackbarHostState,
-	outerScope: CoroutineScope
+	outerScope: CoroutineScope,
+	paddingValues: PaddingValues
 ) {
 	val viewModel: ObfuscatePhotoViewModel = koinViewModel()
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -335,7 +337,11 @@ fun ObfuscatePhotoContent(
 				PlayfulScaleVisibility(
 					modifier = Modifier
 						.align(Alignment.BottomEnd)
-						.padding(16.dp),
+						.padding(
+							bottom = paddingValues.calculateBottomPadding(),
+							start = 16.dp,
+							end = 16.dp
+						),
 					isVisible = (uiState.isCreatingRegion)
 				) {
 					Column(
@@ -371,7 +377,11 @@ fun ObfuscatePhotoContent(
 				PlayfulScaleVisibility(
 					modifier = Modifier
 						.align(Alignment.BottomEnd)
-						.padding(16.dp),
+						.padding(
+							bottom = paddingValues.calculateBottomPadding(),
+							start = 16.dp,
+							end = 16.dp
+						),
 					isVisible = (uiState.obscuredBitmap != null && uiState.isCreatingRegion.not())
 				) {
 					Column(
@@ -407,7 +417,11 @@ fun ObfuscatePhotoContent(
 				PlayfulScaleVisibility(
 					modifier = Modifier
 						.align(Alignment.BottomEnd)
-						.padding(16.dp),
+						.padding(
+							bottom = paddingValues.calculateBottomPadding(),
+							start = 16.dp,
+							end = 16.dp
+						),
 					isVisible = (uiState.obscuredBitmap == null && uiState.regions.isNotEmpty() && uiState.isCreatingRegion.not())
 				) {
 					Column(

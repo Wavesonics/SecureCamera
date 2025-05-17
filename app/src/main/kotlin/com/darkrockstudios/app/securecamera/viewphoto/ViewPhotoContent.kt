@@ -130,7 +130,7 @@ fun ViewPhotoContent(
 					val photo = uiState.photos[index]
 
 					ViewPhoto(
-						modifier = Modifier.fillParentMaxSize(),
+						modifier = Modifier.fillParentMaxSize().padding(bottom = paddingValues.calculateBottomPadding()),
 						photo = photo,
 						viewModel = viewModel,
 					)

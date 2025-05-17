@@ -24,7 +24,8 @@ import timber.log.Timber
 @Composable
 fun ImportPhotosContent(
 	photosToImport: List<Uri>,
-	navController: NavHostController
+	navController: NavHostController,
+	paddingValues: PaddingValues
 ) {
 	val viewModel: ImportPhotosViewModel = koinViewModel()
 	val context = LocalContext.current
@@ -81,7 +82,12 @@ fun ImportPhotosContent(
 		Column(
 			modifier = Modifier
 				.fillMaxSize()
-				.padding(16.dp),
+				.padding(
+					top = 16.dp,
+					bottom = paddingValues.calculateBottomPadding(),
+					start = 16.dp,
+					end = 16.dp
+				),
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center,
 		) {

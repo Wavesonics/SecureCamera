@@ -42,7 +42,7 @@ fun TopCameraControlsBar(
 		) + fadeOut(animationSpec = tween(durationMillis = 300))
 	) {
 		Surface(
-			modifier = Modifier.Companion
+			modifier = Modifier
 				.fillMaxWidth()
 				.padding(
 					start = 16.dp,
@@ -50,15 +50,15 @@ fun TopCameraControlsBar(
 					top = paddingValues?.calculateTopPadding()?.plus(16.dp) ?: 16.dp,
 					bottom = 16.dp
 				),
-			color = Color.Companion.Black.copy(alpha = 0.6f),
+			color = Color.Black.copy(alpha = 0.6f),
 			shape = RoundedCornerShape(16.dp)
 		) {
 			Row(
-				modifier = Modifier.Companion
+				modifier = Modifier
 					.fillMaxWidth()
 					.padding(16.dp),
 				horizontalArrangement = Arrangement.SpaceBetween,
-				verticalAlignment = Alignment.Companion.CenterVertically
+				verticalAlignment = Alignment.CenterVertically
 			) {
 				Column(
 					verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -72,11 +72,11 @@ fun TopCameraControlsBar(
 
 				Row(
 					horizontalArrangement = Arrangement.spacedBy(16.dp),
-					verticalAlignment = Alignment.Companion.CenterVertically
+					verticalAlignment = Alignment.CenterVertically
 				) {
 					FilledTonalButton(
 						onClick = onLensToggle,
-						modifier = Modifier.Companion
+						modifier = Modifier
 							.background(MaterialTheme.colorScheme.primary, CircleShape),
 						colors = ButtonDefaults.filledTonalButtonColors(
 							containerColor = MaterialTheme.colorScheme.primary
@@ -91,7 +91,7 @@ fun TopCameraControlsBar(
 
 					FilledTonalButton(
 						onClick = onClose,
-						modifier = Modifier.Companion
+						modifier = Modifier
 							.background(MaterialTheme.colorScheme.primary, CircleShape),
 						colors = ButtonDefaults.filledTonalButtonColors(
 							containerColor = MaterialTheme.colorScheme.primary

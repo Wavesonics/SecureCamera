@@ -110,7 +110,7 @@ fun SettingsContent(
 				.padding(
 					start = 16.dp,
 					end = 16.dp,
-					bottom = 0.dp,
+					bottom = paddingValues.calculateBottomPadding(),
 					top = 8.dp
 				),
 			verticalArrangement = Arrangement.Top,
