@@ -2,6 +2,7 @@ package com.darkrockstudios.app.securecamera.camera
 
 import android.graphics.Bitmap
 import android.util.LruCache
+import com.darkrockstudios.app.securecamera.withLockBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -18,29 +19,20 @@ class ThumbnailCache {
 	private val cacheMutex = Mutex()
 
 	suspend fun getThumbnail(photo: PhotoDef): Bitmap? {
-		cacheMutex.withLock {
-			thumbnailCache.get(photo.photoName)?.let {
-				return it
-			}
+		return cacheMutex.withLock {
+			thumbnailCache.get(photo.photoName)
 		}
-		return null
 	}
 
 	fun evictThumbnail(photo: PhotoDef) {
-		cacheMutex.tryLock()
-		try {
+		cacheMutex.withLockBlocking {
 			thumbnailCache.remove(photo.photoName)
-		} finally {
-			cacheMutex.unlock()
 		}
 	}
 
 	fun clear() {
-		cacheMutex.tryLock()
-		try {
+		cacheMutex.withLockBlocking {
 			thumbnailCache.evictAll()
-		} finally {
-			cacheMutex.unlock()
 		}
 	}
 
