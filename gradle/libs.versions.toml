@@ -6,7 +6,7 @@ targetSdk = "35"
 compileSdk = "35"
 minSdk = "29"
 
-javaVersion = "11"
+javaVersion = "17"
 agp = "8.9.3"
 workManager = "2.10.1"
 argon2kt = "1.6.0"
