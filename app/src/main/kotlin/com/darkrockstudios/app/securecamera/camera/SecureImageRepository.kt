@@ -16,7 +16,8 @@ import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import kotlin.time.toJavaInstant
 
 
@@ -32,9 +33,7 @@ class SecureImageRepository(
 		return File(appContext.filesDir, DECOYS_DIR)
 	}
 
-	fun evictKey() {
-		encryptionScheme.evictKey()
-	}
+	fun evictKey() = encryptionScheme.evictKey()
 
 	/**
 	 * Resets all security-related data when a security failure occurs.

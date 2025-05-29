@@ -3,11 +3,14 @@ package com.darkrockstudios.app.securecamera.introduction
 import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.LocationOff
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.lifecycle.viewModelScope
 import com.darkrockstudios.app.securecamera.BaseViewModel
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.security.HardwareSchemeConfig
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
@@ -24,7 +27,6 @@ import kotlin.time.Duration.Companion.minutes
 
 class IntroductionViewModel(
 	private val appContext: Context,
-	private val preferencesDataSource: AppPreferencesDataSource,
 	private val securityLevelDetector: SecurityLevelDetector,
 	private val pinStrengthCheck: PinStrengthCheckUseCase,
 	private val createPinUseCase: CreatePinUseCase,
@@ -119,7 +121,6 @@ class IntroductionViewModel(
 
 		viewModelScope.launch(Dispatchers.Default) {
 			if (createPinUseCase.createPin(pin, config)) {
-				preferencesDataSource.setIntroCompleted(true)
 				_uiState.update { it.copy(pinCreated = true, isCreatingPin = false) }
 			} else {
 				_uiState.update { it.copy(isCreatingPin = false) }

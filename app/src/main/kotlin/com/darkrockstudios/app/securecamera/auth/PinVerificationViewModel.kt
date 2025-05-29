@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 
 class PinVerificationViewModel(
 	private val appContext: Context,
-	private val authManager: AuthorizationRepository,
+	private val authRepository: AuthorizationRepository,
 	private val invalidateSessionUseCase: InvalidateSessionUseCase,
 	private val securityResetUseCase: SecurityResetUseCase,
 	private val verifyPinUseCase: VerifyPinUseCase,
@@ -33,9 +33,9 @@ class PinVerificationViewModel(
 
 	private fun loadInitialState() {
 		viewModelScope.launch {
-			val failedAttempts = authManager.getFailedAttempts()
+			val failedAttempts = authRepository.getFailedAttempts()
 
-			val remainingBackoff = authManager.calculateRemainingBackoffSeconds()
+			val remainingBackoff = authRepository.calculateRemainingBackoffSeconds()
 			val isBackoffActive = remainingBackoff > 0
 
 			_uiState.update {
@@ -108,8 +108,6 @@ class PinVerificationViewModel(
 			val isValid = verifyPinUseCase.verifyPin(pin)
 
 			if (isValid) {
-				authManager.resetFailedAttempts()
-
 				withContext(Dispatchers.Main) {
 					_uiState.update {
 						it.copy(
@@ -121,8 +119,8 @@ class PinVerificationViewModel(
 					onNavigate(returnRoute)
 				}
 			} else {
-				val newFailedAttempts = authManager.incrementFailedAttempts()
-				val remainingBackoff = authManager.calculateRemainingBackoffSeconds()
+				val newFailedAttempts = authRepository.incrementFailedAttempts()
+				val remainingBackoff = authRepository.calculateRemainingBackoffSeconds()
 				val isBackoffActive = remainingBackoff > 0
 
 				withContext(Dispatchers.Main) {

@@ -24,6 +24,7 @@ class VerifyPinUseCase(
 		val hashedPin = authManager.verifyPin(pin)
 		return if (hashedPin != null) {
 			encryptionScheme.deriveAndCacheKey(pin, hashedPin)
+			authManager.resetFailedAttempts()
 			true
 		} else {
 			false
