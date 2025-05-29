@@ -4,7 +4,11 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
-import io.mockk.*
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.just
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
@@ -46,6 +50,7 @@ class VerifyPinUseCaseTest {
 		val pin = "1234"
 		coEvery { pinRepository.hasPoisonPillPin() } returns false
 		coEvery { authManager.verifyPin(pin) } returns mockk(relaxed = true)
+		coEvery { authManager.resetFailedAttempts() } just Runs
 
 		// When
 		val result = verifyPinUseCase.verifyPin(pin)
@@ -99,6 +104,7 @@ class VerifyPinUseCaseTest {
 		coEvery { pinRepository.hasPoisonPillPin() } returns true
 		coEvery { pinRepository.verifyPoisonPillPin(pin) } returns false
 		coEvery { authManager.verifyPin(pin) } returns mockk(relaxed = true)
+		coEvery { authManager.resetFailedAttempts() } just Runs
 
 		// When
 		val result = verifyPinUseCase.verifyPin(pin)
