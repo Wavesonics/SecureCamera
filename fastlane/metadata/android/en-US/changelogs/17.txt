@@ -1,0 +1,1 @@
+- Fix a couple crashes seen in the wild
