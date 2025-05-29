@@ -24,7 +24,7 @@ interface PinRepository {
 	 * Check if a Poison Pill PIN is set
 	 */
 	suspend fun hasPoisonPillPin(): Boolean {
-		return getHashedPoisonPillPin() != null
+		return getHashedPin() != null && getHashedPoisonPillPin() != null
 	}
 
 	/**
