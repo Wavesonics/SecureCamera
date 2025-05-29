@@ -2,7 +2,11 @@ package com.darkrockstudios.app.securecamera.security.schemes
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties.*
+import android.security.keystore.KeyProperties.BLOCK_MODE_GCM
+import android.security.keystore.KeyProperties.ENCRYPTION_PADDING_NONE
+import android.security.keystore.KeyProperties.KEY_ALGORITHM_AES
+import android.security.keystore.KeyProperties.PURPOSE_DECRYPT
+import android.security.keystore.KeyProperties.PURPOSE_ENCRYPT
 import android.security.keystore.StrongBoxUnavailableException
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
@@ -220,14 +224,19 @@ class HardwareBackedEncryptionScheme(
 		return (ks.getEntry(keyAlias, null) as KeyStore.SecretKeyEntry).secretKey
 	}
 
-	override suspend fun encryptWithKeyAlias(plain: ByteArray, keyAlias: String): ByteArray {
+	private fun createKeyForAlias(keyAlias: String) {
 		if (ks.containsAlias(keyAlias).not()) {
 			generateHardwareBackedKey(HardwareSchemeConfig(false, 5.minutes, false), keyAlias)
 		}
+	}
+
+	override suspend fun encryptWithKeyAlias(plain: ByteArray, keyAlias: String): ByteArray {
+		createKeyForAlias(keyAlias)
 		return encryptWithHardwareBackedKey(plain, keyAlias)
 	}
 
 	override suspend fun decryptWithKeyAlias(encrypted: ByteArray, keyAlias: String): ByteArray {
+		createKeyForAlias(keyAlias)
 		return decryptWithHardwareBackedKey(encrypted, keyAlias)
 	}
 
