@@ -115,7 +115,7 @@ class SecureImageRepositoryTest {
 		val galleryDir = secureImageRepository.getGalleryDirectory()
 
 		// Then
-		assertEquals(File(context.filesDir, SecureImageRepository.Companion.PHOTOS_DIR), galleryDir)
+		assertEquals(File(context.filesDir, SecureImageRepository.PHOTOS_DIR), galleryDir)
 	}
 
 	@Test
@@ -125,7 +125,7 @@ class SecureImageRepositoryTest {
 		decoyDir.mkdirs()
 
 		// Then
-		assertEquals(File(context.filesDir, SecureImageRepository.Companion.DECOYS_DIR), decoyDir)
+		assertEquals(File(context.filesDir, SecureImageRepository.DECOYS_DIR), decoyDir)
 		assertTrue(decoyDir.exists())
 	}
 
@@ -558,7 +558,7 @@ class SecureImageRepositoryTest {
 			photoFile = photoFile
 		)
 
-		repeat(SecureImageRepository.Companion.MAX_DECOY_PHOTOS) { i ->
+		repeat(SecureImageRepository.MAX_DECOY_PHOTOS) { i ->
 			val decoyFile = File(decoyDir, "photo_20230101_120000_0$i.jpg")
 			decoyFile.writeBytes("encrypted image data".toByteArray())
 		}
