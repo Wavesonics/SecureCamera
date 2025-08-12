@@ -1,11 +1,8 @@
 package com.darkrockstudios.app.securecamera.navigation
 
 import android.net.Uri
-import android.os.Bundle
 import android.os.Parcelable
 import androidx.core.net.toUri
-import androidx.navigation.NavDestination
-import androidx.navigation.NavType
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.KSerializer
@@ -13,7 +10,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
@@ -65,33 +61,25 @@ object AppDestinations {
 		return "import_photos/$b64"
 	}
 
-	fun isPinVerificationRoute(destination: NavDestination?): Boolean {
-		if (destination == null) return false
-		return destination.route?.startsWith("pin_verification/") ?: false
-	}
-
 	@OptIn(ExperimentalEncodingApi::class)
 	fun encodeReturnRoute(route: String): String = Base64.UrlSafe.encode(route.toByteArray())
 
 	@OptIn(ExperimentalEncodingApi::class)
 	fun decodeReturnRoute(encodedRoute: String): String = String(Base64.UrlSafe.decode(encodedRoute))
-}
 
-@OptIn(ExperimentalEncodingApi::class)
-val UriListType = object : NavType<PhotoImportJob>(isNullableAllowed = false) {
-	val json: Json = getJson()
+	fun decodeRouteArg(route: String, prefix: String): String? =
+		route.removePrefix(prefix).takeIf { it.isNotBlank() }
 
-	override fun get(bundle: Bundle, key: String): PhotoImportJob? {
-		return bundle.getParcelable(key)
-	}
-
-	override fun parseValue(value: String): PhotoImportJob {
-		val jsonStr = String(Base64.UrlSafe.decode(value))
-		return json.decodeFromString<PhotoImportJob>(jsonStr)
-	}
-
-	override fun put(bundle: Bundle, key: String, value: PhotoImportJob) {
-		bundle.putParcelable(key, value)
+	@OptIn(ExperimentalEncodingApi::class)
+	fun decodeImportJob(route: String): PhotoImportJob? {
+		val b64 = route.substringAfter("import_photos/", missingDelimiterValue = "")
+		if (b64.isBlank()) return null
+		return try {
+			val jsonStr = String(Base64.UrlSafe.decode(b64))
+			navJson.decodeFromString<PhotoImportJob>(jsonStr)
+		} catch (_: Throwable) {
+			null
+		}
 	}
 }
 

@@ -25,11 +25,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.darkrockstudios.app.securecamera.ConfirmDeletePhotoDialog
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.camera.PhotoDef
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.NavController
 import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
 import net.engawapg.lib.zoomable.ExperimentalZoomableApi
 import net.engawapg.lib.zoomable.rememberZoomState
@@ -130,7 +130,9 @@ fun ViewPhotoContent(
 					val photo = uiState.photos[index]
 
 					ViewPhoto(
-						modifier = Modifier.fillParentMaxSize().padding(bottom = paddingValues.calculateBottomPadding()),
+						modifier = Modifier
+							.fillParentMaxSize()
+							.padding(bottom = paddingValues.calculateBottomPadding()),
 						photo = photo,
 						viewModel = viewModel,
 					)

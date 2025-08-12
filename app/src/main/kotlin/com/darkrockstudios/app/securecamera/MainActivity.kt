@@ -12,10 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.AppRouteMapper
+import com.darkrockstudios.app.securecamera.navigation.NavController
+import com.darkrockstudios.app.securecamera.navigation.rememberCompatNavController
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
@@ -31,7 +32,8 @@ class MainActivity : ComponentActivity() {
 	private val locationRepository: LocationRepository by inject()
 	private val preferences: AppPreferencesDataSource by inject()
 	private val authorizationRepository: AuthorizationRepository by inject()
-	lateinit var navController: NavHostController
+	lateinit var navController: NavController
+	lateinit var backStack: androidx.navigation3.runtime.NavBackStack
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -45,10 +47,13 @@ class MainActivity : ComponentActivity() {
 
 		enableEdgeToEdge()
 
-		val startDestination = determineStartRoute()
+		val startRoute = determineStartRoute()
 		setContent {
-			navController = rememberNavController()
-			App(capturePhoto, startDestination, navController)
+			val startKey = AppRouteMapper.toKey(startRoute) ?: com.darkrockstudios.app.securecamera.navigation.Camera
+			val (bs, controller) = rememberCompatNavController(startKey)
+			backStack = bs
+			navController = controller
+			App(capturePhoto, backStack, navController)
 		}
 
 		startKeepAliveWatcher()

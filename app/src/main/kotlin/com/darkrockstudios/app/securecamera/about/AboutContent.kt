@@ -17,8 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.navigation.NavController
 
 /**
  * About screen content
@@ -26,7 +26,7 @@ import com.darkrockstudios.app.securecamera.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutContent(
-	navController: NavHostController,
+	navController: NavController,
 	modifier: Modifier = Modifier,
 	paddingValues: PaddingValues,
 ) {

@@ -7,9 +7,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.navigation.NavHostController
+import androidx.navigation3.runtime.NavBackStack
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.navigation.AppNavHost
+import com.darkrockstudios.app.securecamera.navigation.NavController
 import com.darkrockstudios.app.securecamera.navigation.enforceAuth
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.ui.theme.SecureCameraTheme
@@ -19,8 +20,8 @@ import org.koin.compose.koinInject
 @Composable
 fun App(
 	capturePhoto: MutableState<Boolean?>,
-	startDestination: String,
-	navController: NavHostController
+	backStack: NavBackStack,
+	navController: NavController
 ) {
 	KoinContext {
 		SecureCameraTheme {
@@ -38,11 +39,11 @@ fun App(
 					modifier = Modifier.imePadding()
 				) { paddingValues ->
 					AppNavHost(
+						backStack = backStack,
 						navController = navController,
 						capturePhoto = capturePhoto,
 						modifier = Modifier,
 						snackbarHostState = snackbarHostState,
-						startDestination = startDestination,
 						paddingValues = paddingValues,
 					)
 				}
@@ -53,14 +54,15 @@ fun App(
 
 @Composable
 private fun VerifySessionOnResume(
-	navController: NavHostController,
+	navController: NavController,
 	hasCompletedIntro: Boolean?,
 	authorizationRepository: AuthorizationRepository
 ) {
 	var requireAuthCheck = remember { false }
 	LifecycleResumeEffect(hasCompletedIntro) {
 		if (hasCompletedIntro == true && requireAuthCheck) {
-			enforceAuth(authorizationRepository, navController.currentDestination, navController)
+			// Use the top-of-stack key in Nav3
+			enforceAuth(authorizationRepository, null, navController)
 		}
 		onPauseOrDispose {
 			requireAuthCheck = true

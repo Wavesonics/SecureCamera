@@ -19,10 +19,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.NavController
+import com.darkrockstudios.app.securecamera.navigation.navigateClearingBackStack
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_10_MIN
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_1_MIN
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_5_MIN
@@ -37,7 +38,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
-	navController: NavHostController,
+	navController: NavController,
 	modifier: Modifier = Modifier,
 	paddingValues: PaddingValues,
 	snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -49,9 +50,7 @@ fun SettingsContent(
 
 	LaunchedEffect(uiState.securityResetComplete) {
 		if (uiState.securityResetComplete) {
-			navController.navigate(AppDestinations.INTRODUCTION_ROUTE) {
-				popUpTo(0) { inclusive = true }
-			}
+			navController.navigateClearingBackStack(AppDestinations.INTRODUCTION_ROUTE)
 		}
 	}
 

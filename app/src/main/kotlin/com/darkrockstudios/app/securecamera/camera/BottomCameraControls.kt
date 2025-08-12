@@ -19,16 +19,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.NavController
 
 @Composable
 fun BottomCameraControls(
 	modifier: Modifier = Modifier,
 	onCapture: (() -> Unit)?,
 	isLoading: Boolean,
-	navController: NavHostController,
+	navController: NavController,
 ) {
 	val context = LocalContext.current
 
