@@ -8,8 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -106,7 +106,8 @@ fun ViewPhotoContent(
 		}
 
 		if (uiState.photos.isNotEmpty()) {
-			val listState = rememberLazyListState(initialFirstVisibleItemIndex = uiState.initialIndex)
+			val listState =
+				remember(uiState.initialIndex) { LazyListState(firstVisibleItemIndex = uiState.initialIndex) }
 
 			LaunchedEffect(listState) {
 				snapshotFlow {
