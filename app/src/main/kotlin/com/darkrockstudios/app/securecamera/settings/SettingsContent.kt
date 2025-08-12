@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.darkrockstudios.app.securecamera.LocationPermissionStatus
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.About
+import com.darkrockstudios.app.securecamera.navigation.Introduction
 import com.darkrockstudios.app.securecamera.navigation.NavController
 import com.darkrockstudios.app.securecamera.navigation.navigateClearingBackStack
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource.Companion.SESSION_TIMEOUT_10_MIN
@@ -50,7 +51,7 @@ fun SettingsContent(
 
 	LaunchedEffect(uiState.securityResetComplete) {
 		if (uiState.securityResetComplete) {
-			navController.navigateClearingBackStack(AppDestinations.INTRODUCTION_ROUTE)
+			navController.navigateClearingBackStack(Introduction)
 		}
 	}
 
@@ -88,7 +89,7 @@ fun SettingsContent(
 			},
 			actions = {
 				IconButton(
-					onClick = { navController.navigate(AppDestinations.ABOUT_ROUTE) },
+					onClick = { navController.navigate(About) },
 					modifier = Modifier.padding(8.dp)
 				) {
 					Icon(

@@ -108,7 +108,7 @@ fun AppNavHost(
 			entry<PinVerification> { key ->
 				PinVerificationContent(
 					navController = navController,
-					returnRoute = key.returnRoute,
+					returnKey = key.returnKey,
 					snackbarHostState = snackbarHostState,
 					modifier = Modifier.fillMaxSize()
 				)
@@ -176,15 +176,15 @@ fun enforceAuth(
 		currentKey !is PinVerification &&
 		currentKey !is Introduction
 	) {
-		val returnRoute = when (currentKey) {
-			is ViewPhoto -> AppDestinations.createViewPhotoRoute(currentKey.photoName)
-			is ObfuscatePhoto -> AppDestinations.createObfuscatePhotoRoute(currentKey.photoName)
-			is Gallery -> AppDestinations.GALLERY_ROUTE
-			is Settings -> AppDestinations.SETTINGS_ROUTE
-			is About -> AppDestinations.ABOUT_ROUTE
-			is ImportPhotos -> AppDestinations.createImportPhotosRoute(currentKey.job.photos)
-			else -> AppDestinations.CAMERA_ROUTE
+		val returnKey = when (currentKey) {
+			is ViewPhoto -> ViewPhoto(currentKey.photoName)
+			is ObfuscatePhoto -> ObfuscatePhoto(currentKey.photoName)
+			is Gallery -> Gallery
+			is Settings -> Settings
+			is About -> About
+			is ImportPhotos -> ImportPhotos(currentKey.job)
+			else -> Camera
 		}
-		navController.navigate(AppDestinations.createPinVerificationRoute(returnRoute)) { launchSingleTop = true }
+		navController.navigate(PinVerification(returnKey)) { launchSingleTop = true }
 	}
 }

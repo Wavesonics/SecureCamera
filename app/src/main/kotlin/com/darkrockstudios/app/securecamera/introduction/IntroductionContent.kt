@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.Camera
 import com.darkrockstudios.app.securecamera.navigation.NavController
 import com.darkrockstudios.app.securecamera.navigation.navigateClearingBackStack
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +41,7 @@ fun IntroductionContent(
 	// Navigate to camera when PIN is created
 	LaunchedEffect(uiState.pinCreated) {
 		if (uiState.pinCreated) {
-			navController.navigateClearingBackStack(AppDestinations.CAMERA_ROUTE)
+			navController.navigateClearingBackStack(Camera)
 		}
 	}
 

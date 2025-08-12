@@ -25,8 +25,9 @@ import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.RequestLocationPermission
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.gallery.vibrateDevice
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.Camera
 import com.darkrockstudios.app.securecamera.navigation.NavController
+import com.darkrockstudios.app.securecamera.navigation.PinVerification
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -86,7 +87,7 @@ fun CameraControls(
 			}
 			activeJobs = (activeJobs + job).toMutableList()
 		} else {
-			navController.navigate(AppDestinations.createPinVerificationRoute(AppDestinations.CAMERA_ROUTE))
+			navController.navigate(PinVerification(Camera))
 		}
 	}
 

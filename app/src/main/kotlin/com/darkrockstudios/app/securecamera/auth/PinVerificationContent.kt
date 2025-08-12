@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import com.darkrockstudios.app.securecamera.R
 import com.darkrockstudios.app.securecamera.navigation.NavController
 import com.darkrockstudios.app.securecamera.navigation.navigateClearingBackStack
@@ -33,7 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 fun PinVerificationContent(
 	navController: NavController,
 	snackbarHostState: SnackbarHostState,
-	returnRoute: String,
+	returnKey: NavKey,
 	modifier: Modifier = Modifier
 ) {
 	val viewModel: PinVerificationViewModel = koinViewModel()
@@ -97,9 +98,9 @@ fun PinVerificationContent(
 			fun verifyPin() {
 				viewModel.verify(
 					pin = pin,
-					returnRoute = returnRoute,
-					onNavigate = {
-						navController.navigateClearingBackStack(it)
+					returnKey = returnKey,
+					onNavigate = { destKey ->
+						navController.navigateClearingBackStack(destKey)
 					},
 					onFailure = { pin = "" }
 				)

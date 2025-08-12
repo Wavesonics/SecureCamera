@@ -9,14 +9,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
-import com.darkrockstudios.app.securecamera.navigation.AppRouteMapper
-import com.darkrockstudios.app.securecamera.navigation.NavController
-import com.darkrockstudios.app.securecamera.navigation.rememberCompatNavController
+import com.darkrockstudios.app.securecamera.navigation.*
+import com.darkrockstudios.app.securecamera.navigation.Camera
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
@@ -33,7 +34,6 @@ class MainActivity : ComponentActivity() {
 	private val preferences: AppPreferencesDataSource by inject()
 	private val authorizationRepository: AuthorizationRepository by inject()
 	lateinit var navController: NavController
-	lateinit var backStack: androidx.navigation3.runtime.NavBackStack
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -47,11 +47,10 @@ class MainActivity : ComponentActivity() {
 
 		enableEdgeToEdge()
 
-		val startRoute = determineStartRoute()
+		val startKey = determineStartKey()
 		setContent {
-			val startKey = AppRouteMapper.toKey(startRoute) ?: com.darkrockstudios.app.securecamera.navigation.Camera
-			val (bs, controller) = rememberCompatNavController(startKey)
-			backStack = bs
+			val backStack = rememberNavBackStack(startKey)
+			val controller = remember(backStack) { Nav3CompatController(backStack) }
 			navController = controller
 			App(capturePhoto, backStack, navController)
 		}
@@ -59,24 +58,23 @@ class MainActivity : ComponentActivity() {
 		startKeepAliveWatcher()
 	}
 
-	private fun determineStartRoute(): String {
+	private fun determineStartKey(): NavKey {
 		val photosToImport = receiveFiles()
 		val hasCompletedIntro = runBlocking { preferences.hasCompletedIntro.firstOrNull() ?: false }
-		val startDestination = if (hasCompletedIntro) {
-			val targetDestination = if (photosToImport.isNotEmpty()) {
-				AppDestinations.createImportPhotosRoute(photosToImport)
+		return if (hasCompletedIntro) {
+			val targetKey: DestinationKey = if (photosToImport.isNotEmpty()) {
+				ImportPhotos(PhotoImportJob(photosToImport))
 			} else {
-				AppDestinations.CAMERA_ROUTE
+				Camera
 			}
 			if (authorizationRepository.checkSessionValidity()) {
-				targetDestination
+				targetKey
 			} else {
-				AppDestinations.createPinVerificationRoute(targetDestination)
+				PinVerification(targetKey)
 			}
 		} else {
-			AppDestinations.INTRODUCTION_ROUTE
+			Introduction
 		}
-		return startDestination
 	}
 
 	override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

@@ -9,8 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations.createImportPhotosRoute
+import com.darkrockstudios.app.securecamera.navigation.ImportPhotos
 import com.darkrockstudios.app.securecamera.navigation.NavController
+import com.darkrockstudios.app.securecamera.navigation.PhotoImportJob
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +25,7 @@ fun GalleryTopNav(
 	onCancelSelection: () -> Unit = {}
 ) {
 	val openPhotoPicker = rememberPhotoPickerLauncher { uris ->
-		navController.navigate(createImportPhotosRoute(uris))
+		navController.navigate(ImportPhotos(PhotoImportJob(uris)))
 	}
 
 	TopAppBar(

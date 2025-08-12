@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.Gallery
 import com.darkrockstudios.app.securecamera.navigation.NavController
 import com.darkrockstudios.app.securecamera.navigation.navigateFromBase
 import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
@@ -430,7 +430,7 @@ fun ObfuscatePhotoContent(
 			saveAsCopy = {
 				viewModel.saveAsCopy(
 					onNavigate = { route ->
-						navController.navigateFromBase(AppDestinations.GALLERY_ROUTE, route)
+						navController.navigateFromBase(Gallery, route)
 					}
 				)
 			},

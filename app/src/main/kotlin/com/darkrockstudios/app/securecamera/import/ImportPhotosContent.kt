@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.navigation.AppDestinations
+import com.darkrockstudios.app.securecamera.navigation.Gallery
 import com.darkrockstudios.app.securecamera.navigation.NavController
 import com.darkrockstudios.app.securecamera.navigation.navigateClearingBackStack
 import com.darkrockstudios.app.securecamera.ui.NotificationPermissionRationale
@@ -157,7 +157,7 @@ fun ImportPhotosContent(
 				Button(
 					modifier = Modifier.padding(16.dp),
 					onClick = {
-						navController.navigateClearingBackStack(AppDestinations.GALLERY_ROUTE)
+						navController.navigateClearingBackStack(Gallery)
 					}
 				) {
 					Text(stringResource(id = R.string.import_photos_done_button))
@@ -180,7 +180,7 @@ private fun CancelImportDialog(navController: NavController, dismiss: () -> Unit
 				onClick = {
 					viewModel.cancelImport()
 					dismiss()
-					navController.navigateClearingBackStack(AppDestinations.GALLERY_ROUTE)
+					navController.navigateClearingBackStack(Gallery)
 				}
 			) {
 				Text(stringResource(id = R.string.discard_button))
