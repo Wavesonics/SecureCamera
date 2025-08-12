@@ -44,31 +44,54 @@ class Nav3CompatController(
 			// keep removing
 		}
 	}
-}
 
+	/** Ensures the given key is the base of the stack. Clears if different or empty. */
+	fun ensureBase(base: NavKey) {
+		val currentBase = backStack.firstOrNull()
+		if (currentBase == base) return
+		clearBackStack()
+		backStack.add(base)
+	}
+}
 
 fun NavController.navigateClearingBackStack(key: NavKey, launchSingleTop: Boolean = false) {
 	when (this) {
 		is Nav3CompatController -> {
-			this.clearBackStack()
-			this.navigate(key) { this.launchSingleTop = launchSingleTop }
+			clearBackStack()
+			navigate(key) { this.launchSingleTop = launchSingleTop }
 		}
 		else -> {
-			this.navigate(key) { this.launchSingleTop = launchSingleTop }
+			navigate(key) { this.launchSingleTop = launchSingleTop }
 		}
 	}
 }
 
-
+/**
+ * Puts `baseKey` at the bottom of the stack, and then navigates to targetKey
+ */
 fun NavController.navigateFromBase(baseKey: NavKey, targetKey: NavKey, launchSingleTop: Boolean = false) {
 	when (this) {
 		is Nav3CompatController -> {
-			this.clearBackStack()
-			this.navigate(baseKey)
-			this.navigate(targetKey) { this.launchSingleTop = launchSingleTop }
+			ensureBase(baseKey)
+			navigate(targetKey) { this.launchSingleTop = launchSingleTop }
 		}
 		else -> {
-			this.navigate(targetKey) { this.launchSingleTop = launchSingleTop }
+			navigate(targetKey) { this.launchSingleTop = launchSingleTop }
+		}
+	}
+}
+
+fun NavController.popAndNavigate(popN: Int = 1, targetKey: NavKey, launchSingleTop: Boolean = false) {
+	when (this) {
+		is Nav3CompatController -> {
+			repeat(popN) {
+				popBackStack()
+			}
+			navigate(targetKey) { this.launchSingleTop = launchSingleTop }
+		}
+
+		else -> {
+			navigate(targetKey) { this.launchSingleTop = launchSingleTop }
 		}
 	}
 }

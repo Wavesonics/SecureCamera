@@ -15,9 +15,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.darkrockstudios.app.securecamera.R
+import com.darkrockstudios.app.securecamera.navigation.Camera
 import com.darkrockstudios.app.securecamera.navigation.Gallery
 import com.darkrockstudios.app.securecamera.navigation.NavController
-import com.darkrockstudios.app.securecamera.navigation.navigateClearingBackStack
+import com.darkrockstudios.app.securecamera.navigation.navigateFromBase
 import com.darkrockstudios.app.securecamera.ui.NotificationPermissionRationale
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
@@ -157,7 +158,7 @@ fun ImportPhotosContent(
 				Button(
 					modifier = Modifier.padding(16.dp),
 					onClick = {
-						navController.navigateClearingBackStack(Gallery)
+						navController.navigateFromBase(Camera, Gallery)
 					}
 				) {
 					Text(stringResource(id = R.string.import_photos_done_button))
@@ -180,7 +181,7 @@ private fun CancelImportDialog(navController: NavController, dismiss: () -> Unit
 				onClick = {
 					viewModel.cancelImport()
 					dismiss()
-					navController.navigateClearingBackStack(Gallery)
+					navController.navigateFromBase(Camera, Gallery)
 				}
 			) {
 				Text(stringResource(id = R.string.discard_button))

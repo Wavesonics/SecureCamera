@@ -27,9 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.darkrockstudios.app.securecamera.R
-import com.darkrockstudios.app.securecamera.navigation.Gallery
 import com.darkrockstudios.app.securecamera.navigation.NavController
-import com.darkrockstudios.app.securecamera.navigation.navigateFromBase
+import com.darkrockstudios.app.securecamera.navigation.popAndNavigate
 import com.darkrockstudios.app.securecamera.ui.HandleUiEvents
 import com.darkrockstudios.app.securecamera.ui.PlayfulScaleVisibility
 import kotlinx.coroutines.CoroutineScope
@@ -430,7 +429,8 @@ fun ObfuscatePhotoContent(
 			saveAsCopy = {
 				viewModel.saveAsCopy(
 					onNavigate = { route ->
-						navController.navigateFromBase(Gallery, route)
+						// Pop the editor, and the original PhotoView
+						navController.popAndNavigate(2, route)
 					}
 				)
 			},
