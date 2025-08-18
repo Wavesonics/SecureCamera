@@ -103,15 +103,14 @@ fun ViewPhotoContent(
 		}
 
 		if (uiState.photos.isNotEmpty()) {
-			val listState =
-				remember(uiState.initialIndex) { LazyListState(firstVisibleItemIndex = uiState.initialIndex) }
+			val listState = remember { LazyListState(firstVisibleItemIndex = uiState.currentIndex) }
 
 			LaunchedEffect(listState) {
 				snapshotFlow {
 					listState.firstVisibleItemIndex to
 							listState.firstVisibleItemScrollOffset
 				}.collect { (idx, off) ->
-					if (listState.firstVisibleItemIndex != viewModel.currentIndex) {
+					if (listState.firstVisibleItemIndex != uiState.currentIndex) {
 						viewModel.setCurrentPhotoIndex(listState.firstVisibleItemIndex)
 					}
 				}

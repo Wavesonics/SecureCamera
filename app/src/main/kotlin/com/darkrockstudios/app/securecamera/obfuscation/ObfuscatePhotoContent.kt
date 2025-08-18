@@ -45,7 +45,7 @@ fun ObfuscatePhotoContent(
 	outerScope: CoroutineScope,
 	paddingValues: PaddingValues
 ) {
-	val viewModel: ObfuscatePhotoViewModel = koinViewModel()
+	val viewModel: ObfuscatePhotoViewModel = koinViewModel(key = photoName)
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	LaunchedEffect(photoName) {
@@ -60,10 +60,8 @@ fun ObfuscatePhotoContent(
 			uiState.isCreatingRegion ||
 			uiState.currentRegion != null
 
-	// State for discard confirmation dialog
 	val showDiscardDialog = remember { mutableStateOf(false) }
 
-	// Handle system back button
 	BackHandler(enabled = hasUnsavedChanges) {
 		showDiscardDialog.value = true
 	}
