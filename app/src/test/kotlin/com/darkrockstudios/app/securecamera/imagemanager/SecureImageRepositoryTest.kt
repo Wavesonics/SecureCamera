@@ -96,7 +96,6 @@ class SecureImageRepositoryTest {
 		// Create the SecureImageManager with real dependencies
 		secureImageRepository = SecureImageRepository(
 			appContext = context,
-			pinRepository = pinRepository,
 			thumbnailCache = thumbnailCache,
 			encryptionScheme = encryptionScheme,
 		)
@@ -531,7 +530,7 @@ class SecureImageRepositoryTest {
 		coEvery { encryptionScheme.deriveKey(any(), any()) } returns ppk
 
 		// When
-		val result = secureImageRepository.addDecoyPhoto(photoDef)
+		val result = secureImageRepository.addDecoyPhotoWithKey(photoDef, ByteArray(0x00))
 
 		// Then
 		assertTrue(result)
@@ -564,7 +563,7 @@ class SecureImageRepositoryTest {
 		}
 
 		// When
-		val result = secureImageRepository.addDecoyPhoto(photoDef)
+		val result = secureImageRepository.addDecoyPhotoWithKey(photoDef, ByteArray(0x00))
 
 		// Then
 		assertFalse(result)

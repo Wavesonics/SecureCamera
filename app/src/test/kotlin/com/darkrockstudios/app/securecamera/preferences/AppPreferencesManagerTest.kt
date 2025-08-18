@@ -2,36 +2,27 @@ package com.darkrockstudios.app.securecamera.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.io.File
+import testutil.FakeDataStore
 
 class AppPreferencesManagerTest {
 
 	private lateinit var context: Context
 	private lateinit var preferencesManager: AppPreferencesDataSource
 
-	@OptIn(ExperimentalCoroutinesApi::class)
-	private val testScope = TestScope(UnconfinedTestDispatcher())
-
 	private lateinit var dataStore: DataStore<Preferences>
 
 	@Before
 	fun setup() {
 		context = mockk(relaxed = true)
-		dataStore = PreferenceDataStoreFactory.create(
-			scope = testScope,
-			produceFile = { File.createTempFile("prefs_test", ".preferences_pb") }
-		)
+		dataStore = FakeDataStore(emptyPreferences())
 		preferencesManager = AppPreferencesDataSource(context, dataStore)
 	}
 

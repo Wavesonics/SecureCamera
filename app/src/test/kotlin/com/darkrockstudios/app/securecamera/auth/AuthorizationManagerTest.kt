@@ -2,8 +2,8 @@ package com.darkrockstudios.app.securecamera.auth
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import com.darkrockstudios.app.securecamera.TestClock
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
@@ -16,15 +16,12 @@ import io.mockk.mockk
 import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.io.File
+import testutil.FakeDataStore
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
@@ -42,16 +39,10 @@ class AuthorizationManagerTest {
 
 	private val configJson = Json.encodeToString(SoftwareSchemeConfig)
 
-	@OptIn(ExperimentalCoroutinesApi::class)
-	private val testScope = TestScope(UnconfinedTestDispatcher())
-
 	@Before
 	fun setup() {
 		context = mockk(relaxed = true)
-		dataStore = PreferenceDataStoreFactory.create(
-			scope = testScope,
-			produceFile = { File.createTempFile("prefs_test", ".preferences_pb") }
-		)
+		dataStore = FakeDataStore(emptyPreferences())
 		preferencesManager = spyk(AppPreferencesDataSource(context, dataStore))
 		encryptionManager = mockk(relaxed = true)
 		pinRepository = mockk()
@@ -321,14 +312,13 @@ class AuthorizationManagerTest {
 		val pin = "1234"
 
 		// Create a new spy for preferencesManager for this test
-		val spyPreferencesManager = spyk(AppPreferencesDataSource(context, dataStore))
 		val testAuthManager =
-			AuthorizationRepository(spyPreferencesManager, pinRepository, encryptionManager, context, clock)
+			AuthorizationRepository(preferencesManager, pinRepository, encryptionManager, context, clock)
 
 		// Set up initial state
-		spyPreferencesManager.setAppPin(pin, configJson)
-		spyPreferencesManager.setFailedPinAttempts(5)
-		spyPreferencesManager.setLastFailedAttemptTimestamp(1000L)
+		preferencesManager.setAppPin(pin, configJson)
+		preferencesManager.setFailedPinAttempts(5)
+		preferencesManager.setLastFailedAttemptTimestamp(1000L)
 
 		// Mock verifySecurityPin to return true initially, then false after reset
 		coEvery { pinRepository.verifySecurityPin(pin) } returns true andThen false
@@ -338,38 +328,7 @@ class AuthorizationManagerTest {
 
 		// Then
 		// Verify that securityFailureReset was called on the preferences manager
-		coVerify { spyPreferencesManager.securityFailureReset() }
-	}
-
-	@Test
-	fun `activatePoisonPill should delegate to preferencesManager`() = runTest {
-		// Given
-		val regularPin = "1234"
-		val poisonPillPin = "5678"
-		val hashedPoisonPin = "hashed"
-		preferencesManager.setAppPin(regularPin, configJson)
-		preferencesManager.setPoisonPillPin(hashedPoisonPin, poisonPillPin)
-
-		// Mock activatePoisonPill to change behavior
-		coEvery { pinRepository.activatePoisonPill() } answers {
-			// After activatePoisonPill is called, hasPoisonPillPin should return false
-			// and verifySecurityPin should return true for the poison pill pin
-			coEvery { pinRepository.hasPoisonPillPin() } returns false
-			coEvery { pinRepository.verifySecurityPin(poisonPillPin) } returns true
-		}
-
-		// Verify initial state
-		assertTrue(pinRepository.verifySecurityPin(regularPin))
-		assertTrue(pinRepository.verifyPoisonPillPin(poisonPillPin))
-		assertTrue(pinRepository.hasPoisonPillPin())
-
-		// When
-		authManager.activatePoisonPill()
-
-		// Then
-		// Verify poison pill was activated
-		assertTrue(pinRepository.verifySecurityPin(poisonPillPin))
-		assertFalse(pinRepository.hasPoisonPillPin())
+		coVerify { preferencesManager.securityFailureReset() }
 	}
 
 	@Test

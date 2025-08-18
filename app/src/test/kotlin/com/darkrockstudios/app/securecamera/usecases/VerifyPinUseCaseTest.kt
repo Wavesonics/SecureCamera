@@ -4,11 +4,7 @@ import com.darkrockstudios.app.securecamera.auth.AuthorizationRepository
 import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
-import io.mockk.Runs
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.just
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
@@ -58,7 +54,7 @@ class VerifyPinUseCaseTest {
 		// Then
 		assertTrue(result)
 		coVerify { authManager.verifyPin(pin) }
-		coVerify(exactly = 0) { authManager.activatePoisonPill() }
+		coVerify(exactly = 0) { pinRepository.activatePoisonPill() }
 		coVerify(exactly = 0) { imageManager.activatePoisonPill() }
 	}
 
@@ -75,7 +71,7 @@ class VerifyPinUseCaseTest {
 		// Then
 		assertFalse(result)
 		coVerify { authManager.verifyPin(pin) }
-		coVerify(exactly = 0) { authManager.activatePoisonPill() }
+		coVerify(exactly = 0) { pinRepository.activatePoisonPill() }
 		coVerify(exactly = 0) { imageManager.activatePoisonPill() }
 	}
 
@@ -86,7 +82,7 @@ class VerifyPinUseCaseTest {
 		coEvery { pinRepository.getHashedPin() } returns mockk()
 		coEvery { pinRepository.hasPoisonPillPin() } returns true
 		coEvery { pinRepository.verifyPoisonPillPin(pin) } returns true
-		coEvery { authManager.activatePoisonPill() } returns Unit
+		coEvery { pinRepository.activatePoisonPill() } returns Unit
 		coEvery { imageManager.activatePoisonPill() } returns Unit
 		coEvery { authManager.verifyPin(pin) } returns null // Even if PIN verification fails, poison pill should activate
 
@@ -113,7 +109,7 @@ class VerifyPinUseCaseTest {
 		assertTrue(result)
 		coVerify { pinRepository.hasPoisonPillPin() }
 		coVerify { pinRepository.verifyPoisonPillPin(pin) }
-		coVerify(exactly = 0) { authManager.activatePoisonPill() }
+		coVerify(exactly = 0) { pinRepository.activatePoisonPill() }
 		coVerify(exactly = 0) { imageManager.activatePoisonPill() }
 		coVerify { authManager.verifyPin(pin) }
 	}

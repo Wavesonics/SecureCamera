@@ -38,10 +38,6 @@ class AuthorizationRepository(
 		preferences.securityFailureReset()
 	}
 
-	suspend fun activatePoisonPill() {
-		pinRepository.activatePoisonPill()
-	}
-
 	/**
 	 * Gets the current number of failed PIN attempts
 	 * @return The number of failed attempts

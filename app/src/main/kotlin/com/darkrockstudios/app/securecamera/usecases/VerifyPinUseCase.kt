@@ -18,7 +18,7 @@ class VerifyPinUseCase(
 		if (pinRepository.hasPoisonPillPin() && pinRepository.verifyPoisonPillPin(pin)) {
 			encryptionScheme.activatePoisonPill(oldPin = pinRepository.getHashedPin())
 			imageManager.activatePoisonPill()
-			authManager.activatePoisonPill()
+			pinRepository.activatePoisonPill()
 		}
 
 		val hashedPin = authManager.verifyPin(pin)
