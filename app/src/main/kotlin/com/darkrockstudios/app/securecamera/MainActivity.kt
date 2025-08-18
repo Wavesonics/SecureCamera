@@ -120,13 +120,13 @@ class MainActivity : ComponentActivity() {
 		val intent = getIntent()
 
 		return if (Intent.ACTION_SEND == intent.action && intent.type != null) {
-			if (intent.type?.startsWith("image/jpeg") == true) {
+			if (intent.type?.startsWith("image/") == true) {
 				handleSingleImage(intent)
 			} else {
 				emptyList()
 			}
 		} else if (Intent.ACTION_SEND_MULTIPLE == intent.action && intent.type != null) {
-			if (intent.type?.startsWith("image/jpeg") == true) {
+			if (intent.type?.startsWith("image/") == true) {
 				handleMultipleImages(intent)
 			} else {
 				emptyList()
