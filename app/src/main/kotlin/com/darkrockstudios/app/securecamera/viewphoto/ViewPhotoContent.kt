@@ -47,12 +47,9 @@ fun ViewPhotoContent(
 	snackbarHostState: SnackbarHostState,
 	paddingValues: PaddingValues
 ) {
-	val viewModel: ViewPhotoViewModel = koinViewModel { parametersOf() }
+	val viewModel: ViewPhotoViewModel =
+		koinViewModel(key = initialPhoto.photoName) { parametersOf(initialPhoto.photoName) }
 	val context = LocalContext.current
-
-	LaunchedEffect(initialPhoto) {
-		viewModel.initialize(initialPhoto)
-	}
 
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

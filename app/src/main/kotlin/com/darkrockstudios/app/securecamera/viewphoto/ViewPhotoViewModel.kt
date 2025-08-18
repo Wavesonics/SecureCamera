@@ -21,6 +21,7 @@ class ViewPhotoViewModel(
 	private val imageManager: SecureImageRepository,
 	private val preferencesManager: AppPreferencesDataSource,
 	private val pinRepository: PinRepository,
+	private val initialPhotoName: String,
 ) : BaseViewModel<ViewPhotoUiState>() {
 
 	var currentIndex: Int = 0
@@ -28,11 +29,12 @@ class ViewPhotoViewModel(
 
 	override fun createState() = ViewPhotoUiState()
 
-	fun initialize(initialPhoto: PhotoDef) {
+	init {
 		val photos = imageManager.getPhotos().sortedByDescending { photoDef ->
 			photoDef.dateTaken()
 		}
-		val initialIndex = photos.indexOfFirst { it == initialPhoto }
+		val initialIndex = photos.indexOfFirst { it.photoName == initialPhotoName }
+		val initialPhoto = photos[initialIndex]
 
 		viewModelScope.launch {
 			val hasPoisonPill = pinRepository.hasPoisonPillPin()
@@ -49,12 +51,6 @@ class ViewPhotoViewModel(
 		}
 
 		viewModelScope.launch {
-			preferencesManager.sanitizeFileName.collect { sanitizeFileName ->
-				_uiState.update { it.copy(sanitizeFileName = sanitizeFileName) }
-			}
-		}
-
-		viewModelScope.launch {
 			preferencesManager.sanitizeMetadata.collect { sanitizeMetadata ->
 				_uiState.update { it.copy(sanitizeMetadata = sanitizeMetadata) }
 			}
@@ -67,6 +63,10 @@ class ViewPhotoViewModel(
 
 	fun setCurrentPhotoIndex(index: Int) {
 		currentIndex = index
+		viewModelScope.launch {
+			val isDecoy = getCurrentPhoto()?.let { imageManager.isDecoyPhoto(it) } ?: false
+			_uiState.update { it.copy(isDecoy = isDecoy) }
+		}
 	}
 
 	fun getCurrentPhoto(): PhotoDef? {
