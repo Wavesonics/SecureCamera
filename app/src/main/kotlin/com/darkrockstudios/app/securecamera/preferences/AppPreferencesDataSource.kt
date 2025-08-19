@@ -70,13 +70,13 @@ class AppPreferencesDataSource(
 	/**
 	 * Check if the user has completed the introduction
 	 */
-	val hasCompletedIntro: Flow<Boolean?> = context.dataStore.data
+	val hasCompletedIntro: Flow<Boolean?> = dataStore.data
 		.map { preferences ->
 			preferences[HAS_COMPLETED_INTRO] ?: false
 		}
 
 	// DELETE ME after beta migration is over
-	val isProdReady: Flow<Boolean?> = context.dataStore.data
+	val isProdReady: Flow<Boolean?> = dataStore.data
 		.map { preferences ->
 			preferences[IS_PROD_READY] ?: false
 		}

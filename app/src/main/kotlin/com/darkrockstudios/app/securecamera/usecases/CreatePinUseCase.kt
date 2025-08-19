@@ -11,10 +11,11 @@ class CreatePinUseCase(
 	private val encryptionScheme: EncryptionScheme,
 	private val pinRepository: PinRepository,
 	private val preferencesDataSource: AppPreferencesDataSource,
+	private val authorizePinUseCase: AuthorizePinUseCase
 ) {
 	suspend fun createPin(pin: String, schemeConfig: SchemeConfig): Boolean {
 		pinRepository.setAppPin(pin, schemeConfig)
-		val hashedPin = authorizationRepository.verifyPin(pin)
+		val hashedPin = authorizePinUseCase.authorizePin(pin)
 		return if (hashedPin != null) {
 			authorizationRepository.createKey(pin, hashedPin)
 			encryptionScheme.deriveAndCacheKey(pin, hashedPin)

@@ -10,20 +10,17 @@ import com.ashampoo.kim.common.convertToPhotoMetadata
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
 import com.ashampoo.kim.model.TiffOrientation
-import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 import kotlin.time.toJavaInstant
 
 
 class SecureImageRepository(
 	private val appContext: Context,
-	private val pinRepository: PinRepository,
 	internal val thumbnailCache: ThumbnailCache,
 	private val encryptionScheme: EncryptionScheme,
 ) {
@@ -438,18 +435,15 @@ class SecureImageRepository(
 
 	fun numDecoys(): Int = getDecoyFiles().count()
 
-	suspend fun addDecoyPhoto(photoDef: PhotoDef): Boolean {
+	suspend fun addDecoyPhotoWithKey(photoDef: PhotoDef, keyBytes: ByteArray): Boolean {
 		return if (numDecoys() < MAX_DECOY_PHOTOS) {
 			val jpgBytes = decryptJpg(photoDef)
 			getDecoyDirectory().mkdirs()
 			val decoyFile = getDecoyFile(photoDef)
 
-			val ppp = pinRepository.getHashedPoisonPillPin() ?: return false
-			val pin = pinRepository.getPlainPoisonPillPin() ?: return false
-			val ppk = encryptionScheme.deriveKey(plainPin = pin, hashedPin = ppp)
 			encryptionScheme.encryptToFile(
 				plain = jpgBytes,
-				keyBytes = ppk,
+				keyBytes = keyBytes,
 				targetFile = decoyFile
 			)
 

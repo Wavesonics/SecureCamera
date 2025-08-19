@@ -11,6 +11,7 @@ import com.darkrockstudios.app.securecamera.camera.SecureImageRepository
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.share.sharePhotoWithProvider
+import com.darkrockstudios.app.securecamera.usecases.AddDecoyPhotoUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ class ViewPhotoViewModel(
 	private val imageManager: SecureImageRepository,
 	private val preferencesManager: AppPreferencesDataSource,
 	private val pinRepository: PinRepository,
+	private val addDecoyPhotoUseCase: AddDecoyPhotoUseCase,
 	private val initialPhotoName: String,
 ) : BaseViewModel<ViewPhotoUiState>() {
 
@@ -99,7 +101,7 @@ class ViewPhotoViewModel(
 					showMessage(appContext.getString(R.string.decoy_removed))
 				}
 			} else {
-				val success = imageManager.addDecoyPhoto(currentPhoto)
+				val success = addDecoyPhotoUseCase.addDecoyPhoto(currentPhoto)
 				withContext(Dispatchers.Main) {
 					_uiState.update {
 						it.copy(
