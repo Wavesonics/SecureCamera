@@ -38,7 +38,6 @@ val appModule = module {
 	single {
 		AuthorizationRepository(
 			preferences = get(),
-			pinRepository = get(),
 			encryptionScheme = get(),
 			context = get(),
 			clock = get()
@@ -77,6 +76,7 @@ val appModule = module {
 	factoryOf(::SecurityResetUseCase)
 	factoryOf(::PinStrengthCheckUseCase)
 	factoryOf(::VerifyPinUseCase)
+	factoryOf(::AuthorizePinUseCase)
 	factoryOf(::CreatePinUseCase)
 	factoryOf(::PinSizeUseCase)
 	factoryOf(::RemovePoisonPillIUseCase)

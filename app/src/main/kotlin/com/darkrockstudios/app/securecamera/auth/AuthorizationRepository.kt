@@ -3,7 +3,6 @@ package com.darkrockstudios.app.securecamera.auth
 import android.content.Context
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import com.darkrockstudios.app.securecamera.security.pin.PinRepository
 import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +18,6 @@ import kotlin.time.Instant
  */
 class AuthorizationRepository(
 	private val preferences: AppPreferencesDataSource,
-	private val pinRepository: PinRepository,
 	private val encryptionScheme: EncryptionScheme,
 	private val context: Context,
 	private val clock: Clock,
@@ -116,28 +114,10 @@ class AuthorizationRepository(
 	}
 
 	/**
-	 * Verifies the PIN and updates the authorization state if successful.
-	 * @param pin The PIN entered by the user
-	 * @return True if the PIN is correct, false otherwise
-	 */
-	suspend fun verifyPin(pin: String): HashedPin? {
-		val hashedPin = pinRepository.getHashedPin()
-		val isValid = pinRepository.verifySecurityPin(pin)
-		return if (isValid && hashedPin != null) {
-			authorizeSession()
-			// Reset failed attempts counter on successful verification
-			resetFailedAttempts()
-			hashedPin
-		} else {
-			null
-		}
-	}
-
-	/**
 	 * Marks the current session as authorized and updates the last authentication time.
 	 * Also starts the SessionService to monitor session validity.
 	 */
-	private fun authorizeSession() {
+	fun authorizeSession() {
 		lastAuthTimeMs = clock.now()
 		_isAuthorized.value = true
 		startSessionService()

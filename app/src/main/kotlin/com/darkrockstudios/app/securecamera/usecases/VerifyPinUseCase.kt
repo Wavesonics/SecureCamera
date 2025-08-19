@@ -11,6 +11,7 @@ class VerifyPinUseCase(
 	private val pinRepository: PinRepository,
 	private val encryptionScheme: EncryptionScheme,
 	private val migratePinHash: MigratePinHash,
+	private val authorizePinUseCase: AuthorizePinUseCase,
 ) {
 	suspend fun verifyPin(pin: String): Boolean {
 		migratePinHash.runMigration(pin)
@@ -21,7 +22,7 @@ class VerifyPinUseCase(
 			pinRepository.activatePoisonPill()
 		}
 
-		val hashedPin = authManager.verifyPin(pin)
+		val hashedPin = authorizePinUseCase.authorizePin(pin)
 		return if (hashedPin != null) {
 			encryptionScheme.deriveAndCacheKey(pin, hashedPin)
 			authManager.resetFailedAttempts()
