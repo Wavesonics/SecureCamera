@@ -75,7 +75,7 @@ val appModule = module {
 		}
 	} bind PinRepository::class
 	singleOf(::SecurityLevelDetector)
-	singleOf(::PinCrypto)
+	single<PinCrypto> { PinCrypto() }
 
 	single { WorkManager.getInstance(get()) }
 
