@@ -15,7 +15,8 @@ import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import kotlin.time.toJavaInstant
 
 
@@ -224,13 +225,12 @@ class SecureImageRepository(
 		val updatedBytes = processImageWithMetadata(bitmap, jpgBytes, quality)
 
 		val dir = getGalleryDirectory()
-		val newImageName = photoDef.photoName.substringBefore(".jpg") + "_cp.jpg"
+		val newImageName = generateCopyName(dir, photoDef.photoName)
 		val newPhotoFile = File(dir, newImageName)
 		val tempFile = File(dir, "$newImageName.tmp")
 
 		encryptAndSaveImage(updatedBytes, tempFile, newPhotoFile)
 
-		// Create a new PhotoDef for the new file
 		val newPhotoDef = PhotoDef(
 			photoName = newImageName,
 			photoFormat = "jpg",
@@ -469,4 +469,17 @@ class SecureImageRepository(
 		const val THUMBNAILS_DIR = ".thumbnails"
 		const val MAX_DECOY_PHOTOS = 10
 	}
+}
+
+
+internal fun generateCopyName(dir: File, originalName: String): String {
+	val base = originalName.substringBeforeLast(".")
+	val ext = originalName.substringAfterLast('.', "jpg")
+	var candidate = "${base}_cp.${ext}"
+	var i = 1
+	while (File(dir, candidate).exists()) {
+		candidate = "${base}_cp${i}.${ext}"
+		i++
+	}
+	return candidate
 }
