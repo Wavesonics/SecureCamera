@@ -1,8 +1,13 @@
 package com.darkrockstudios.app.securecamera.usecases
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import com.darkrockstudios.app.securecamera.preferences.*
-import com.darkrockstudios.app.securecamera.security.DeviceInfo
+import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
+import com.darkrockstudios.app.securecamera.preferences.HashedPin
+import com.darkrockstudios.app.securecamera.preferences.XorCipher
+import com.darkrockstudios.app.securecamera.preferences.base64Decode
+import com.darkrockstudios.app.securecamera.preferences.base64Encode
+import com.darkrockstudios.app.securecamera.preferences.base64EncodeUrlSafe
+import com.darkrockstudios.app.securecamera.security.DeviceInfoDataSource
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
 import com.darkrockstudios.app.securecamera.security.pin.PinRepository.Companion.ARGON_COST
@@ -13,7 +18,6 @@ import com.darkrockstudios.app.securecamera.security.schemes.HardwareBackedEncry
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
 import com.lambdapioneer.argon2kt.Argon2Mode
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
@@ -22,7 +26,7 @@ class MigratePinHash(
 	private val dataSource: AppPreferencesDataSource,
 	private val encryptionScheme: EncryptionScheme,
 	private val removePoisonPillIUseCase: RemovePoisonPillIUseCase,
-	private val deviceInfo: DeviceInfo,
+	private val deviceInfo: DeviceInfoDataSource,
 ) {
 	private val argon2Kt = Argon2Kt()
 

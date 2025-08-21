@@ -10,7 +10,7 @@ import com.darkrockstudios.app.securecamera.import.ImportPhotosViewModel
 import com.darkrockstudios.app.securecamera.introduction.IntroductionViewModel
 import com.darkrockstudios.app.securecamera.obfuscation.ObfuscatePhotoViewModel
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
-import com.darkrockstudios.app.securecamera.security.DeviceInfo
+import com.darkrockstudios.app.securecamera.security.DeviceInfoDataSource
 import com.darkrockstudios.app.securecamera.security.SecurityLevel
 import com.darkrockstudios.app.securecamera.security.SecurityLevelDetector
 import com.darkrockstudios.app.securecamera.security.pin.PinCrypto
@@ -21,7 +21,16 @@ import com.darkrockstudios.app.securecamera.security.schemes.EncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.HardwareBackedEncryptionScheme
 import com.darkrockstudios.app.securecamera.security.schemes.SoftwareEncryptionScheme
 import com.darkrockstudios.app.securecamera.settings.SettingsViewModel
-import com.darkrockstudios.app.securecamera.usecases.*
+import com.darkrockstudios.app.securecamera.usecases.AddDecoyPhotoUseCase
+import com.darkrockstudios.app.securecamera.usecases.AuthorizePinUseCase
+import com.darkrockstudios.app.securecamera.usecases.CreatePinUseCase
+import com.darkrockstudios.app.securecamera.usecases.InvalidateSessionUseCase
+import com.darkrockstudios.app.securecamera.usecases.MigratePinHash
+import com.darkrockstudios.app.securecamera.usecases.PinSizeUseCase
+import com.darkrockstudios.app.securecamera.usecases.PinStrengthCheckUseCase
+import com.darkrockstudios.app.securecamera.usecases.RemovePoisonPillIUseCase
+import com.darkrockstudios.app.securecamera.usecases.SecurityResetUseCase
+import com.darkrockstudios.app.securecamera.usecases.VerifyPinUseCase
 import com.darkrockstudios.app.securecamera.viewphoto.ViewPhotoViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -70,7 +79,7 @@ val appModule = module {
 
 	single { WorkManager.getInstance(get()) }
 
-	factoryOf(::DeviceInfo)
+	factoryOf(::DeviceInfoDataSource)
 
 	factoryOf(::ThumbnailCache)
 	factoryOf(::SecurityResetUseCase)

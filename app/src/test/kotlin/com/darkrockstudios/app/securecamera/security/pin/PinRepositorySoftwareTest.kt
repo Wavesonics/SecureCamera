@@ -3,7 +3,7 @@ package com.darkrockstudios.app.securecamera.security.pin
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import com.darkrockstudios.app.securecamera.preferences.XorCipher
-import com.darkrockstudios.app.securecamera.security.DeviceInfo
+import com.darkrockstudios.app.securecamera.security.DeviceInfoDataSource
 import com.darkrockstudios.app.securecamera.security.SchemeConfig
 import com.darkrockstudios.app.securecamera.security.SoftwareSchemeConfig
 import io.mockk.coEvery
@@ -12,14 +12,18 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PinRepositorySoftwareTest {
 	private lateinit var dataSource: AppPreferencesDataSource
-	private lateinit var deviceInfo: DeviceInfo
+	private lateinit var deviceInfo: DeviceInfoDataSource
 	private lateinit var pinCrypto: PinCrypto
 	private lateinit var repo: PinRepositorySoftware
 

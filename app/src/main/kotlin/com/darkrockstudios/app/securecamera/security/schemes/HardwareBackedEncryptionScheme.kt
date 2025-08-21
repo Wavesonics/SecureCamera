@@ -10,7 +10,7 @@ import android.security.keystore.KeyProperties.PURPOSE_ENCRYPT
 import android.security.keystore.StrongBoxUnavailableException
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
-import com.darkrockstudios.app.securecamera.security.DeviceInfo
+import com.darkrockstudios.app.securecamera.security.DeviceInfoDataSource
 import com.darkrockstudios.app.securecamera.security.HardwareSchemeConfig
 import dev.whyoleg.cryptography.CryptographyProvider
 import dev.whyoleg.cryptography.algorithms.PBKDF2
@@ -31,7 +31,7 @@ import kotlin.time.Duration.Companion.minutes
 
 class HardwareBackedEncryptionScheme(
 	private val appContext: Context,
-	deviceInfo: DeviceInfo,
+	deviceInfo: DeviceInfoDataSource,
 	private val appPreferencesDataSource: AppPreferencesDataSource,
 ) : SoftwareEncryptionScheme(deviceInfo) {
 	private val provider = CryptographyProvider.Default

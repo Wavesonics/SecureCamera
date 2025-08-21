@@ -3,14 +3,14 @@ package com.darkrockstudios.app.securecamera.security.pin
 import com.darkrockstudios.app.securecamera.preferences.AppPreferencesDataSource
 import com.darkrockstudios.app.securecamera.preferences.HashedPin
 import com.darkrockstudios.app.securecamera.preferences.XorCipher
-import com.darkrockstudios.app.securecamera.security.DeviceInfo
+import com.darkrockstudios.app.securecamera.security.DeviceInfoDataSource
 import com.darkrockstudios.app.securecamera.security.SchemeConfig
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 class PinRepositorySoftware(
 	private val dataSource: AppPreferencesDataSource,
-	private val deviceInfo: DeviceInfo,
+	private val deviceInfo: DeviceInfoDataSource,
 	private val pinCrypto: PinCrypto,
 ) : PinRepository {
 
