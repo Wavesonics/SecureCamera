@@ -96,22 +96,6 @@ jobs:
           arch: x86_64
           script: ./gradlew connectedCheck
 
-      - name: Collect logcat
-        if: failure()
-        run: |
-          adb logcat -d > logcat.txt || true
-          mkdir -p artifacts
-          mv logcat.txt artifacts/ || true
-          find app/build/reports -maxdepth 4 -type f -print0 | xargs -0 -I{} cp --parents {} artifacts/ || true
-          find app/build/outputs/androidTest-results -maxdepth 6 -type f -print0 | xargs -0 -I{} cp --parents {} artifacts/ || true
-
-      - name: Upload test artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-test-artifacts
-          path: artifacts
-
       - name: Upload Test Reports
         if: failure()
         uses: actions/upload-artifact@v4

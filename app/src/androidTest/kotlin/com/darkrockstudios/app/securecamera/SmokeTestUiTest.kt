@@ -66,11 +66,11 @@ class SmokeTestUiTest {
 
 			setPinFields("3133734", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForText(R.string.pin_creation_error)
+			waitForTextSimple(R.string.pin_creation_error)
 
 			setPinFields("123456", "123456")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForText(R.string.pin_creation_error_weak_pin)
+			waitForTextSimple(R.string.pin_creation_error_weak_pin)
 
 			setPinFields("313373", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
@@ -108,6 +108,10 @@ class SmokeTestUiTest {
 				.onAllNodes(hasRole(Role.Button) and hasContentDescription(contentDescription))
 				.fetchSemanticsNodes().isNotEmpty()
 		}
+	}
+
+	private fun waitForTextSimple(@StringRes id: Int) {
+		waitForTextSimple(str(id))
 	}
 
 	private fun waitForTextSimple(text: String) {
