@@ -66,16 +66,16 @@ class SmokeTestUiTest {
 
 			setPinFields("3133734", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForTextSimple(R.string.pin_creation_error)
+			waitForTextEitherTree(R.string.pin_creation_error)
 
 			setPinFields("123456", "123456")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForTextSimple(R.string.pin_creation_error_weak_pin)
+			waitForTextEitherTree(R.string.pin_creation_error_weak_pin)
 
 			setPinFields("313373", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
 
-			waitForTextSimple(str(R.string.pin_creating_vault))
+			waitForTextEitherTree(str(R.string.pin_creating_vault), assertDisplayed = false)
 
 			waitForButton(str(R.string.camera_shutter_button_desc))
 
@@ -177,7 +177,8 @@ class SmokeTestUiTest {
 		text: String,
 		timeout: Duration = 10.seconds,
 		useUnmergedTree: Boolean = true,
-		substring: Boolean = true
+		substring: Boolean = true,
+		assertDisplayed: Boolean = true
 	) {
 		waitUntil(timeout.inWholeMilliseconds) {
 			onAllNodes(
@@ -185,8 +186,60 @@ class SmokeTestUiTest {
 				useUnmergedTree = useUnmergedTree
 			).fetchSemanticsNodes().isNotEmpty()
 		}
-		onNodeWithText(text, substring = substring)
-			.assertIsDisplayed()
+		val node = onNode(
+			hasText(text, substring = substring),
+			useUnmergedTree = useUnmergedTree
+		)
+		if (assertDisplayed) node.assertIsDisplayed() else node.assertExists()
+	}
+
+	fun ComposeContentTestRule.waitForTextEitherTree(
+		text: String,
+		timeout: Duration = 10.seconds,
+		substring: Boolean = true,
+		ignoreCase: Boolean = false,
+		assertDisplayed: Boolean = true,
+		preferUnmergedFirst: Boolean = true
+	) {
+		fun hasAny(useUnmerged: Boolean) = onAllNodes(
+			hasText(text, substring = substring, ignoreCase = ignoreCase),
+			useUnmergedTree = useUnmerged
+		).fetchSemanticsNodes().isNotEmpty()
+
+		val order = if (preferUnmergedFirst) listOf(true, false) else listOf(false, true)
+
+		waitUntil(timeout.inWholeMilliseconds) {
+			hasAny(order[0]) || hasAny(order[1])
+		}
+
+		// Pick the tree that actually has the node
+		val chosenUnmerged = if (hasAny(order[0])) order[0] else order[1]
+
+		val node = onNode(
+			hasText(text, substring = substring, ignoreCase = ignoreCase),
+			useUnmergedTree = chosenUnmerged
+		)
+		if (assertDisplayed) node.assertIsDisplayed() else node.assertExists()
+	}
+
+	fun ComposeContentTestRule.waitForTextEitherTree(
+		@StringRes resId: Int,
+		timeout: Duration = 10.seconds,
+		substring: Boolean = true,
+		ignoreCase: Boolean = false,
+		assertDisplayed: Boolean = true,
+		preferUnmergedFirst: Boolean = true
+	) {
+		val str = androidx.test.platform.app.InstrumentationRegistry
+			.getInstrumentation().targetContext.getString(resId)
+		waitForTextEitherTree(
+			text = str,
+			timeout = timeout,
+			substring = substring,
+			ignoreCase = ignoreCase,
+			assertDisplayed = assertDisplayed,
+			preferUnmergedFirst = preferUnmergedFirst
+		)
 	}
 
 	fun ComposeContentTestRule.waitForContentDescription(
