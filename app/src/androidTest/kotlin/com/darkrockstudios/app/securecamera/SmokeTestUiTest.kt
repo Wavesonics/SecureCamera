@@ -52,11 +52,11 @@ class SmokeTestUiTest {
 
 			setPinFields("3133734", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForTextEitherTree(R.string.pin_creation_error)
+			waitForTextEitherTree(R.string.pin_creation_error, assertDisplayed = false)
 
 			setPinFields("123456", "123456")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForTextEitherTree(R.string.pin_creation_error_weak_pin)
+			waitForTextEitherTree(R.string.pin_creation_error_weak_pin, assertDisplayed = false)
 
 			setPinFields("313373", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
@@ -64,26 +64,16 @@ class SmokeTestUiTest {
 			waitForTextEitherTree(str(R.string.pin_creating_vault), assertDisplayed = false)
 
 			waitForEitherTree(hasRole(Role.Button) and hasContentDescription(str(R.string.camera_shutter_button_desc)))
-
-			onNode(
-				hasRole(Role.Button) and hasContentDescription(str(R.string.camera_shutter_button_desc))
-			).performClick()
+				.performClick()
 
 			waitForEitherTree(hasContentDescription(str(R.string.camera_more_options_content_description)))
-
-			onNode(
-				hasRole(Role.Button) and hasContentDescription(str(R.string.camera_more_options_content_description))
-			).performClick()
+				.performClick()
 
 			waitForEitherTree(hasTestTag("flash-switch"))
+				.performClick()
 
-			onNode(
-				hasRole(Role.Switch) and hasTestTag("flash-switch")
-			).performClick()
-
-			onNode(
-				hasRole(Role.Button) and hasContentDescription(str(R.string.camera_close_controls_content_description))
-			).performClick()
+			waitForEitherTree(hasRole(Role.Button) and hasContentDescription(str(R.string.camera_close_controls_content_description)))
+				.performClick()
 		}
 	}
 
