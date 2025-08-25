@@ -130,3 +130,27 @@ fun ComposeContentTestRule.setTextField(value: String, placeholder: Int) {
 		performTextInput(value)
 	}
 }
+
+fun ComposeContentTestRule.waitUntilTextAppearsAtLeastOnce(
+	text: String,
+	timeout: Duration = 5.seconds,
+	ignoreCase: Boolean = false
+): Boolean {
+	var seen = false
+	waitUntil(timeout.inWholeMilliseconds) {
+		val anyTree =
+			onAllNodes(
+				hasText(text, substring = true, ignoreCase = ignoreCase),
+				useUnmergedTree = false
+			)
+				.fetchSemanticsNodes().isNotEmpty() ||
+					onAllNodes(
+						hasText(text, substring = true, ignoreCase = ignoreCase),
+						useUnmergedTree = true
+					)
+						.fetchSemanticsNodes().isNotEmpty()
+		if (anyTree) seen = true
+		anyTree // stop waiting as soon as we see it
+	}
+	return seen
+}
