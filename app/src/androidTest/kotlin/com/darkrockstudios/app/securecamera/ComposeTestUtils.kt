@@ -25,6 +25,7 @@ import kotlin.time.Duration.Companion.seconds
 fun ComposeContentTestRule.waitForEitherTree(
 	matcher: SemanticsMatcher,
 	timeout: Duration = 10.seconds,
+	assert: Boolean = true,
 	assertDisplayed: Boolean = true,
 	preferUnmergedFirst: Boolean = true
 ): androidx.compose.ui.test.SemanticsNodeInteraction {
@@ -48,7 +49,9 @@ fun ComposeContentTestRule.waitForEitherTree(
 		useUnmergedTree = chosenUnmerged
 	)
 
-	if (assertDisplayed) node.assertIsDisplayed() else node.assertExists()
+	if (assert) {
+		if (assertDisplayed) node.assertIsDisplayed() else node.assertExists()
+	}
 	return node
 }
 
@@ -57,6 +60,7 @@ fun ComposeContentTestRule.waitForTextEitherTree(
 	timeout: Duration = 10.seconds,
 	substring: Boolean = true,
 	ignoreCase: Boolean = false,
+	assert: Boolean = true,
 	assertDisplayed: Boolean = true,
 	preferUnmergedFirst: Boolean = true
 ) {
@@ -78,7 +82,9 @@ fun ComposeContentTestRule.waitForTextEitherTree(
 		hasText(text, substring = substring, ignoreCase = ignoreCase),
 		useUnmergedTree = chosenUnmerged
 	)
-	if (assertDisplayed) node.assertIsDisplayed() else node.assertExists()
+	if (assert) {
+		if (assertDisplayed) node.assertIsDisplayed() else node.assertExists()
+	}
 }
 
 fun ComposeContentTestRule.waitForTextEitherTree(
@@ -86,6 +92,7 @@ fun ComposeContentTestRule.waitForTextEitherTree(
 	timeout: Duration = 10.seconds,
 	substring: Boolean = true,
 	ignoreCase: Boolean = false,
+	assert: Boolean = true,
 	assertDisplayed: Boolean = true,
 	preferUnmergedFirst: Boolean = true
 ) {
@@ -96,6 +103,7 @@ fun ComposeContentTestRule.waitForTextEitherTree(
 		timeout = timeout,
 		substring = substring,
 		ignoreCase = ignoreCase,
+		assert = assert,
 		assertDisplayed = assertDisplayed,
 		preferUnmergedFirst = preferUnmergedFirst
 	)

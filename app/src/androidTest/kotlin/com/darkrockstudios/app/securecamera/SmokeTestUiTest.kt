@@ -52,16 +52,16 @@ class SmokeTestUiTest {
 
 			setPinFields("3133734", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForTextEitherTree(R.string.pin_creation_error, assertDisplayed = false)
+			waitForTextEitherTree(R.string.pin_creation_error, assert = false)
 
 			setPinFields("123456", "123456")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
-			waitForTextEitherTree(R.string.pin_creation_error_weak_pin, assertDisplayed = false)
+			waitForTextEitherTree(R.string.pin_creation_error_weak_pin, assert = false)
 
 			setPinFields("313373", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
 
-			waitForTextEitherTree(str(R.string.pin_creating_vault), assertDisplayed = false)
+			waitForTextEitherTree(str(R.string.pin_creating_vault), assert = false)
 
 			waitForEitherTree(hasRole(Role.Button) and hasContentDescription(str(R.string.camera_shutter_button_desc)))
 				.performClick()
