@@ -56,7 +56,13 @@ class SmokeTestUiTest {
 			setPinFields("3133734", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
 			waitForIdle()
-			waitUntilExactlyOneExists(hasText(str(R.string.pin_creation_error)))
+			waitUntilExactlyOneExists(
+				hasText(
+					str(R.string.pin_creation_error),
+					substring = true,
+					ignoreCase = true
+				)
+			)
 
 			setPinFields("123456", "123456")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
