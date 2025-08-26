@@ -3,9 +3,11 @@ package com.darkrockstudios.app.securecamera
 import android.Manifest
 import android.os.Build
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -35,6 +37,7 @@ class SmokeTestUiTest {
 	@get:Rule
 	val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+	@OptIn(ExperimentalTestApi::class)
 	@Test
 	fun smokeTest() {
 		composeTestRule.apply {
@@ -53,18 +56,17 @@ class SmokeTestUiTest {
 			setPinFields("3133734", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
 			waitForIdle()
-			onNodeWithText(str(R.string.pin_creation_error)).assertExists()
-			//waitUntilTextAppearsAtLeastOnce(str(R.string.pin_creation_error))
+			waitUntilExactlyOneExists(hasText(str(R.string.pin_creation_error)))
 
 			setPinFields("123456", "123456")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
 			waitForIdle()
-			waitUntilTextAppearsAtLeastOnce(str(R.string.pin_creation_error_weak_pin))
+			waitUntilExactlyOneExists(hasText(str(R.string.pin_creation_error_weak_pin)))
 
 			setPinFields("313373", "313373")
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
 			waitForIdle()
-			waitUntilTextAppearsAtLeastOnce(str(R.string.pin_creating_vault))
+			waitUntilExactlyOneExists(hasText(str(R.string.pin_creating_vault)))
 
 			waitForEitherTree(hasRole(Role.Button) and hasContentDescription(str(R.string.camera_shutter_button_desc)))
 				.performClick()
