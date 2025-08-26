@@ -54,6 +54,7 @@ class SmokeTestUiTest {
 			onNodeWithText(str(R.string.pin_creation_title)).assertIsDisplayed()
 
 			setPinFields("3133734", "313373")
+			waitForIdle()
 			onNodeWithText(str(R.string.pin_creation_button)).performClick()
 			waitForIdle()
 			waitUntilAtLeastOneExists(hasTestTag("pin-error"))
